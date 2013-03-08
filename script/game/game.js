@@ -12,8 +12,8 @@ rect.onhover = function() {
 }
 // randomize position
 rect.randomPos = function() {
-        this.position = { x:random(View.canvasWidth - rectsize, 0),
-                          y:random(View.canvasHeight - rectsize, 0) };
+        this.position = { x:random(View.canvasWidth - rectsize),
+                          y:random(View.canvasHeight - rectsize) };
 }
 
 // initializes the game
