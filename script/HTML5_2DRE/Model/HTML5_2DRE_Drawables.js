@@ -48,7 +48,7 @@
 Model.Drawables = new Array();
 
 Model.Drawables.BaseDrawable = {
-		name			: 	"Rectangle",
+		name			: 	"DrawableObject",
 		position		: 	{ x:0, y:0 },
 		size			: 	{ x:1, y:1 },
 		scale			: 	{ x:1, y:1 },
@@ -424,6 +424,7 @@ Model.Drawables.SpriteDrawable.onload = function ()
 Model.Drawables.SpriteDrawable.load = 	function(src)
 {
 	this._image.onload = this.onload; // workaround
+	this._image.parent = this;
 	this._image.src = src;
 	this.curImage = src;
 }
@@ -573,4 +574,47 @@ Model.Drawables.TextBox.removeLeadingWhiteSpace = function (text)
 								return text.substring(i, text.length);
 							}
 
-Model.Drawables.AnimatedDrawable = Model.Drawables.BaseDrawable.clone();
+//TODO: Fix padding
+Model.Drawables.AnimatedDrawable = Model.Drawables.SpriteDrawable.clone();
+Model.Drawables.AnimatedDrawable.frameSize = {x:1, y:1};
+Model.Drawables.AnimatedDrawable.frameN = 1;
+Model.Drawables.AnimatedDrawable.secondsPerFrame = 1;
+Model.Drawables.AnimatedDrawable.startPadding = {x:0, y:0};
+Model.Drawables.AnimatedDrawable.framePadding = {x:0, y:0};
+Model.Drawables.AnimatedDrawable._framesPerRow = 0;
+Model.Drawables.AnimatedDrawable._currentFrame = 0;
+Model.Drawables.AnimatedDrawable._currentFrameOfRow = 0;
+Model.Drawables.AnimatedDrawable._currentRow = 0;
+Model.Drawables.AnimatedDrawable._secondsSinceNewFrame = 0.0;
+// WARNING: Magic onload function is called by this._image, not but AnimatedDrawable itself
+Model.Drawables.AnimatedDrawable.onload = function ()
+{
+	this.loaded = true;
+	this.parent.calculateFramesPerRow();
+}
+Model.Drawables.AnimatedDrawable.calculateFramesPerRow = function ()
+{
+	this._framesPerRow = Math.floor((this._image.naturalWidth - this.startPadding.x) / (this.framePadding.x + this.frameSize.x));
+}
+Model.Drawables.AnimatedDrawable.draw = function(ctx)
+{
+	if(this._image.loaded) {
+		this._secondsSinceNewFrame += deltaTime;
+		if (this._secondsSinceNewFrame >= this.secondsPerFrame) {
+			this._secondsSinceNewFrame = 0;
+			this._currentFrame++;
+			this._currentFrameOfRow++;
+			if (this._currentFrame >= this.frameN) {
+				this._currentFrame = 0;
+				this._currentFrameOfRow = this._currentFrame;
+				this._currentRow = this._currentFrame;
+			} else if (this._currentFrameOfRow >= this._framesPerRow) {
+				this._currentRow++;
+				this._currentFrameOfRow = 0;
+			}
+		}
+		ctx.drawImage(this._image, this.startPadding.x + this.framePadding.x * this._currentFrameOfRow + this.frameSize.x * this._currentFrameOfRow,
+					  this.startPadding.y + this.framePadding.y * this._currentRow + this.frameSize.y * this._currentRow,
+					  this.frameSize.x, this.frameSize.y, -(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
+	}
+}

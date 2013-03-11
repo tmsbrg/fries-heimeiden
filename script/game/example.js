@@ -1,6 +1,6 @@
 // example game with HTML5 2DRE
-var rect = Model.Drawables.RectangleDrawable.clone();
-const rectsize = 40;
+var rect = Model.Drawables.AnimatedDrawable.clone();
+const rectsize = 128;
 const rectv = 320;
 var drectx = rectv;
 var drecty = rectv;
@@ -12,14 +12,16 @@ rect.onhover = function() {
 }
 // randomize position
 rect.randomPos = function() {
-        this.position = { x:random(View.canvasWidth - rectsize),
-                          y:random(View.canvasHeight - rectsize) };
+        this.position = { x:random(View.canvasWidth - this.size.x),
+                          y:random(View.canvasHeight - this.size.y) };
 }
 
 // initializes the game
 initialize = function() {
     rect.size = { x:rectsize, y:rectsize};
-    rect.color = 'red';
+	rect.frameSize = {x:64, y:64};
+	rect.frameN = 4;
+    rect.load("./images/testanim.png");
     rect.cursor = "pointer";
     rect.randomPos();
     Model.addDrawable(rect);
@@ -27,6 +29,7 @@ initialize = function() {
 
 // called every frame
 Controller.update = function() {
+	
     rect.position.x += drectx * deltaTime;
     rect.position.y += drecty * deltaTime;
     if (rect.position.x + rect.size.x > View.canvasWidth) {
