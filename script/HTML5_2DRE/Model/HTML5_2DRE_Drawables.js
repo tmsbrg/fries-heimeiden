@@ -498,7 +498,7 @@ Model.Drawables.ButtonDrawable.draw = 	function(ctx)
 	}
 }
 
-// TODO: Make this class work more efficiently 
+// TODO: Make this class work more efficiently by making it use with strings and a custom draw function instead of a list of TextDrawables
 Model.Drawables.TextBox = Model.Drawables.RectangleDrawable.clone()
 Model.Drawables.TextBox.padding = 5;
 Model.Drawables.TextBox.textVerticalSize = 20;
@@ -562,14 +562,6 @@ Model.Drawables.TextBox.clearText = function ()
 								this.text = "";
 								this.lines = new Array();
 							}
-Model.Drawables.TextBox.updatePosition = function ()
-							{
-								var newPosition = View.mouseposition();
-								if (newPosition.x + this.size.x > View.canvasWidth) {
-									newPosition.x -= this.size.x;
-								}
-								this.position = { x: newPosition.x + 5, y: newPosition.y + 20};
-							}
 Model.Drawables.TextBox.updateSize = function ()
 							{
 								this.size = { x: this.padding * 2 + this.largestLine * this.fontSize / 2 + this.fontSize * 2, y: this.padding * 2 + this.textVerticalSize * this.lines.length };
@@ -580,3 +572,5 @@ Model.Drawables.TextBox.removeLeadingWhiteSpace = function (text)
 									;
 								return text.substring(i, text.length);
 							}
+
+Model.Drawables.AnimatedDrawable = Model.Drawables.BaseDrawable.clone();
