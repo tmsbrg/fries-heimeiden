@@ -397,10 +397,14 @@ Model.Drawables.TextDrawable.setText =	function(text)
 	
 	Variables:
 	
+    borderColor - The colour of the sprite's border
+    borderWidth - The width of the sprite's border	
 	_image - Contains image element used to draw.
 	curImage - Contains the source link or path for the current image.
 */
 Model.Drawables.SpriteDrawable = Model.Drawables.BaseDrawable.clone();
+Model.Drawables.SpriteDrawable.borderColor = "#000000";
+Model.Drawables.SpriteDrawable.borderWidth = 0;
 Model.Drawables.SpriteDrawable._image = new Image();
 Model.Drawables.SpriteDrawable.curImage = "";
 	/*
@@ -441,6 +445,12 @@ Model.Drawables.SpriteDrawable.draw = 	function(ctx)
 {
 	if(this._image.loaded)
 	{
+        if(this.borderWidth > 0)
+        {
+            ctx.lineWidth = this.borderWidth;
+            ctx.strokeStyle = this.borderColor;
+            ctx.strokeRect(-(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
+        }
 		ctx.drawImage(this._image, -(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
 	}
 }
@@ -613,6 +623,12 @@ Model.Drawables.AnimatedDrawable.draw = function(ctx)
 				this._currentFrameOfRow = 0;
 			}
 		}
+        if(this.borderWidth > 0)
+        {
+            ctx.lineWidth = this.borderWidth;
+            ctx.strokeStyle = this.borderColor;
+            ctx.strokeRect(-(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
+        }
 		ctx.drawImage(this._image, this.startPadding.x + this.framePadding.x * this._currentFrameOfRow + this.frameSize.x * this._currentFrameOfRow,
 					  this.startPadding.y + this.framePadding.y * this._currentRow + this.frameSize.y * this._currentRow,
 					  this.frameSize.x, this.frameSize.y, -(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
