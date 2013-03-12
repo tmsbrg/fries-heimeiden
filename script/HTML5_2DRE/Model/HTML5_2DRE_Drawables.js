@@ -586,7 +586,7 @@ Model.Drawables.AnimatedDrawable._currentFrame = 0;
 Model.Drawables.AnimatedDrawable._currentFrameOfRow = 0;
 Model.Drawables.AnimatedDrawable._currentRow = 0;
 Model.Drawables.AnimatedDrawable._secondsSinceNewFrame = 0.0;
-// WARNING: Magic onload function is called by this._image, not but AnimatedDrawable itself
+// WARNING: Magic onload function is called by this._image, not by this
 Model.Drawables.AnimatedDrawable.onload = function ()
 {
 	this.loaded = true;
@@ -601,7 +601,7 @@ Model.Drawables.AnimatedDrawable.draw = function(ctx)
 	if(this._image.loaded) {
 		this._secondsSinceNewFrame += deltaTime;
 		if (this._secondsSinceNewFrame >= this.secondsPerFrame) {
-			this._secondsSinceNewFrame = 0;
+			this._secondsSinceNewFrame -= this.secondsPerFrame;
 			this._currentFrame++;
 			this._currentFrameOfRow++;
 			if (this._currentFrame >= this.frameN) {
