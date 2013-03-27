@@ -584,34 +584,33 @@ Model.Drawables.TextBox.removeLeadingWhiteSpace = function (text)
 								return text.substring(i, text.length);
 							}
 
-//TODO: Fix padding
-Model.Drawables.AnimatedDrawable = Model.Drawables.SpriteDrawable.clone();
-Model.Drawables.AnimatedDrawable.frameSize = {x:1, y:1};
-Model.Drawables.AnimatedDrawable.frameN = 1;
-Model.Drawables.AnimatedDrawable.secondsPerFrame = 1;
-Model.Drawables.AnimatedDrawable.startPadding = {x:0, y:0};
-Model.Drawables.AnimatedDrawable.framePadding = {x:0, y:0};
-Model.Drawables.AnimatedDrawable._framesPerRow = 0;
-Model.Drawables.AnimatedDrawable._currentFrame = 0;
-Model.Drawables.AnimatedDrawable._currentFrameOfRow = 0;
-Model.Drawables.AnimatedDrawable._currentRow = 0;
-Model.Drawables.AnimatedDrawable._secondsSinceNewFrame = 0.0;
+Model.Drawables.AnimationDrawable = Model.Drawables.SpriteDrawable.clone();
+Model.Drawables.AnimationDrawable.frameSize = {x:1, y:1};
+Model.Drawables.AnimationDrawable.frameN = 1;
+Model.Drawables.AnimationDrawable.secondsPerFrame = 1;
+Model.Drawables.AnimationDrawable.startPadding = {x:0, y:0};
+Model.Drawables.AnimationDrawable.framePadding = {x:0, y:0};
+Model.Drawables.AnimationDrawable._framesPerRow = 0;
+Model.Drawables.AnimationDrawable._currentFrame = 0;
+Model.Drawables.AnimationDrawable._currentFrameOfRow = 0;
+Model.Drawables.AnimationDrawable._currentRow = 0;
+Model.Drawables.AnimationDrawable._secondsSinceNewFrame = 0.0;
 // WARNING: Magic onload function is called by this._image, not by this
-Model.Drawables.AnimatedDrawable.onload = function ()
+Model.Drawables.AnimationDrawable.onload = function ()
 {
 	this.loaded = true;
 	this.parent.calculateFramesPerRow();
 }
-Model.Drawables.AnimatedDrawable.calculateFramesPerRow = function ()
+Model.Drawables.AnimationDrawable.calculateFramesPerRow = function ()
 {
-	this._framesPerRow = Math.floor((this._image.naturalWidth - this.startPadding.x) / (this.framePadding.x + this.frameSize.x));
+	this._framesPerRow = Math.floor((this._image.naturalWidth - this.startPadding.x) / (this.framePadding.x + this.frameSize.x - 1));
 }
-Model.Drawables.AnimatedDrawable.draw = function(ctx)
+Model.Drawables.AnimationDrawable.draw = function(ctx)
 {
 	if(this._image.loaded) {
 		this._secondsSinceNewFrame += deltaTime;
 		if (this._secondsSinceNewFrame >= this.secondsPerFrame) {
-			this._secondsSinceNewFrame -= this.secondsPerFrame;
+			this._secondsSinceNewFrame = 0;
 			this._currentFrame++;
 			this._currentFrameOfRow++;
 			if (this._currentFrame >= this.frameN) {
@@ -623,14 +622,13 @@ Model.Drawables.AnimatedDrawable.draw = function(ctx)
 				this._currentFrameOfRow = 0;
 			}
 		}
-        if(this.borderWidth > 0)
-        {
+        if(this.borderWidth > 0) {
             ctx.lineWidth = this.borderWidth;
             ctx.strokeStyle = this.borderColor;
             ctx.strokeRect(-(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
         }
-		ctx.drawImage(this._image, this.startPadding.x + this.framePadding.x * this._currentFrameOfRow + this.frameSize.x * this._currentFrameOfRow,
-					  this.startPadding.y + this.framePadding.y * this._currentRow + this.frameSize.y * this._currentRow,
+		ctx.drawImage(this._image, this.startPadding.x + (this.framePadding.x + 1) * this._currentFrameOfRow + this.frameSize.x * this._currentFrameOfRow,
+					  this.startPadding.y + (this.framePadding.y + 1) * this._currentRow + this.frameSize.y * this._currentRow,
 					  this.frameSize.x, this.frameSize.y, -(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
 	}
 }
