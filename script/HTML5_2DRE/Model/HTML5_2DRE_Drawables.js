@@ -603,7 +603,7 @@ Model.Drawables.AnimationDrawable.onload = function ()
 }
 Model.Drawables.AnimationDrawable.calculateFramesPerRow = function ()
 {
-	this._framesPerRow = Math.floor((this._image.naturalWidth - this.startPadding.x) / (this.framePadding.x + this.frameSize.x - 1));
+	this._framesPerRow = Math.floor((this._image.naturalWidth - this.startPadding.x) / (this.framePadding.x + this.frameSize.x));
 }
 Model.Drawables.AnimationDrawable.draw = function(ctx)
 {
@@ -611,6 +611,8 @@ Model.Drawables.AnimationDrawable.draw = function(ctx)
 		this._secondsSinceNewFrame += deltaTime;
 		if (this._secondsSinceNewFrame >= this.secondsPerFrame) {
 			this._secondsSinceNewFrame = 0;
+            console.log(this._currentFrameOfRow + ", " + this._currentRow);
+            console.log("framesPerRow: " + this._framesPerRow);
 			this._currentFrame++;
 			this._currentFrameOfRow++;
 			if (this._currentFrame >= this.frameN) {
@@ -627,8 +629,11 @@ Model.Drawables.AnimationDrawable.draw = function(ctx)
             ctx.strokeStyle = this.borderColor;
             ctx.strokeRect(-(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
         }
-		ctx.drawImage(this._image, this.startPadding.x + (this.framePadding.x + 1) * this._currentFrameOfRow + this.frameSize.x * this._currentFrameOfRow,
-					  this.startPadding.y + (this.framePadding.y + 1) * this._currentRow + this.frameSize.y * this._currentRow,
+		ctx.drawImage(this._image,
+                      this.startPadding.x + this.framePadding.x + this.framePadding.x * 2 * this._currentFrameOfRow + this.frameSize.x * this._currentFrameOfRow,
+					  this.startPadding.y + this.framePadding.y + this.framePadding.y * 2 * this._currentRow + this.frameSize.y * this._currentRow,
 					  this.frameSize.x, this.frameSize.y, -(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
 	}
 }
+
+Model.Drawables.AnimatedDrawable = Model.Drawables.BaseDrawable.clone();

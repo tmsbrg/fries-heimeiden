@@ -1,6 +1,6 @@
 // example game with HTML5 2DRE
 var rect = Model.Drawables.AnimationDrawable.clone();
-const rectsize = 128;
+const rectsize = 56;
 const rectv = 320;
 var drectx = rectv;
 var drecty = rectv;
@@ -19,10 +19,9 @@ rect.randomPos = function() {
 // initializes the game
 initialize = function() {
     rect.size = { x:rectsize, y:rectsize};
-	rect.frameSize = {x:56, y:56};
+	rect.frameSize = {x:58, y:58};
 	rect.frameN = 4;
-    rect.startPadding = {x:4,y:4};
-    rect.framePadding = {x:7,y:7};
+    rect.framePadding = {x:3,y:3};
     rect.load("./images/testanim.png");
     rect.cursor = "pointer";
     rect.randomPos();
