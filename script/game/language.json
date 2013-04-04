@@ -1,0 +1,4 @@
+// have to do it this way to make it easy to load from local disk
+var language = {
+    "a" : "b"
+}
