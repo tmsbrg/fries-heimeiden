@@ -42,7 +42,7 @@ initialize = function() {
     Model.addDrawable(rectAn);
 }
 
-d = 0; t = 5;
+d = 0; t = 4;
 Controller.update = function() {
     d += deltaTime;
     if (d>t){d=0;rectAn.showAnimation(random(rectAn.animationList.length-1))}

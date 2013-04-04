@@ -610,7 +610,7 @@ Model.Drawables.AnimationDrawable.calculateFramesPerRow = function ()
 Model.Drawables.AnimationDrawable.reset = function ()
 {
     this._currentFrame = this._currentFrameOfRow = this._currentRow = 
-        this._secondsSinzeNewFrame = 0;
+        this._secondsSinceNewFrame = 0;
     this.paused = false;
 }
 Model.Drawables.AnimationDrawable.pause = function ()
