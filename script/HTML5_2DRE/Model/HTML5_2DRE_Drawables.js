@@ -109,6 +109,7 @@ Model.Drawables.BaseDrawable = {
 										ctx.save();
 										ctx.translate(this.drawableObjects[i].position.x + (this.drawableObjects[i].size.x / 2), this.drawableObjects[i].position.y + (this.drawableObjects[i].size.y / 2));
 										ctx.rotate(this.drawableObjects[i].rotation);
+                                        ctx.globalAlpha = this.drawableObjects[i].alpha;
 										this.drawableObjects[i].base_draw(ctx);
 										ctx.restore();
 									}
