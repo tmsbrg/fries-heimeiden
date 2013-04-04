@@ -1,48 +1,51 @@
 // example game with HTML5 2DRE
+var rectAn = Model.Drawables.AnimatedDrawable.clone() 
 var rect = Model.Drawables.AnimationDrawable.clone();
-const rectsize = 56;
-const rectv = 320;
-var drectx = rectv;
-var drecty = rectv;
+var rect2;
+var rect3;
+const redgold = 0;
+const purplegreen = 1;
+const disint = 2;
+
+const rectsize = 64;
+
+rect.onhover = function() {
+    this.parent.onhover();
+}
 
 // automatically called when mouse hovers over the drawableObject
-rect.onhover = function() {
+rectAn.onhover = function() {
         console.log("boom!");
-        this.randomPos();
+        rectAn.pause();
 }
 // randomize position
-rect.randomPos = function() {
+rectAn.randomPos = function() {
         this.position = { x:random(View.canvasWidth - this.size.x),
                           y:random(View.canvasHeight - this.size.y) };
 }
 
 // initializes the game
 initialize = function() {
-    rect.size = { x:rectsize, y:rectsize};
-	rect.frameSize = {x:58, y:58};
-	rect.frameN = 4;
-    rect.framePadding = {x:3,y:3};
+    rectAn.size = {x:rectsize, y:rectsize};
+	rect.frameSize = {x:rectsize, y: rectsize};
+	rect.frameN = 2;
+    rect2 = rect.clone();
+    rect2.load("./images/testanim.png");
+    rect2.offset = {x:0, y:rectsize};
+    rect3 = rect.clone();
     rect.load("./images/testanim.png");
-    rect.cursor = "pointer";
-    rect.randomPos();
-    Model.addDrawable(rect);
+    rect3.load("./images/testanim2.png");
+    rect3.frameN = 4;
+    rectAn.addAnimations(rect, rect2, rect3);
+    rectAn.showAnimation(random(rectAn.animationList.length-1));
+    rectAn.randomPos();
+    Model.addDrawable(rectAn);
 }
 
-// called every frame
+d = 0; t = 5;
 Controller.update = function() {
-	
-    //rect.position.x += drectx * deltaTime;
-    //rect.position.y += drecty * deltaTime;
-    if (rect.position.x + rect.size.x > View.canvasWidth) {
-        drectx = -rectv;
-    } else if (rect.position.x < 0) {
-        drectx = rectv;
-    }
-    if (rect.position.y + rect.size.y > View.canvasHeight) {
-        drecty = -rectv;
-    } else if (rect.position.y < 0) {
-        drecty = rectv;
-    }
+    d += deltaTime;
+    if (d>t){d=0;rectAn.showAnimation(random(rectAn.animationList.length-1))}
 }
 
 // no arguments given: returns random float between 0 and 1
@@ -56,4 +59,3 @@ random = function(max, min) {
     }
     return Math.round(Math.random() * (max - min) + min);
 }
-

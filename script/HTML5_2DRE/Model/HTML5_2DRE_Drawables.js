@@ -589,8 +589,9 @@ Model.Drawables.AnimationDrawable = Model.Drawables.SpriteDrawable.clone();
 Model.Drawables.AnimationDrawable.frameSize = {x:1, y:1};
 Model.Drawables.AnimationDrawable.frameN = 1;
 Model.Drawables.AnimationDrawable.secondsPerFrame = 1;
-Model.Drawables.AnimationDrawable.startPadding = {x:0, y:0};
+Model.Drawables.AnimationDrawable.offset = {x:0, y:0};
 Model.Drawables.AnimationDrawable.framePadding = {x:0, y:0};
+Model.Drawables.AnimationDrawable.paused = false;
 Model.Drawables.AnimationDrawable._framesPerRow = 0;
 Model.Drawables.AnimationDrawable._currentFrame = 0;
 Model.Drawables.AnimationDrawable._currentFrameOfRow = 0;
@@ -604,16 +605,30 @@ Model.Drawables.AnimationDrawable.onload = function ()
 }
 Model.Drawables.AnimationDrawable.calculateFramesPerRow = function ()
 {
-	this._framesPerRow = Math.floor((this._image.naturalWidth - this.startPadding.x) / (this.framePadding.x + this.frameSize.x));
+	this._framesPerRow = Math.floor((this._image.naturalWidth - this.offset.x) / (this.framePadding.x + this.frameSize.x));
+}
+Model.Drawables.AnimationDrawable.reset = function ()
+{
+    this._currentFrame = this._currentFrameOfRow = this._currentRow = 
+        this._secondsSinzeNewFrame = 0;
+    this.paused = false;
+}
+Model.Drawables.AnimationDrawable.pause = function ()
+{
+    this.paused = true;
+}
+Model.Drawables.AnimationDrawable.unpause = function ()
+{
+    this.paused = false;
 }
 Model.Drawables.AnimationDrawable.draw = function(ctx)
 {
-	if(this._image.loaded) {
-		this._secondsSinceNewFrame += deltaTime;
+	if (this._image.loaded) {
+		if (!this.paused) {
+            this._secondsSinceNewFrame += deltaTime;
+        }
 		if (this._secondsSinceNewFrame >= this.secondsPerFrame) {
 			this._secondsSinceNewFrame = 0;
-            console.log(this._currentFrameOfRow + ", " + this._currentRow);
-            console.log("framesPerRow: " + this._framesPerRow);
 			this._currentFrame++;
 			this._currentFrameOfRow++;
 			if (this._currentFrame >= this.frameN) {
@@ -631,10 +646,54 @@ Model.Drawables.AnimationDrawable.draw = function(ctx)
             ctx.strokeRect(-(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
         }
 		ctx.drawImage(this._image,
-                      this.startPadding.x + this.framePadding.x + this.framePadding.x * 2 * this._currentFrameOfRow + this.frameSize.x * this._currentFrameOfRow,
-					  this.startPadding.y + this.framePadding.y + this.framePadding.y * 2 * this._currentRow + this.frameSize.y * this._currentRow,
+                      this.offset.x + this.framePadding.x + this.framePadding.x * 2 * this._currentFrameOfRow + this.frameSize.x * this._currentFrameOfRow,
+					  this.offset.y + this.framePadding.y + this.framePadding.y * 2 * this._currentRow + this.frameSize.y * this._currentRow,
 					  this.frameSize.x, this.frameSize.y, -(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
 	}
 }
 
 Model.Drawables.AnimatedDrawable = Model.Drawables.BaseDrawable.clone();
+Model.Drawables.AnimatedDrawable.animationList = new Array();
+Model.Drawables.AnimatedDrawable.currentAnimation = null;
+Model.Drawables.AnimatedDrawable.addAnimations = function() {
+    for (var i=0;i<arguments.length;i++) {
+        this.animationList[this.animationList.length] = arguments[i];
+        arguments[i].visible = false;
+        arguments[i].size = this.size.clone();
+        this.addDrawable(arguments[i]);
+    }
+}
+Model.Drawables.AnimatedDrawable.showAnimation = function(number) {
+    if (this.animationList[number]) {
+        if (this.currentAnimation) {
+            this.stopAnimation();
+        }
+        this.currentAnimation = this.animationList[number];
+        this.currentAnimation.visible = true;
+    } else {
+        console.log("No animation with index number: " + number);
+    }
+}
+Model.Drawables.AnimatedDrawable.stopAnimation = function() {
+    this.currentAnimation.visible = false;
+    this.currentAnimation.reset();
+    this.currentAnimation = null;
+}
+Model.Drawables.AnimatedDrawable.reset = function ()
+{
+    if (this.currentAnimation) {
+        this.currentAnimation.reset();
+    }
+}
+Model.Drawables.AnimatedDrawable.pause = function ()
+{
+    if (this.currentAnimation) {
+        this.currentAnimation.pause();
+    }
+}
+Model.Drawables.AnimatedDrawable.unpause = function ()
+{
+    if (this.currentAnimation) {
+        this.currentAnimation.unpause();
+    }
+}
