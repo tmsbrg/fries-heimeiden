@@ -31,14 +31,17 @@ Actor.extend({
     direction : 0,
     speed : 0,
     update : function() {
+        if(paused) {return;}
         if (this.direction || this.speed) {
             this.position.x += this.direction * this.speed * deltaTime;
         }
+
     }
 });
 
+
 Enemy = Actor.clone();
 Enemy.extend({
-    speed : 10,
+    speed : 25,
     direction : LEFT
 });
