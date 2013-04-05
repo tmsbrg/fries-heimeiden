@@ -1,17 +1,20 @@
 //non-static object classes for Heimeiden here
 
-Lane = Model.Drawables.RectangleDrawable.clone();
+Lane = Model.Drawables.BaseDrawable.clone();
 Lane.extend({
     size : vec2(settings.tileSize.x*settings.tilesPerLane, settings.tileSize.y),
+    lanePos : 0,
     setLanePos : function(pos) {
         this.position.y = this.size.y * pos;
+        this.lanePos = pos;
     },
     onDrawInit : function() {
         for (var i=0; i<settings.tilesPerLane; i++) {
             tile = Tile.clone();
             tile.position.x += settings.tileSize.x * i;
-            tile.color = 'black';
-            tile.alpha = (i%2)?0.06:0;
+            tile.color = (this.lanePos%2)?
+                         ((i%2)?"#32be3d":"#25b231"):
+                         ((i%2)?"#25b231":"#32be3d");
             this.addDrawable(tile);
         }
     }
@@ -28,7 +31,9 @@ Actor.extend({
     direction : 0,
     speed : 0,
     update : function() {
-        this.position.x += this.direction * this.speed * deltaTime;
+        if (this.direction || this.speed) {
+            this.position.x += this.direction * this.speed * deltaTime;
+        }
     }
 });
 

@@ -2,17 +2,15 @@ Game = Model.Drawables.BaseDrawable.clone();
 Game.extend({
     PlayerData : {},
     position : settings.fieldPosition.clone(),
-    Lanes : new Array(5),
+    Lanes : new Array(settings.lanes),
     // Initializes the lanes and adds the main objects to the drawables list
     initialize : function() {
         console.log("Starting Heimeiden...");
-        foreach(this.Lanes, function(lane, i, caller) {
-            lane = Lane.clone();
-            lane.color = (i%2)?"#11FF11":"#00DD00";
-            lane.setLanePos(i);
-            caller.addDrawable(lane);
-            caller.Lanes[i] = lane;
-        }, this);
+        for (var i=0; i<this.Lanes.length; i++) {
+            this.Lanes[i] = Lane.clone();
+            this.Lanes[i].setLanePos(i);
+            this.addDrawable(this.Lanes[i]);
+        }
         Model.addDrawable(this);
         this.spawnEnemy(0);
     },
