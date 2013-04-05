@@ -1,8 +1,8 @@
 Game = Model.Drawables.BaseDrawable.clone();
 Game.extend({
-    PlayerData : {},
     position : settings.fieldPosition.clone(),
     Lanes : new Array(settings.lanes),
+    dyke: null,
     // Initializes the lanes and adds the main objects to the drawables list
     initialize : function() {
         console.log("Starting Heimeiden...");
@@ -11,9 +11,17 @@ Game.extend({
             this.Lanes[i].setLanePos(i);
             this.addDrawable(this.Lanes[i]);
         }
+        this.initDyke();
         Model.addDrawable(this);
-        this.spawnEnemy(0);
+        this.spawnEnemy(random(settings.lanes-1));
     },
+
+    // Initializes the dyke
+    initDyke : function() {
+        this.dyke = Dyke.clone();
+        this.addDrawable(this.dyke);
+    },
+
     // Spawns an enemy at lane index lane
     spawnEnemy : function(lane) {
         enemy = Enemy.clone();
