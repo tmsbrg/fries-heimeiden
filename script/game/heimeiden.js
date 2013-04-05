@@ -48,11 +48,11 @@ Game.extend({
         this.addDrawable(this.pauseButton);
         this.addDrawable(this.stopButton);
         this.pauseButton.size = {x:50, y:50};
-        this.pauseButton.position = vec2(0, 0);
+        this.pauseButton.position = vec2(480, 0);
         this.pauseButton.load("./images/pauseButton.png");
         this.addDrawable(this.pauseButton);
         this.stopButton.size = {x:50, y:50};
-        this.stopButton.position = vec2(500, 0);
+        this.stopButton.position = vec2(550, 0);
         this.stopButton.load("./images/stopButton.png");
         this.addDrawable(this.stopButton);
     },
