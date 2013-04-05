@@ -1,19 +1,19 @@
-var paused;
+
 Game = Model.Drawables.BaseDrawable.clone();
 Game.extend({
-    PlayerData : {},
     position : settings.fieldPosition.clone(),
     Lanes : new Array(settings.lanes),
     pauseButton : Model.Drawables.ButtonDrawable.clone(),
     startButton : Model.Drawables.ButtonDrawable.clone(),
     stopButton : Model.Drawables.ButtonDrawable.clone(),
     // Initializes the lanes and adds the main objects to the drawables list
+
     initialize : function() {
         this.size = vec2(View.canvasWidth, View.canvasHeight);
-        console.log(this.size)
         Model.addDrawable(this);
         this.initializeDrawables();
         this.menu();
+        PlayerData.paused = false;
     },
     menu : function() {
         this.startButton.size = vec2(250, 250);
@@ -31,8 +31,6 @@ Game.extend({
         }
         this.pauseButton.visible = true;
         this.stopButton.visible = true;
-
-        
         this.spawnEnemy(0);
     },
        
@@ -82,11 +80,14 @@ Game.startButton.onclick = function(){
     this.parent.removeDrawable(this);
 }
 Game.pauseButton.onclick = function(){
-    if(paused){paused = false;}
-    else if(!paused){paused = true;}
+    if(PlayerData.paused){PlayerData.paused = false;
+    this.load("./images/pauseButton.png");}
+    else if(!PlayerData.paused){PlayerData.paused = true;
+    this.load("./images/startButton.png");}
 }
 
 
+PlayerData = {paused: null};
 initialize = function() {
-    Game.initialize();
+        Game.initialize();
 }
