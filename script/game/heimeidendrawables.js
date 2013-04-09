@@ -34,6 +34,7 @@ Actor.extend({
     solid : true,
     actorList : null,
     update : function() {
+        if(PlayerData.paused) {return;}
         if (this.direction || this.speed) {
             this.position.x += this.direction * this.speed * deltaTime;
             if (this.solid) {
@@ -48,9 +49,10 @@ Actor.extend({
     }
 });
 
+
 Enemy = Actor.clone();
 Enemy.extend({
-    speed : 10,
+    speed : 25,
     direction : LEFT
 });
 
