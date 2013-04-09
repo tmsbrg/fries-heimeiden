@@ -27,6 +27,7 @@ Game.extend({
     },
     gameStart : function() {
         console.log("Starting Heimeiden...");
+        this.initDyke();
         for (var i=0; i<this.Lanes.length; i++) {
             this.Lanes[i].visible = true;
         }
@@ -43,7 +44,6 @@ Game.extend({
             this.Lanes[i].visible = false;
             this.addDrawable(this.Lanes[i]);
         }
-        this.initDyke();
         this.addDrawable(this.pauseButton);
         this.addDrawable(this.stopButton);
         this.pauseButton.size = {x:50, y:50};
@@ -60,6 +60,10 @@ Game.extend({
         for (var i=0; i<this.Lanes.length; i++) {
             this.Lanes[i].visible = false;
         }
+        for (var i=0; i<this.Actors.length; i++) {
+            this.removeDrawable(this.Actors[i]);
+        }
+        this.Actors = new Array();
         this.pauseButton.visible = false;
         this.stopButton.visible = false;
     },
@@ -87,7 +91,6 @@ Game.stopButton.onclick = function(){
 }
 Game.startButton.onclick = function(){
     this.parent.gameStart();
-    console.log("start");
     this.parent.removeDrawable(this);
 }
 Game.pauseButton.onclick = function(){
