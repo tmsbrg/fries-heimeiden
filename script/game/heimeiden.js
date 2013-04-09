@@ -69,6 +69,7 @@ Game.extend({
         enemy.position.x = (settings.tilesPerLane-1) * settings.tileSize.x;
         this.Lanes[lane].addDrawable(enemy);
     }
+
 });
 Game.stopButton.onclick = function(){
     this.parent.gameStop();
@@ -80,10 +81,13 @@ Game.startButton.onclick = function(){
     this.parent.removeDrawable(this);
 }
 Game.pauseButton.onclick = function(){
-    if(PlayerData.paused){PlayerData.paused = false;
-    this.load("./images/pauseButton.png");}
-    else if(!PlayerData.paused){PlayerData.paused = true;
-    this.load("./images/startButton.png");}
+    if(PlayerData.paused){
+        PlayerData.paused = false; 
+        this.load("./images/pauseButton.png");
+    } else if(!PlayerData.paused){
+        PlayerData.paused = true;
+        this.load("./images/startButton.png");
+    }
 }
 
 
