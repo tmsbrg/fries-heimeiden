@@ -3,6 +3,7 @@ Game = Model.Drawables.BaseDrawable.clone();
 Game.extend({
     position : settings.fieldPosition.clone(),
     Lanes : new Array(settings.lanes),
+    Actors : new Array(),
     dyke: null,
     pauseButton : Model.Drawables.ButtonDrawable.clone(),
     startButton : Model.Drawables.ButtonDrawable.clone(),
@@ -31,7 +32,7 @@ Game.extend({
         }
         this.pauseButton.visible = true;
         this.stopButton.visible = true;
-        this.spawnEnemy(0);
+        this.spawnEnemy(random(this.Lanes.length-1));
     },
     initializeDrawables : function() {
         this.pauseButton.visible = false;
@@ -54,7 +55,6 @@ Game.extend({
         this.stopButton.load("./images/stopButton.png");
         this.addDrawable(this.stopButton);
     },
-
     gameStop : function() {
         console.log(this.pauseButton);
         for (var i=0; i<this.Lanes.length; i++) {
@@ -63,18 +63,21 @@ Game.extend({
         this.pauseButton.visible = false;
         this.stopButton.visible = false;
     },
-
     // Initializes the dyke
     initDyke : function() {
-        this.dyke = Dyke.clone();
-        this.addDrawable(this.dyke);
+        var dyke = Dyke.clone();
+        this.Actors[this.Actors.length] = dyke;
+        dyke.actorList = this.Actors;
+        this.addDrawable(dyke);
     },
-
     // Spawns an enemy at lane index lane
     spawnEnemy : function(lane) {
         enemy = Enemy.clone();
         enemy.position.x = (settings.tilesPerLane-1) * settings.tileSize.x;
-        this.Lanes[lane].addDrawable(enemy);
+        enemy.position.y = lane * settings.tileSize.y;
+        enemy.actorList = this.Actors;
+        this.Actors[this.Actors.length] = enemy;
+        this.addDrawable(enemy);
     }
 });
 Game.stopButton.onclick = function(){

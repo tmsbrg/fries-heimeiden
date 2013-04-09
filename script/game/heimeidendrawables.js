@@ -28,6 +28,7 @@ Tile.extend({
 
 Actor = Model.Drawables.RectangleDrawable.clone();
 Actor.extend({
+    name : "Actor",
     size : settings.tileSize.clone(),
     direction : 0,
     speed : 0,
@@ -35,17 +36,47 @@ Actor.extend({
     actorList : null,
     update : function() {
         if(PlayerData.paused) {return;}
-        if (this.direction || this.speed) {
-            this.position.x += this.direction * this.speed * deltaTime;
-            if (this.solid) {
-                this.checkCollide();
+        if (this.direction && this.speed) {
+            if (!this.checkCollide({x:this.calculateMove(), y:this.position.y})) {
+                this.move();
+            } else if (!this.solid) {
+                this.move();
             }
         }
     },
-    checkCollide : function() {
+    move : function() {
+        this.position.x = this.calculateMove();
+    },
+    calculateMove : function() {
+        return (this.position.x + this.direction * this.speed * deltaTime);
+    },
+    checkCollide : function(position, size) {
         if (this.actorList == null) return;
-
-        //
+        if (position == null) position = this.position;
+        if (size == null) size = this.size;
+        var corners = [position,
+            vec2(position.x, position.y + size.y),
+            vec2(position.x + size.x, position.y + size.y),
+            vec2(position.x + size.x, position.y)
+        ];
+        for (var i=0; i<this.actorList.length; i++) {
+            if (this.actorList[i] == this) continue;
+            for (var j=0; j<corners.length; j++) {
+                if (this.pointInRect(corners[j], this.actorList[i].position,
+                                     this.actorList[i].size)) {
+                    this.actorList[i].onCollide(this);
+                    this.onCollide(this.actorList[i]);
+                    return this.actorList[i];
+                }
+            }
+        }
+        return null;
+    },
+    pointInRect : function(point, position, size) {
+        return (point.x > position.x && point.x < position.x + size.x &&
+                point.y > position.y && point.y < position.y + size.y);
+    },
+    onCollide : function(other) {
     }
 });
 
