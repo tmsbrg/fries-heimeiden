@@ -1,4 +1,5 @@
-
+/* Class Game contains all game objects and manages the game. Every object
+in the game is eventually a child of Game. */
 Game = Model.Drawables.BaseDrawable.clone();
 Game.extend({
     position : settings.fieldPosition.clone(),
@@ -8,7 +9,7 @@ Game.extend({
     pauseButton : Model.Drawables.ButtonDrawable.clone(),
     startButton : Model.Drawables.ButtonDrawable.clone(),
     stopButton : Model.Drawables.ButtonDrawable.clone(),
-    // Initializes the lanes and adds the main objects to the drawables list
+    // Initializes the game, should only be called once per load
     initialize : function() {
         this.size = vec2(View.canvasWidth, View.canvasHeight);
         Model.addDrawable(this);
@@ -16,15 +17,11 @@ Game.extend({
         this.menu();
         PlayerData.paused = false;
     },
+    // Starts the main menu
     menu : function() {
-        this.startButton.size = vec2(250, 250);
-        this.startButton.position = vec2(
-            View.canvasWidth / 2 - this.startButton.size.x / 2,
-            View.canvasHeight / 2 - this.startButton.size.y / 2); 
-        console.log(this.startButton.position)
-        this.startButton.load("./images/startButton.png");
         this.addDrawable(this.startButton);
     },
+    // Starts the game
     gameStart : function() {
         console.log("Starting Heimeiden...");
         this.initDyke();
@@ -35,6 +32,7 @@ Game.extend({
         this.stopButton.visible = true;
         this.spawnEnemy(random(this.Lanes.length-1));
     },
+    // Initializes all static drawableObjects, should only be called once per load
     initializeDrawables : function() {
         this.pauseButton.visible = false;
         this.stopButton.visible = false;
@@ -54,9 +52,14 @@ Game.extend({
         this.stopButton.position = vec2(550, 0);
         this.stopButton.load("./images/stopButton.png");
         this.addDrawable(this.stopButton);
+        this.startButton.size = vec2(250, 250);
+        this.startButton.position = vec2(
+            View.canvasWidth / 2 - this.startButton.size.x / 2,
+            View.canvasHeight / 2 - this.startButton.size.y / 2); 
+        this.startButton.load("./images/startButton.png");
     },
+    // Stops the game
     gameStop : function() {
-        console.log(this.pauseButton);
         for (var i=0; i<this.Lanes.length; i++) {
             this.Lanes[i].visible = false;
         }
@@ -104,7 +107,13 @@ Game.pauseButton.onclick = function(){
 }
 
 
-PlayerData = {paused: null};
+// Contains data for the player
+PlayerData = {
+    paused : null,
+    credits : 0
+};
+
+// Called by rendering engine when everything is loaded
 initialize = function() {
         Game.initialize();
 }

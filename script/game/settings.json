@@ -8,6 +8,13 @@ var settings = {
 
     // game settings
     tilesPerLane : 8,
-    lanes : 5
+    lanes : 5,
+    // enemies
+    paalwormHealth : 10,
+    paalwormDamage : 2,
+    paalwormSpeed : 25,
+    paalwormCooldown : 1,
+    paalwormAttritionTime : 1.7,
+    paalwormAttritionAmount : 1
 
 }
