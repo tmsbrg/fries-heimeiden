@@ -5,9 +5,12 @@ var settings = {
     // graphical settings
     fieldPosition : vec2(20,20),
     tileSize : vec2(60,60),
+    //popupinfo
+    popupSpeed : 100,
+    popupTimeout : 2,
 
     // game settings
     tilesPerLane : 8,
-    lanes : 5
+    lanes : 5,
 
 }

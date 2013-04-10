@@ -8,6 +8,7 @@ Game.extend({
     pauseButton : Model.Drawables.ButtonDrawable.clone(),
     startButton : Model.Drawables.ButtonDrawable.clone(),
     stopButton : Model.Drawables.ButtonDrawable.clone(),
+    popupText : Model.Drawables.TextDrawable.clone(),
     // Initializes the lanes and adds the main objects to the drawables list
     initialize : function() {
         this.size = vec2(View.canvasWidth, View.canvasHeight);
@@ -26,6 +27,7 @@ Game.extend({
         this.addDrawable(this.startButton);
     },
     gameStart : function() {
+        popupText(vec2(100, 100), "text");
         console.log("Starting Heimeiden...");
         this.initDyke();
         for (var i=0; i<this.Lanes.length; i++) {
@@ -34,6 +36,11 @@ Game.extend({
         this.pauseButton.visible = true;
         this.stopButton.visible = true;
         this.spawnEnemy(random(this.Lanes.length-1));
+        },
+
+    waveSpawn : function() {
+         
+
     },
     initializeDrawables : function() {
         this.pauseButton.visible = false;
@@ -85,25 +92,44 @@ Game.extend({
     }
 
 });
-Game.stopButton.onclick = function(){
+Game.stopButton.onclick = function() {
     this.parent.gameStop();
     this.parent.menu();
 }
-Game.startButton.onclick = function(){
+Game.startButton.onclick = function() {
     this.parent.gameStart();
     this.parent.removeDrawable(this);
 }
-Game.pauseButton.onclick = function(){
-    if(PlayerData.paused){
+Game.pauseButton.onclick = function() {
+    if (PlayerData.paused) {
         PlayerData.paused = false; 
         this.load("./images/pauseButton.png");
-    } else if(!PlayerData.paused){
+    } else if (!PlayerData.paused) {
         PlayerData.paused = true;
         this.load("./images/startButton.png");
     }
 }
 
-
+popupText = function(position, text) {
+    var popupText = Model.Drawables.TextDrawable.clone();
+    popupText.position = position;
+    popupText.font = "bold 24px Arial";
+    popupText.color = "red";
+    popupText.setText(text);
+    popupText.timeout = settings.popupTimeout; 
+    popupText.timeleft = popupText.timeout;
+    popupText.speed = settings.popupSpeed;
+    popupText.update = function() {
+        this.position.y -= this.speed * deltaTime;
+        this.timeleft -= deltaTime;
+        this.alpha = popupText.timeleft / popupText.timeout;
+        if (this.timeleft <= 0) {
+            Model.removeDrawable(this);
+        }
+    }
+    Model.addDrawable(popupText);
+}
+PlayerData = {popuptext: null}
 PlayerData = {paused: null};
 initialize = function() {
         Game.initialize();
