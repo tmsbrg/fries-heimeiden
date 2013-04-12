@@ -17,6 +17,6 @@ var settings = {
     paalwormDamage : 2,
     paalwormSpeed : 25,
     paalwormCooldown : 1,
-    paalwormAttritionTime : 1.7,
+    paalwormAttritionTime : 1.5,
     paalwormAttritionAmount : 1
 }

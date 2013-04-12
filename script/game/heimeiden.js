@@ -75,9 +75,7 @@ Game.extend({
     // Initializes the dyke
     initDyke : function() {
         var dyke = Dyke.clone();
-        this.Actors[this.Actors.length] = dyke;
-        dyke.actorList = this.Actors;
-        this.addDrawable(dyke);
+        this.addActor(dyke);
     },
     // Spawns an enemy at lane index lane
     spawnEnemy : function(lane) {
@@ -85,8 +83,12 @@ Game.extend({
         enemy.position.x = (settings.tilesPerLane-1) * settings.tileSize.x;
         enemy.position.y = lane * settings.tileSize.y;
         enemy.actorList = this.Actors;
-        this.Actors[this.Actors.length] = enemy;
-        this.addDrawable(enemy);
+        this.addActor(enemy);
+    },
+    addActor : function(actor) {
+        this.Actors[this.Actors.length] = actor;
+        actor.actorList = this.Actors;
+        this.addDrawable(actor);
     }
 
 });
