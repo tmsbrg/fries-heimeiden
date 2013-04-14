@@ -3,20 +3,20 @@
 var settings = {
 
     // graphical settings
-    fieldPosition : vec2(20,20),
-    tileSize : vec2(60,60),
+    "fieldPosition" : {"x":20, "y":20},
+    "tileSize" : {"x":60, "y":60},
     //popupinfo
-    popupSpeed : 100,
-    popupTimeout : 2,
+    "popupSpeed" : 100,
+    "popupTimeout" : 2,
 
     // game settings
-    tilesPerLane : 8,
-    lanes : 5,
+    "tilesPerLane" : 8,
+    "lanes" : 5,
     // enemies
-    paalwormHealth : 10,
-    paalwormDamage : 2,
-    paalwormSpeed : 25,
-    paalwormCooldown : 1,
-    paalwormAttritionTime : 1.5,
-    paalwormAttritionAmount : 1
+    "paalwormHealth" : 10,
+    "paalwormDamage" : 2,
+    "paalwormSpeed" : 25,
+    "paalwormCooldown" : 1,
+    "paalwormAttritionTime" : 1.5,
+    "paalwormAttritionAmount" : 1
 }

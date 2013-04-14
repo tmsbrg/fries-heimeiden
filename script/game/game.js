@@ -5,6 +5,7 @@ includeJS("./script/game/settings.json");
 includeJS("./script/game/heimeiden.js");
 includeJS("./script/game/heimeidendrawables.js");
 
+// function for easily generating objects with x and y co-ordinates
 vec2 = function (givenx, giveny) {
     return {x:givenx,y:giveny};
 }
@@ -21,6 +22,7 @@ random = function(max, min) {
     return Math.round(Math.random() * (max - min) + min);
 }
 
+// constants for actor movement directions
 const LEFT = -1;
 const RIGHT = 1;
 const NONE = 0;

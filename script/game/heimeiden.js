@@ -15,24 +15,8 @@ Game.extend({
         this.size = vec2(View.canvasWidth, View.canvasHeight);
         Model.addDrawable(this);
         this.initializeDrawables();
-        this.menu();
         PlayerData.paused = false;
-    },
-    // Starts the main menu
-    menu : function() {
-        this.addDrawable(this.startButton);
-    },
-    // Starts the game
-    gameStart : function() {
-        popupText(vec2(100, 100), "text");
-        console.log("Starting Heimeiden...");
-        this.initDyke();
-        for (var i=0; i<this.Lanes.length; i++) {
-            this.Lanes[i].visible = true;
-        }
-        this.pauseButton.visible = true;
-        this.stopButton.visible = true;
-        this.spawnEnemy(random(this.Lanes.length-1));
+        this.menu();
     },
     // Initializes all static drawableObjects, should only be called once per load
     initializeDrawables : function() {
@@ -60,6 +44,21 @@ Game.extend({
             View.canvasHeight / 2 - this.startButton.size.y / 2); 
         this.startButton.load("./images/startButton.png");
     },
+    // Starts the main menu
+    menu : function() {
+        this.addDrawable(this.startButton);
+    },
+    // Starts the game
+    gameStart : function() {
+        console.log("Starting Heimeiden...");
+        this.initDyke();
+        for (var i=0; i<this.Lanes.length; i++) {
+            this.Lanes[i].visible = true;
+        }
+        this.pauseButton.visible = true;
+        this.stopButton.visible = true;
+        this.spawnEnemy(random(this.Lanes.length-1));
+    },
     // Stops the game
     gameStop : function() {
         for (var i=0; i<this.Lanes.length; i++) {
@@ -72,7 +71,7 @@ Game.extend({
         this.pauseButton.visible = false;
         this.stopButton.visible = false;
     },
-    // Initializes the dyke
+    // Initializes the dyke and adds it to the game
     initDyke : function() {
         var dyke = Dyke.clone();
         this.addActor(dyke);
@@ -84,11 +83,13 @@ Game.extend({
         enemy.position.y = lane * settings.tileSize.y;
         this.addActor(enemy);
     },
+    // Spawns a defence at exact position position
     spawnDefence : function (position) {
         defence = Defence.clone();
         defence.position = position.clone();
         this.addActor(defence);
     },
+    // Adds an actor to the field
     addActor : function(actor) {
         this.Actors[this.Actors.length] = actor;
         actor.actorList = this.Actors;

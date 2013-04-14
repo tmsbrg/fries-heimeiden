@@ -1,11 +1,12 @@
 //non-static object classes for Heimeiden belong here
 
-// Creates and maintains an array of tiles for its lane
+// Creates and maintains an array of tiles for a lane
 Lane = Model.Drawables.BaseDrawable.clone();
 Lane.extend({
     size : vec2(settings.tileSize.x*settings.tilesPerLane, settings.tileSize.y),
     lanePos : 0,
     Tiles : new Array(settings.tilesPerLane),
+    // sets its pixel position based on its lane position
     setLanePos : function(pos) {
         this.position.y = this.size.y * pos;
         this.lanePos = pos;
@@ -20,6 +21,7 @@ Lane.extend({
             this.addDrawable(this.Tiles[i]);
         }
     },
+    // makes Game create a defence on his lane at given x position
     spawnDefence : function(xpos) {
         this.parent.spawnDefence(vec2(xpos, this.position.y));
     }
@@ -46,21 +48,25 @@ Actor.extend({
     invulnerable : false,
     direction : 0,
     speed : 0,
-    solid : true,
-    reach : 1,
-    ignoreCollisions : [],
-    actorList : null,
+    solid : true, // if false, it can move while colliding with objects
+    reach : 1, // used for checking movement collisions
+    ignoreCollisions : [], /* array of name tags of objects it won't check
+                              collisions with */
+    actorList : null, // list of actors to check collisions with
     onDrawInit : function() {
         this.onInit();
         this.centre = this.calculateCentre();
     },
+    // Sets its size and then recalculates its centre
     setSize : function(size) {
         this.size = size;
         this.centre = this.calculateCentre();
     },
+    // Returns a vec2 object containing the amount of pixels to its centre
     calculateCentre : function() {
         return vec2(this.size.x / 2 , this.size.y / 2);
     },
+    // Calls this.onUpdate, moves if needed and checks collisions if moving
     update : function() {
         if (PlayerData.paused) return;
         this.onUpdate();
@@ -72,16 +78,19 @@ Actor.extend({
             }
         }
     },
+    // Moves the Actor
     move : function() {
         this.position.x = this.calculateMove();
     },
+    // Calculates its x position if it were to move now and returns it
     calculateMove : function() {
         return (this.position.x + this.direction * this.speed * deltaTime);
     },
-    checkCollide : function(position, size) {
+    /* Checks collisions with all other actors of its actorList whose name tags
+    aren't on the ignoreCollisions list */
+    checkCollide : function(position) {
         if (this.actorList == null) return;
         if (position == null) position = this.position;
-        if (size == null) size = this.size;
         for (var i=0; i<this.actorList.length; i++) {
             var ignore = false;
             if (this.actorList[i] == this) continue;
@@ -104,15 +113,24 @@ Actor.extend({
         }
         return null;
     },
+    /* Returns true if vec2 object point is in rectangle with position
+    rectPos and size rectSize, false otherwise. */
     pointInRect : function(point, rectPos, rectSize) {
         return (point.x > rectPos.x && point.x < rectPos.x + rectSize.x &&
                 point.y >= rectPos.y && point.y <= rectPos.y + rectSize.y);
     },
+    /* Returns true if line starting from position, with range range intersects
+    with rectangle with position rectPos and size rectSize */
     lineInRect : function(position, range, rectPos, rectSize) {
         return (position.y >= rectPos.y &&
                 position.y <= rectPos.y + rectSize.y &&
-                rectPos.x + rectSize.x - position.x >= range);
+                ((range < 0) ? (rectPos.x + rectSize.x - position.x >= range &&
+                                rectPos.x + rectSize.x - position.x <= 0)
+                             : (rectPos.x - position.x <= range &&
+                                rectPos.x - position.x >= 0)));
     },
+    /* Changes health and makes actor die if health goes below 0, ignores negative
+    values if actor is invulnerable */
     changeHealth : function (amount) {
         if (!this.invulnerable || amount > 0) {
             this.health += amount;
@@ -121,6 +139,8 @@ Actor.extend({
             }
         }
     },
+    /* calls the onDeath function and removes the actor from
+    the actorlist and memory */
     die : function () {
         this.onDeath();
         if (this.actorList != null) {
@@ -133,12 +153,16 @@ Actor.extend({
         }
         this.parent.removeDrawable(this);
     },
+    // called when the actor is added to the field
     onInit : function() {
     },
+    // called every frame
     onUpdate : function() {
     },
+    // called on death
     onDeath : function() {
     },
+    // called on collision with an object
     onCollide : function(other) {
     }
 });
@@ -155,13 +179,16 @@ Enemy.extend({
     direction : LEFT,
     ignoreCollisions : [this.name],
     attackTimer : 0,
-    cooldown : settings.paalwormCooldown,
-    attritionTime : settings.paalwormAttritionTime,
-    attritionAmount : settings.paalwormAttritionAmount,
+    cooldown : settings.paalwormCooldown, // amount of seconds between attacks
+    attritionTime : settings.paalwormAttritionTime, /* amount of seconds between 
+    losing health automatically */
+    attritionAmount : settings.paalwormAttritionAmount, /* amount of health lost
+    every time by attrition */
     attritionTimer : null,
     onInit : function () {
         this.attritionTimer = this.attritionTime;
     },
+    // attacks given actor
     attack : function (other) {
         console.log(this.name + " attacks " + other.name + ". " + this.damage
                     + " damage.");
@@ -196,7 +223,7 @@ Defence.extend({
     color : 'green',
     attackTimer : 0,
     cooldown : 1,
-    range : 5,
+    range : 5, // range for attacking enemies, in number of tiles
     attack : function () {
         console.log("attack!");
     },
@@ -204,10 +231,11 @@ Defence.extend({
     enemyInRange : function () {
         for (var i=0; i<this.actorList.length; i++) {
             if (this.actorList[i].name == "Enemy" && 
-                this.lineInRect(vec2(this.position.x + this.centre.y,
+                this.lineInRect(vec2(this.position.x + this.size.x,
                         this.position.y + this.centre.y),
                     this.range * settings.tileSize.x,
-                    this.actorList[i].position, this.actorList[i].size)) {
+                    this.actorList[i].position,
+                    this.actorList[i].size)) {
                 return true;
             }
         }
@@ -215,16 +243,19 @@ Defence.extend({
     },
     onUpdate : function () {
         if (this.attackTimer > 0) {
-            this.attacks -= deltaTime;
+            this.attackTimer -= deltaTime;
         }
         if (this.attackTimer <= 0 && this.enemyInRange()) {
             this.attack();
             this.attackTimer = this.cooldown;
         }
+    },
+    onDeath : function () {
+        console.log(this.name + " has been destroyed!");
     }
 });
 
-// The dyke the player must defend
+// If the dyke is destroyed, the player loses
 Dyke = Actor.clone();
 Dyke.extend({
     name : "Dyke",
