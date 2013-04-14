@@ -82,8 +82,12 @@ Game.extend({
         enemy = Enemy.clone();
         enemy.position.x = (settings.tilesPerLane-1) * settings.tileSize.x;
         enemy.position.y = lane * settings.tileSize.y;
-        enemy.actorList = this.Actors;
         this.addActor(enemy);
+    },
+    spawnDefence : function (position) {
+        defence = Defence.clone();
+        defence.position = position.clone();
+        this.addActor(defence);
     },
     addActor : function(actor) {
         this.Actors[this.Actors.length] = actor;
