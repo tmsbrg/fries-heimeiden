@@ -101,7 +101,7 @@ Actor.extend({
                 }
             }
             if (ignore) continue;
-            if (this.lineInRect(vec2(this.position.x + 
+            if (this.rayHitRect(vec2(this.position.x + 
                         ((this.direction==LEFT) ? 0 : this.size.x),
                         this.position.y + this.centre.y),
                     this.direction * this.reach,
@@ -121,7 +121,7 @@ Actor.extend({
     },
     /* Returns true if line starting from position, with range range intersects
     with rectangle with position rectPos and size rectSize */
-    lineInRect : function(position, range, rectPos, rectSize) {
+    rayHitRect : function(position, range, rectPos, rectSize) {
         return (position.y >= rectPos.y &&
                 position.y <= rectPos.y + rectSize.y &&
                 ((range < 0) ? (rectPos.x + rectSize.x - position.x >= range &&
@@ -231,7 +231,7 @@ Defence.extend({
     enemyInRange : function () {
         for (var i=0; i<this.actorList.length; i++) {
             if (this.actorList[i].name == "Enemy" && 
-                this.lineInRect(vec2(this.position.x + this.size.x,
+                this.rayHitRect(vec2(this.position.x + this.size.x,
                         this.position.y + this.centre.y),
                     this.range * settings.tileSize.x,
                     this.actorList[i].position,
