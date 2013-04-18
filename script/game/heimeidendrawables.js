@@ -22,8 +22,8 @@ Lane.extend({
         }
     },
     // makes Game create a defence on his lane at given x position
-    spawnDefence : function(xpos) {
-        this.parent.spawnActor(vec2(xpos, this.position.y), Defence);
+    buildDefence : function(xpos) {
+        this.parent.buildDefence(vec2(xpos, this.position.y));
     }
 });
 
@@ -33,7 +33,7 @@ Tile.extend({
     size : settings.tileSize.clone(),
     building : null,
     onclick : function () {
-        this.parent.spawnDefence(this.position.x);
+        this.parent.buildDefence(this.position.x);
     }
 });
 
@@ -193,8 +193,6 @@ Enemy.extend({
     },
     // attacks given actor
     attack : function (other) {
-        console.log(this.name + " attacks " + other.name + ". " + this.damage
-                    + " damage.");
         other.changeHealth(-this.damage);
     },
     onUpdate : function () {
@@ -214,7 +212,6 @@ Enemy.extend({
         }
     },
     onDeath : function () {
-        console.log(this.name + " died!");
     }
 });
 
@@ -276,6 +273,7 @@ Dyke.extend({
     health : settings.dykeHealth,
     onDeath : function () {
         console.log(this.name + " breaks!");
+        this.parent.lose();
     }
 });
 
@@ -297,7 +295,6 @@ Bullet.extend({
         }
     },
     onCollide : function (other) {
-        console.log(this.name + " hits " + other.name);
         other.changeHealth(-this.damage);
         this.die();
     }

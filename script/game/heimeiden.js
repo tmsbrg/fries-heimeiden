@@ -5,18 +5,22 @@ Game.extend({
     position : settings.fieldPosition.clone(),
     Lanes : new Array(settings.lanes),
     Actors : new Array(),
-    dyke: null,
+    dyke : null,
+    active : false,
+    creditsTimer : 0,
     pauseButton : Model.Drawables.ButtonDrawable.clone(),
     startButton : Model.Drawables.ButtonDrawable.clone(),
     stopButton : Model.Drawables.ButtonDrawable.clone(),
     popupText : Model.Drawables.TextDrawable.clone(),
     fpsTextBox : Model.Drawables.TextDrawable.clone(),
+    creditsTextBox : Model.Drawables.TextDrawable.clone(),
+    dykeHealth : Model.Drawables.TextDrawable.clone(),
     // Initializes the game, should only be called once per load
     initialize : function() {
         this.initConstants();
         this.initSelf();
         this.initDrawables();
-        this.initData();
+        PlayerData.reset();
         this.startMenu();
     },
     initConstants : function() {
@@ -30,6 +34,8 @@ Game.extend({
     // Initializes all static drawableObjects, should only be called once per load
     initDrawables : function() {
         this.initFPS();
+        this.initCreditsText();
+        this.initDykeHealth();
         this.pauseButton.visible = false;
         this.stopButton.visible = false;
         for (var i=0; i<this.Lanes.length; i++) {
@@ -58,11 +64,21 @@ Game.extend({
 		this.fpsTextBox.size = { x:100, y: 20 };
 		this.fpsTextBox.font = "bold 14px Arial";
 		this.fpsTextBox.color = "#FF0000";
-		this.fpsTextBox.text = "FPS: " + View.lastfps;
-		this.addDrawable(this.fpsTextBox, 101);
+		this.addDrawable(this.fpsTextBox, settings.guiLayer);
     },
-    initData : function() {
-        PlayerData.paused = false;
+    initCreditsText : function() {
+		this.creditsTextBox.position = { x: FIELD_SIZE+10, y: 70 };
+		this.creditsTextBox.size = { x:100, y: 20 };
+		this.creditsTextBox.font = "bold 14px Arial";
+		this.creditsTextBox.color = "#FF0000";
+		this.addDrawable(this.creditsTextBox, settings.guiLayer);
+    },
+    initDykeHealth : function() {
+		this.dykeHealth.position = { x: FIELD_SIZE+10, y: 90 };
+		this.dykeHealth.size = { x:100, y: 20 };
+		this.dykeHealth.font = "bold 14px Arial";
+		this.dykeHealth.color = "#FF0000";
+		this.addDrawable(this.dykeHealth, settings.guiLayer);
     },
     // Starts the main menu
     startMenu : function() {
@@ -76,11 +92,28 @@ Game.extend({
         }
         this.pauseButton.visible = true;
         this.stopButton.visible = true;
-        this.spawnActor(vec2(0,0), Dyke);
+        this.fpsTextBox.visible = true;
+        this.creditsTextBox.visible = true;
+        this.dykeHealth.visible = true;
+        this.active = true;
+        this.dyke = this.spawnActor(vec2(0,0), Dyke);
         EnemyController.start();
+        PlayerData.reset();
     },
     update : function() {
         this.fpsTextBox.text = "FPS: " + View.lastfps;
+        if (!PlayerData.paused) {
+            this.updateCredits();
+        }
+        this.creditsTextBox.text = "Credits: " + PlayerData.credits;
+        this.dykeHealth.text = "Dyke HP: " + this.dyke.health;
+    },
+    updateCredits : function() {
+        this.creditsTimer += deltaTime;
+        if (this.creditsTimer >= settings.secondsToCreditUpdate) {
+            this.creditsTimer = 0;
+            PlayerData.credits += settings.creditsPerCreditUpdate;
+        }
     },
     // Stops the game
     gameStop : function() {
@@ -93,8 +126,20 @@ Game.extend({
         this.Actors = new Array();
         this.pauseButton.visible = false;
         this.stopButton.visible = false;
+        this.fpsTextBox.visible = false;
+        this.creditsTextBox.visible = false;
+        this.dykeHealth.visible = false;
+        this.active = false;
         EnemyController.stop();
         EnemyController.reset();
+    },
+    buildDefence : function(position) {
+        if (PlayerData.credits >= settings.defenceBuildCost) {
+            PlayerData.credits -= settings.defenceBuildCost;
+            this.spawnActor(position, Defence);
+        } else {
+            console.log("Not enough credits to build a defence!");
+        }
     },
     // Spawns an enemy at lane index lane
     spawnEnemy : function(lane) {
@@ -108,6 +153,7 @@ Game.extend({
         var actor = actorObject.clone();
         actor.position = position.clone();
         this.addActor(actor, layer);
+        return actor;
     },
     // Adds an actor to the field
     addActor : function(actor, layer) {
@@ -123,6 +169,11 @@ Game.extend({
             }
         }
         return count;
+    },
+    lose : function() {
+        console.log("You lost the game!");
+        PlayerData.paused = true;
+        PlayerData.endOfGame = true;
     }
 });
 Game.stopButton.onclick = function() {
@@ -134,105 +185,27 @@ Game.startButton.onclick = function() {
     this.parent.removeDrawable(this);
 }
 Game.pauseButton.onclick = function() {
-    if (PlayerData.paused) {
-        PlayerData.paused = false; 
-        this.load("./images/pauseButton.png");
-    } else if (!PlayerData.paused) {
-        PlayerData.paused = true;
-        this.load("./images/startButton.png");
+    if (!PlayerData.endOfGame) {
+        if (PlayerData.paused) {
+            PlayerData.paused = false; 
+            this.load("./images/pauseButton.png");
+        } else if (!PlayerData.paused) {
+            PlayerData.paused = true;
+            this.load("./images/startButton.png");
+        }
     }
 }
-
-EnemyController = Model.Drawables.BaseDrawable.clone();
-EnemyController.extend({
-    active : false,
-    currentWave : 0,
-    currentSubWave : 0,
-    inWave : false,
-    subWaves : null,
-    maxEnemies : null,
-    spawnInterval : null,
-    waitBeforeWave : null,
-    spawnTimer : 0,
-    waitTimer : 0,
-    onDrawInit : function() {
-        this.setNewWaveInfo();
-    },
-    update : function() {
-        if (PlayerData.paused) return;
-        if (this.inWave) {
-            this.updateWave();
-        } else {
-            this.waitTimer += deltaTime;
-            if (this.waitTimer > this.waitBeforeWave) {
-                this.waitTimer = 0;
-                this.startWave();
-            }
-        }
-    },
-    updateWave : function() {
-        this.spawnTimer -= deltaTime;
-        if (this.spawnTimer <= 0) {
-            this.spawnTimer = random(this.spawnInterval.max,
-                                     this.spawnInterval.min);
-            if (this.parent.countActors("Enemy") < this.maxEnemies) {
-                if (this.subWaves[this.currentSubWave].enemies.Enemy > 0) {
-                    this.parent.spawnEnemy(random(settings.lanes-1));
-                } else {
-                    this.currentSubWave++;
-                    if (this.currentSubWave > this.subWaves.length) {
-                        this.currentSubWave = 0;
-                        this.endWave();
-                    }
-                }
-            }
-        }
-    },
-    startWave : function() {
-        this.inWave = true;
-    },
-    endWave : function() {
-        this.inWave = false;
-        this.spawnTimer = 0;
-        currentWave++;
-        if (currentWave < Waves.waves.length) {
-            this.setNewWaveInfo();
-        } else {
-            this.stop();
-        }
-    },
-    setNewWaveInfo : function() {
-        this.setWaveVariable("maxEnemies");
-        this.setWaveVariable("spawnInterval");
-        this.setWaveVariable("waitBeforeWave");
-        this.setWaveVariable("subWaves");
-    },
-    setWaveVariable : function(variable) {
-        this[variable] = (Waves.waves[this.currentWave][variable] != null) ?
-                            Waves.waves[this.currentWave][variable] :
-                            settings["default" + variable.charAt(0).toUpperCase()
-                                     + variable.substr(1)];
-    },
-    start : function() {
-        this.active = true;
-    },
-    stop : function() {
-        this.active = false;
-    },
-    reset : function() {
-        this.inWave = false;
-        this.active = true;
-        this.spawnTimer = 0;
-        this.waitTimer = 0;
-        this.currentWave = 0;
-        this.setNewWaveInfo();
-    }
-});
 
 // Contains data for the player
 PlayerData = {
     paused : null,
-    credits : 0
+    credits : null,
+    endOfGame : null,
+    reset : function() {
+        this.paused = false;
+        this.credits = settings.startingCredits;
+        this.endOfGame = false
+    }
 };
 
 // Draws fading text popup at given position

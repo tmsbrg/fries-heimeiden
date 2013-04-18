@@ -17,6 +17,11 @@ var settings = {
             "guiLayer" : 3,
 
     // game settings
+        // credits
+            "startingCredits" : 10,
+            "secondsToCreditUpdate" : 4,
+            "creditsPerCreditUpdate" : 2,
+        // field
             "tilesPerLane" : 8,
             "lanes" : 5,
         // enemies
@@ -28,15 +33,16 @@ var settings = {
             "paalwormAttritionAmount" : 1,
         // defences
             "defenceHealth" : 4,
+            "defenceBuildCost" : 5,
             "defenceRange" : 5, // range for attacking enemies, in number of tiles
-            "defenceCooldown" : 1,
+            "defenceCooldown" : 2,
         // dyke
-            "dykeHealth" : 10,
+            "dykeHealth" : 20,
         // bullets
             "bulletSpeed" : 80,
             "bulletDamage" : 4,
         // waves, default values can be overwritten for specific waves in waves.json
             "defaultMaxEnemies" : 5, // max enemies on screen at the same time
             "defaultSpawnInterval" : {"min":1, "max":5},
-            "defaultWaitBeforeWave" : 5, // in seconds
+            "defaultWaitBeforeWave" : 20, // in seconds
 }
