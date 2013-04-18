@@ -83,11 +83,11 @@ Game.extend({
         enemy.position.y = lane * settings.tileSize.y;
         this.addActor(enemy);
     },
-    // Spawns a defence at exact position position
-    spawnDefence : function (position) {
-        defence = Defence.clone();
-        defence.position = position.clone();
-        this.addActor(defence);
+    // Spawns an actor object at exact position position
+    spawnActor : function (position, actorObject) {
+        var actor = actorObject.clone();
+        actor.position = position.clone();
+        this.addActor(actor);
     },
     // Adds an actor to the field
     addActor : function(actor) {

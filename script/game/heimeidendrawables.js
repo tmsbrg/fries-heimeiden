@@ -23,7 +23,7 @@ Lane.extend({
     },
     // makes Game create a defence on his lane at given x position
     spawnDefence : function(xpos) {
-        this.parent.spawnDefence(vec2(xpos, this.position.y));
+        this.parent.spawnActor(vec2(xpos, this.position.y), Defence);
     }
 });
 
@@ -106,9 +106,12 @@ Actor.extend({
                         this.position.y + this.centre.y),
                     this.direction * this.reach,
                     this.actorList[i].position, this.actorList[i].size)) {
-                this.actorList[i].onCollide(this);
-                this.onCollide(this.actorList[i]);
-                return this.actorList[i];
+                var other = this.actorList[i];
+                other.onCollide(this);
+                if (other) {
+                    this.onCollide(other);
+                }
+                return other;
             }
         }
         return null;
@@ -125,9 +128,9 @@ Actor.extend({
         return (position.y >= rectPos.y &&
                 position.y <= rectPos.y + rectSize.y &&
                 ((range < 0) ? (rectPos.x + rectSize.x - position.x >= range &&
-                                rectPos.x + rectSize.x - position.x <= 0)
+                                rectPos.x - position.x <= 0)
                              : (rectPos.x - position.x <= range &&
-                                rectPos.x - position.x >= 0)));
+                                rectPos.x + rectSize.x - position.x >= 0)));
     },
     /* Changes health and makes actor die if health goes below 0, ignores negative
     values if actor is invulnerable */
@@ -177,7 +180,7 @@ Enemy.extend({
     damage : settings.paalwormDamage,
     speed : settings.paalwormSpeed,
     direction : LEFT,
-    ignoreCollisions : [this.name],
+    ignoreCollisions : ["Enemy"],
     attackTimer : 0,
     cooldown : settings.paalwormCooldown, // amount of seconds between attacks
     attritionTime : settings.paalwormAttritionTime, /* amount of seconds between 
@@ -221,11 +224,18 @@ Defence.extend({
     health : 4,
     alpha : 0.7,
     color : 'green',
+    bullet : null,
     attackTimer : 0,
     cooldown : 1,
     range : 5, // range for attacking enemies, in number of tiles
+    onInit : function () {
+        this.bullet = Bullet;
+    },
     attack : function () {
-        console.log("attack!");
+        this.parent.spawnActor(vec2(this.position.x + this.size.x / 2 -
+                this.bullet.size.x/2,
+                this.position.y + this.size.y/2 - this.bullet.size.y/2),
+                this.bullet);
     },
     // return true if an enemy is in range and on the same lane
     enemyInRange : function () {
@@ -265,5 +275,23 @@ Dyke.extend({
     health : 10,
     onDeath : function () {
         console.log(this.name + " breaks!");
+    }
+});
+
+// Moves to the right and wounds enemies on impact
+Bullet = Actor.clone();
+Bullet.extend({
+    name : "Bullet",
+    size : vec2(settings.tileSize.x / 4, settings.tileSize.y / 4),
+    color : 'red',
+    direction : RIGHT,
+    invulnerable : true,
+    speed : 80,
+    damage : 4,
+    ignoreCollisions : ["Bullet", "Defence"],
+    onCollide : function (other) {
+        console.log(this.name + " hits " + other.name);
+        other.changeHealth(-this.damage);
+        this.die();
     }
 });

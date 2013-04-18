@@ -13,7 +13,7 @@ var settings = {
     "tilesPerLane" : 8,
     "lanes" : 5,
     // enemies
-    "paalwormHealth" : 10,
+    "paalwormHealth" : 20,
     "paalwormDamage" : 2,
     "paalwormSpeed" : 25,
     "paalwormCooldown" : 1,
