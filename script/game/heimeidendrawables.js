@@ -175,7 +175,7 @@ Actor.extend({
 Enemy = Actor.clone();
 Enemy.extend({
     name : "Enemy",
-    color : 'black',
+    color : 'brown',
     health : settings.paalwormHealth,
     damage : settings.paalwormDamage,
     speed : settings.paalwormSpeed,
@@ -221,21 +221,22 @@ Enemy.extend({
 Defence = Actor.clone();
 Defence.extend({
     name : "Defence",
-    health : 4,
+    health : settings.defenceHealth,
     alpha : 0.7,
     color : 'green',
     bullet : null,
     attackTimer : 0,
-    cooldown : 1,
-    range : 5, // range for attacking enemies, in number of tiles
+    cooldown : settings.defenceCooldown,
+    range : settings.defenceRange,
     onInit : function () {
         this.bullet = Bullet;
     },
     attack : function () {
-        this.parent.spawnActor(vec2(this.position.x + this.size.x / 2 -
-                this.bullet.size.x/2,
-                this.position.y + this.size.y/2 - this.bullet.size.y/2),
-                this.bullet);
+        this.parent.spawnActor(vec2(
+                    this.position.x + this.size.x/2 - this.bullet.size.x/2,
+                    this.position.y + this.size.y/2 - this.bullet.size.y/2),
+                this.bullet,
+                settings.bulletLayer);
     },
     // return true if an enemy is in range and on the same lane
     enemyInRange : function () {
@@ -272,7 +273,7 @@ Dyke.extend({
     size : vec2(settings.tileSize.x, settings.tileSize.y * settings.lanes),
     color : 'yellow',
     alpha : 0.7,
-    health : 10,
+    health : settings.dykeHealth,
     onDeath : function () {
         console.log(this.name + " breaks!");
     }
@@ -282,13 +283,19 @@ Dyke.extend({
 Bullet = Actor.clone();
 Bullet.extend({
     name : "Bullet",
-    size : vec2(settings.tileSize.x / 4, settings.tileSize.y / 4),
+    size : vec2(settings.tileSize.x * settings.bulletSizeInTiles,
+                settings.tileSize.y * settings.bulletSizeInTiles),
     color : 'red',
     direction : RIGHT,
     invulnerable : true,
-    speed : 80,
-    damage : 4,
+    speed : settings.bulletSpeed,
+    damage : settings.bulletDamage,
     ignoreCollisions : ["Bullet", "Defence"],
+    onUpdate : function() {
+        if (this.position.x > FIELD_SIZE) {
+            this.die();
+        }
+    },
     onCollide : function (other) {
         console.log(this.name + " hits " + other.name);
         other.changeHealth(-this.damage);

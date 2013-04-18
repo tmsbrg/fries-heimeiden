@@ -2,6 +2,7 @@
 and constants */
 includeJS("./script/game/language.json");
 includeJS("./script/game/settings.json");
+includeJS("./script/game/waves.json");
 includeJS("./script/game/heimeiden.js");
 includeJS("./script/game/heimeidendrawables.js");
 

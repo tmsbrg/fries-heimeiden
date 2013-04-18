@@ -10,54 +10,77 @@ Game.extend({
     startButton : Model.Drawables.ButtonDrawable.clone(),
     stopButton : Model.Drawables.ButtonDrawable.clone(),
     popupText : Model.Drawables.TextDrawable.clone(),
+    fpsTextBox : Model.Drawables.TextDrawable.clone(),
     // Initializes the game, should only be called once per load
     initialize : function() {
+        this.initConstants();
+        this.initSelf();
+        this.initDrawables();
+        this.initData();
+        this.startMenu();
+    },
+    initConstants : function() {
+        // calculated constants from settings
+        FIELD_SIZE = settings.tileSize.x * settings.tilesPerLane;
+    },
+    initSelf : function() {
         this.size = vec2(View.canvasWidth, View.canvasHeight);
         Model.addDrawable(this);
-        this.initializeDrawables();
-        PlayerData.paused = false;
-        this.menu();
     },
     // Initializes all static drawableObjects, should only be called once per load
-    initializeDrawables : function() {
+    initDrawables : function() {
+        this.initFPS();
         this.pauseButton.visible = false;
         this.stopButton.visible = false;
         for (var i=0; i<this.Lanes.length; i++) {
             this.Lanes[i] = Lane.clone();
             this.Lanes[i].setLanePos(i);
             this.Lanes[i].visible = false;
-            this.addDrawable(this.Lanes[i]);
+            this.addDrawable(this.Lanes[i], settings.groundLayer);
         }
-        this.addDrawable(this.pauseButton);
-        this.addDrawable(this.stopButton);
         this.pauseButton.size = {x:50, y:50};
-        this.pauseButton.position = vec2(480, 0);
+        this.pauseButton.position = vec2(FIELD_SIZE+10, 0);
         this.pauseButton.load("./images/pauseButton.png");
-        this.addDrawable(this.pauseButton);
+        this.addDrawable(this.pauseButton, settings.guiLayer);
         this.stopButton.size = {x:50, y:50};
-        this.stopButton.position = vec2(550, 0);
+        this.stopButton.position = vec2(FIELD_SIZE+70, 0);
         this.stopButton.load("./images/stopButton.png");
-        this.addDrawable(this.stopButton);
+        this.addDrawable(this.stopButton, settings.guiLayer);
         this.startButton.size = vec2(250, 250);
         this.startButton.position = vec2(
             View.canvasWidth / 2 - this.startButton.size.x / 2,
             View.canvasHeight / 2 - this.startButton.size.y / 2); 
         this.startButton.load("./images/startButton.png");
+        this.addDrawable(EnemyController);
+    },
+    initFPS : function() {
+		this.fpsTextBox.position = { x: FIELD_SIZE+10, y: 50 };
+		this.fpsTextBox.size = { x:100, y: 20 };
+		this.fpsTextBox.font = "bold 14px Arial";
+		this.fpsTextBox.color = "#FF0000";
+		this.fpsTextBox.text = "FPS: " + View.lastfps;
+		this.addDrawable(this.fpsTextBox, 101);
+    },
+    initData : function() {
+        PlayerData.paused = false;
     },
     // Starts the main menu
-    menu : function() {
+    startMenu : function() {
         this.addDrawable(this.startButton);
     },
     // Starts the game
     gameStart : function() {
         console.log("Starting Heimeiden...");
-        this.initDyke();
         for (var i=0; i<this.Lanes.length; i++) {
             this.Lanes[i].visible = true;
         }
         this.pauseButton.visible = true;
         this.stopButton.visible = true;
-        this.spawnEnemy(random(this.Lanes.length-1));
+        this.spawnActor(vec2(0,0), Dyke);
+        EnemyController.start();
+    },
+    update : function() {
+        this.fpsTextBox.text = "FPS: " + View.lastfps;
     },
     // Stops the game
     gameStop : function() {
@@ -70,36 +93,41 @@ Game.extend({
         this.Actors = new Array();
         this.pauseButton.visible = false;
         this.stopButton.visible = false;
-    },
-    // Initializes the dyke and adds it to the game
-    initDyke : function() {
-        var dyke = Dyke.clone();
-        this.addActor(dyke);
+        EnemyController.stop();
+        EnemyController.reset();
     },
     // Spawns an enemy at lane index lane
     spawnEnemy : function(lane) {
-        enemy = Enemy.clone();
-        enemy.position.x = (settings.tilesPerLane-1) * settings.tileSize.x;
-        enemy.position.y = lane * settings.tileSize.y;
-        this.addActor(enemy);
+        this.spawnActor(vec2((settings.tilesPerLane-1) * settings.tileSize.x,
+                             lane * settings.tileSize.y),
+                        Enemy);
     },
     // Spawns an actor object at exact position position
-    spawnActor : function (position, actorObject) {
+    spawnActor : function (position, actorObject, layer) {
+        if (layer == null) layer = settings.characterLayer;
         var actor = actorObject.clone();
         actor.position = position.clone();
-        this.addActor(actor);
+        this.addActor(actor, layer);
     },
     // Adds an actor to the field
-    addActor : function(actor) {
+    addActor : function(actor, layer) {
         this.Actors[this.Actors.length] = actor;
         actor.actorList = this.Actors;
-        this.addDrawable(actor);
+        this.addDrawable(actor, layer);
+    },
+    countActors : function(actorName) {
+        var count = 0;
+        for (var i=0; i<this.Actors.length; i++) {
+            if (this.Actors[i].name == actorName) {
+                count++;
+            }
+        }
+        return count;
     }
-
 });
 Game.stopButton.onclick = function() {
     this.parent.gameStop();
-    this.parent.menu();
+    this.parent.startMenu();
 }
 Game.startButton.onclick = function() {
     this.parent.gameStart();
@@ -114,6 +142,92 @@ Game.pauseButton.onclick = function() {
         this.load("./images/startButton.png");
     }
 }
+
+EnemyController = Model.Drawables.BaseDrawable.clone();
+EnemyController.extend({
+    active : false,
+    currentWave : 0,
+    currentSubWave : 0,
+    inWave : false,
+    subWaves : null,
+    maxEnemies : null,
+    spawnInterval : null,
+    waitBeforeWave : null,
+    spawnTimer : 0,
+    waitTimer : 0,
+    onDrawInit : function() {
+        this.setNewWaveInfo();
+    },
+    update : function() {
+        if (PlayerData.paused) return;
+        if (this.inWave) {
+            this.updateWave();
+        } else {
+            this.waitTimer += deltaTime;
+            if (this.waitTimer > this.waitBeforeWave) {
+                this.waitTimer = 0;
+                this.startWave();
+            }
+        }
+    },
+    updateWave : function() {
+        this.spawnTimer -= deltaTime;
+        if (this.spawnTimer <= 0) {
+            this.spawnTimer = random(this.spawnInterval.max,
+                                     this.spawnInterval.min);
+            if (this.parent.countActors("Enemy") < this.maxEnemies) {
+                if (this.subWaves[this.currentSubWave].enemies.Enemy > 0) {
+                    this.parent.spawnEnemy(random(settings.lanes-1));
+                } else {
+                    this.currentSubWave++;
+                    if (this.currentSubWave > this.subWaves.length) {
+                        this.currentSubWave = 0;
+                        this.endWave();
+                    }
+                }
+            }
+        }
+    },
+    startWave : function() {
+        this.inWave = true;
+    },
+    endWave : function() {
+        this.inWave = false;
+        this.spawnTimer = 0;
+        currentWave++;
+        if (currentWave < Waves.waves.length) {
+            this.setNewWaveInfo();
+        } else {
+            this.stop();
+        }
+    },
+    setNewWaveInfo : function() {
+        this.setWaveVariable("maxEnemies");
+        this.setWaveVariable("spawnInterval");
+        this.setWaveVariable("waitBeforeWave");
+        this.setWaveVariable("subWaves");
+    },
+    setWaveVariable : function(variable) {
+        this[variable] = (Waves.waves[this.currentWave][variable] != null) ?
+                            Waves.waves[this.currentWave][variable] :
+                            settings["default" + variable.charAt(0).toUpperCase()
+                                     + variable.substr(1)];
+    },
+    start : function() {
+        this.active = true;
+    },
+    stop : function() {
+        this.active = false;
+    },
+    reset : function() {
+        this.inWave = false;
+        this.active = true;
+        this.spawnTimer = 0;
+        this.waitTimer = 0;
+        this.currentWave = 0;
+        this.setNewWaveInfo();
+    }
+});
 
 // Contains data for the player
 PlayerData = {

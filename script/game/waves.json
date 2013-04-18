@@ -1,0 +1,17 @@
+// have to do it this way to make it easy to load from local disk with includeJS
+
+Waves = {
+"waves" : [
+    {"subWaves" : [
+        {"enemies" : { "Enemy" : 10 } },
+        {"enemies" : { "Enemy" : 10 } }
+        ]
+    },
+    {"subWaves" : [
+        {"enemies" : { "Enemy" : 15}},
+        {"enemies" : { "Enemy" : 20}},
+        ],
+        "maximumEnemies" : 10
+    }
+]
+}
