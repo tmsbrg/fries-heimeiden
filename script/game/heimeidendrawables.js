@@ -33,7 +33,9 @@ Tile.extend({
     size : settings.tileSize.clone(),
     building : null,
     onclick : function () {
-        this.parent.buildDefence(this.position.x);
+        if (!PlayerData.paused) {
+            this.parent.buildDefence(this.position.x);
+        }
     }
 });
 
@@ -69,11 +71,13 @@ Actor.extend({
     // Calls this.onUpdate, moves if needed and checks collisions if moving
     update : function() {
         if (PlayerData.paused) return;
+        var other;
         this.onUpdate();
         if (this.direction && this.speed) {
-            if (!this.checkCollide({x:this.calculateMove(), y:this.position.y})) {
+            if (other = !this.checkCollide({x:this.calculateMove(),
+                                            y:this.position.y})) {
                 this.move();
-            } else if (!this.solid) {
+            } else if (!this.solid || (other && !other.solid)) {
                 this.move();
             }
         }
@@ -176,11 +180,12 @@ Enemy = Actor.clone();
 Enemy.extend({
     name : "Enemy",
     color : 'brown',
+    treasure : null,
     health : settings.paalwormHealth,
     damage : settings.paalwormDamage,
     speed : settings.paalwormSpeed,
     direction : LEFT,
-    ignoreCollisions : ["Enemy"],
+    ignoreCollisions : ["Enemy", "Treasure"],
     attackTimer : 0,
     cooldown : settings.paalwormCooldown, // amount of seconds between attacks
     attritionTime : settings.paalwormAttritionTime, /* amount of seconds between 
@@ -189,6 +194,7 @@ Enemy.extend({
     every time by attrition */
     attritionTimer : null,
     onInit : function () {
+        this.treasure = Treasure;
         this.attritionTimer = this.attritionTime;
     },
     // attacks given actor
@@ -212,6 +218,12 @@ Enemy.extend({
         }
     },
     onDeath : function () {
+        this.parent.spawnActor(vec2(this.position.x + this.size.x/2
+                                        - this.treasure.size.x/2,
+                                    this.position.y + this.size.y/2
+                                        - this.treasure.size.y/2),
+                               this.treasure,
+                               settings.shellLayer);
     }
 });
 
@@ -288,7 +300,7 @@ Bullet.extend({
     invulnerable : true,
     speed : settings.bulletSpeed,
     damage : settings.bulletDamage,
-    ignoreCollisions : ["Bullet", "Defence"],
+    ignoreCollisions : ["Bullet", "Defence", "Treasure"],
     onUpdate : function() {
         if (this.position.x + this.size.x >= FIELD_SIZE) {
             this.die();
@@ -297,5 +309,33 @@ Bullet.extend({
     onCollide : function (other) {
         other.changeHealth(-this.damage);
         this.die();
+    }
+});
+
+// Gives player credits if clicked on
+Treasure = Actor.clone();
+Treasure.extend({
+    name : "Treasure",
+    color : 'purple',
+    fadeCounter : 0,
+    fadeTime : settings.shellFadeTime,
+    alpha : 1,
+    invulnerable : true,
+    solid : false,
+    size : vec2(settings.tileSize.x * settings.shellSizeInTiles,
+                settings.tileSize.y * settings.shellSizeInTiles),
+    onUpdate : function() {
+        this.fadeCounter += deltaTime;
+        this.alpha = 1 - (this.fadeCounter / this.fadeTime);
+        if (this.fadeCounter > this.fadeTime) {
+            this.die();
+        }
+    },
+    onhover : function() {
+        if (!PlayerData.paused) {
+            this.parent.addCredits(settings.shellWorth);
+            popupRect(this.position, this.size, this.color);
+            this.die();
+        }
     }
 });

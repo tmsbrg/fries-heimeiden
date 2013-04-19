@@ -9,6 +9,7 @@ EnemyController.extend({
     spawnInterval : null,
     waitBeforeWave : null,
     enemyPool : null,
+    lastLane : null,
     spawnTimer : 0,
     waitTimer : 0,
     onDrawInit : function() {
@@ -33,8 +34,13 @@ EnemyController.extend({
                                      this.spawnInterval.min);
             if (this.parent.countActors("Enemy") < this.maxEnemies) {
                 if (this.enemyPool.Enemy > 0) {
-                    this.parent.spawnEnemy(random(settings.lanes-1));
+                    var lane;
+                    do {
+                        lane = random(settings.lanes-1);
+                    } while (this.lastLane == lane)
+                    this.parent.spawnEnemy(lane);
                     this.enemyPool.Enemy--;
+                    this.lastLane = lane;
                 } else {
                     this.currentSubWave++;
                     if (this.currentSubWave >= this.subWaves.length) {
@@ -86,6 +92,7 @@ EnemyController.extend({
     },
     reset : function() {
         this.inWave = false;
+        this.lastLane = null;
         this.spawnTimer = 0;
         this.waitTimer = 0;
         this.currentWave = 0;

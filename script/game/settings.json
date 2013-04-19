@@ -6,20 +6,24 @@ var settings = {
         "fieldPosition" : {"x":20, "y":20},
         "tileSize" : {"x":60, "y":60},
         // popupinfo
-            "popupSpeed" : 100,
-            "popupTimeout" : 2,
-        // bullets
+            "popupSpeed" : 50,
+            "popupTimeout" : 1,
+        // popuprect
+            "popupRectTimeout" : 0.5,
+        // actors
             "bulletSizeInTiles" : 0.25,
+            "shellSizeInTiles" : 0.4,
         // layers
             "groundLayer" : 0,
             "characterLayer" : 1,
             "bulletLayer" : 2,
-            "guiLayer" : 3,
+            "shellLayer" : 3,
+            "guiLayer" : 4,
 
     // game settings
         // credits
-            "startingCredits" : 10,
-            "secondsToCreditUpdate" : 4,
+            "startingCredits" : 20,
+            "secondsToCreditUpdate" : 2,
             "creditsPerCreditUpdate" : 2,
         // field
             "tilesPerLane" : 8,
@@ -33,16 +37,19 @@ var settings = {
             "paalwormAttritionAmount" : 1,
         // defences
             "defenceHealth" : 4,
-            "defenceBuildCost" : 5,
+            "defenceBuildCost" : 15,
             "defenceRange" : 5, // range for attacking enemies, in number of tiles
-            "defenceCooldown" : 2,
+            "defenceCooldown" : 1.7,
         // dyke
             "dykeHealth" : 20,
         // bullets
             "bulletSpeed" : 80,
             "bulletDamage" : 4,
+        // shipworm shells
+            "shellWorth" : 2,
+            "shellFadeTime" : 3,
         // waves, default values can be overwritten for specific waves in waves.json
             "defaultMaxEnemies" : 5, // max enemies on screen at the same time
-            "defaultSpawnInterval" : {"min":3, "max":4},
+            "defaultSpawnInterval" : {"min":2, "max":5},
             "defaultWaitBeforeWave" : 7, // in seconds
 }

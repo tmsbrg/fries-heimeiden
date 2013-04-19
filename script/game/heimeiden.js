@@ -7,11 +7,9 @@ Game.extend({
     Actors : new Array(),
     dyke : null,
     active : false,
-    creditsTimer : 0,
     pauseButton : Model.Drawables.ButtonDrawable.clone(),
     startButton : Model.Drawables.ButtonDrawable.clone(),
     stopButton : Model.Drawables.ButtonDrawable.clone(),
-    popupText : Model.Drawables.TextDrawable.clone(),
     fpsTextBox : Model.Drawables.TextDrawable.clone(),
     creditsTextBox : Model.Drawables.TextDrawable.clone(),
     dykeHealth : Model.Drawables.TextDrawable.clone(),
@@ -20,7 +18,6 @@ Game.extend({
         this.initConstants();
         this.initSelf();
         this.initDrawables();
-        PlayerData.reset();
         this.startMenu();
     },
     initConstants : function() {
@@ -46,7 +43,6 @@ Game.extend({
         }
         this.pauseButton.size = {x:50, y:50};
         this.pauseButton.position = vec2(FIELD_SIZE+10, 0);
-        this.pauseButton.load("./images/pauseButton.png");
         this.addDrawable(this.pauseButton, settings.guiLayer);
         this.stopButton.size = {x:50, y:50};
         this.stopButton.position = vec2(FIELD_SIZE+70, 0);
@@ -95,6 +91,7 @@ Game.extend({
         this.fpsTextBox.visible = true;
         this.creditsTextBox.visible = true;
         this.dykeHealth.visible = true;
+        this.pauseButton.load("./images/pauseButton.png");
         this.active = true;
         this.dyke = this.spawnActor(vec2(0,0), Dyke);
         EnemyController.start();
@@ -109,11 +106,16 @@ Game.extend({
         this.dykeHealth.text = "Dyke HP: " + this.dyke.health;
     },
     updateCredits : function() {
-        this.creditsTimer += deltaTime;
-        if (this.creditsTimer >= settings.secondsToCreditUpdate) {
-            this.creditsTimer = 0;
-            PlayerData.credits += settings.creditsPerCreditUpdate;
+        PlayerData.creditsTimer += deltaTime;
+        if (PlayerData.creditsTimer >= settings.secondsToCreditUpdate) {
+            PlayerData.creditsTimer = 0;
+            this.addCredits(settings.creditsPerCreditUpdate);
         }
+    },
+    addCredits : function(credits) {
+        PlayerData.credits += credits;
+        popupText(vec2(this.creditsTextBox.position.x + 60,
+                       this.creditsTextBox.position.y - 20), "+" + credits);
     },
     // Stops the game
     gameStop : function() {
@@ -201,32 +203,60 @@ PlayerData = {
     paused : null,
     credits : null,
     endOfGame : null,
+    creditsTimer : null,
     reset : function() {
         this.paused = false;
         this.credits = settings.startingCredits;
-        this.endOfGame = false
+        this.endOfGame = false;
+        this.creditsTimer = 0;
     }
 };
 
 // Draws fading text popup at given position
 popupText = function(position, text) {
     var popupText = Model.Drawables.TextDrawable.clone();
-    popupText.position = position;
+    popupText.position = position.clone();
     popupText.font = "bold 24px Arial";
     popupText.color = "red";
     popupText.setText(text);
     popupText.timeout = settings.popupTimeout; 
-    popupText.timeleft = popupText.timeout;
+    popupText.timeleft = settings.popupTimeout;
     popupText.speed = settings.popupSpeed;
     popupText.update = function() {
+        if (PlayerData.paused) return;
         this.position.y -= this.speed * deltaTime;
         this.timeleft -= deltaTime;
-        this.alpha = popupText.timeleft / popupText.timeout;
+        this.alpha = this.timeleft / this.timeout;
         if (this.timeleft <= 0) {
-            Model.removeDrawable(this);
+            Game.removeDrawable(this);
         }
     }
-    Model.addDrawable(popupText);
+    Game.addDrawable(popupText);
+}
+
+/* Draws fading and expanding rect popup at given position,
+and color, expanding until given size */
+popupRect = function(position, size, color) {
+    var rect = Model.Drawables.RectangleDrawable.clone();
+    rect.startPosition = position.clone();
+    rect.endSize = size.clone();
+    rect.color = color;
+    rect.timeout = settings.popupRectTimeout;
+    rect.timeleft = rect.timeout;
+    rect.update = function() {
+        if (PlayerData.paused) return;
+        this.timeleft -= deltaTime;
+        this.alpha = this.timeleft / this.timeout;
+        this.size = vec2((1 - this.timeleft / this.timeout) * this.endSize.x,
+                         (1 - this.timeleft / this.timeout) * this.endSize.y);
+        this.position = vec2(this.startPosition.x -
+                (this.size.x-this.endSize.x) / 2,
+                this.startPosition.y - (this.size.y-this.endSize.y) / 2);
+        if (this.timeleft <= 0) {
+            Game.removeDrawable(this);
+        }
+    }
+    Game.addDrawable(rect);
 }
 
 // Called by rendering engine when everything is loaded
