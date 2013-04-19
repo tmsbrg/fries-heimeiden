@@ -290,7 +290,7 @@ Bullet.extend({
     damage : settings.bulletDamage,
     ignoreCollisions : ["Bullet", "Defence"],
     onUpdate : function() {
-        if (this.position.x > FIELD_SIZE) {
+        if (this.position.x + this.size.x >= FIELD_SIZE) {
             this.die();
         }
     },

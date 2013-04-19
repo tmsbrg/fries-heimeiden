@@ -43,6 +43,6 @@ var settings = {
             "bulletDamage" : 4,
         // waves, default values can be overwritten for specific waves in waves.json
             "defaultMaxEnemies" : 5, // max enemies on screen at the same time
-            "defaultSpawnInterval" : {"min":1, "max":5},
-            "defaultWaitBeforeWave" : 20, // in seconds
+            "defaultSpawnInterval" : {"min":3, "max":4},
+            "defaultWaitBeforeWave" : 7, // in seconds
 }
