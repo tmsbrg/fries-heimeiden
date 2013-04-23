@@ -3,49 +3,45 @@ var rectAn = Model.Drawables.AnimatedDrawable.clone()
 var rect = Model.Drawables.AnimationDrawable.clone();
 var rect2;
 var rect3;
-const redgold = 0;
-const purplegreen = 1;
-const disint = 2;
 
-const rectsize = 64;
+const rectsize = {x:873,y:486};
 
-rect.onhover = function() {
-    this.parent.onhover();
+rect.onclick = function() {
+    this.parent.onclick();
 }
 
-// automatically called when mouse hovers over the drawableObject
-rectAn.onhover = function() {
-        console.log("boom!");
-        rectAn.pause();
+rectAn.onclick = function() {
+    this.showAnimation(random(this.animationList.length-1));
 }
+
 // randomize position
 rectAn.randomPos = function() {
-        this.position = { x:random(View.canvasWidth - this.size.x),
-                          y:random(View.canvasHeight - this.size.y) };
+        this.position = {x:0,y:0};
 }
 
 // initializes the game
 initialize = function() {
-    rectAn.size = {x:rectsize, y:rectsize};
-	rect.frameSize = {x:rectsize, y: rectsize};
-	rect.frameN = 2;
+    rectAn.size = rectsize;
+	rect.frameSize = rectsize;
+    rect.secondsPerFrame = 0.15;
+	rect.frameN = 4;
     rect2 = rect.clone();
-    rect2.load("./images/testanim.png");
-    rect2.offset = {x:0, y:rectsize};
+    rect2.load("./images/spritesheet.png");
+    rect2.offset = {x:0, y:rectsize.y};
     rect3 = rect.clone();
-    rect.load("./images/testanim.png");
-    rect3.load("./images/testanim2.png");
-    rect3.frameN = 4;
+    rect.load("./images/spritesheet.png");
+    rect3.load("./images/spritesheet.png");
+    rect3.offset = {x:0, y:rectsize.y*2};
     rectAn.addAnimations(rect, rect2, rect3);
-    rectAn.showAnimation(random(rectAn.animationList.length-1));
+    rectAn.showAnimation(0);
     rectAn.randomPos();
     Model.addDrawable(rectAn);
 }
 
 d = 0; t = 4;
 Controller.update = function() {
-    d += deltaTime;
-    if (d>t){d=0;rectAn.showAnimation(random(rectAn.animationList.length-1))}
+    //d += deltaTime;
+    //if (d>t){d=0;rectAn.showAnimation(random(rectAn.animationList.length-1))}
 }
 
 // no arguments given: returns random float between 0 and 1
