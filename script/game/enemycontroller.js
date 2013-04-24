@@ -37,7 +37,7 @@ EnemyController.extend({
                     var lane;
                     do {
                         lane = random(settings.lanes-1);
-                    } while (this.lastLane == lane)
+                    } while (this.lastLane == lane);
                     this.parent.spawnEnemy(lane);
                     this.enemyPool.Enemy--;
                     this.lastLane = lane;

@@ -12,7 +12,7 @@ Game.extend({
     stopButton : Model.Drawables.ButtonDrawable.clone(),
     fpsTextBox : Model.Drawables.TextDrawable.clone(),
     creditsTextBox : Model.Drawables.TextDrawable.clone(),
-    dykeHealth : Model.Drawables.TextDrawable.clone(),
+    dykeHealthBox : Model.Drawables.TextDrawable.clone(),
     // Initializes the game, should only be called once per load
     initialize : function() {
         this.initConstants();
@@ -70,11 +70,11 @@ Game.extend({
 		this.addDrawable(this.creditsTextBox, settings.guiLayer);
     },
     initDykeHealth : function() {
-		this.dykeHealth.position = { x: FIELD_SIZE+10, y: 90 };
-		this.dykeHealth.size = { x:100, y: 20 };
-		this.dykeHealth.font = "bold 14px Arial";
-		this.dykeHealth.color = "#FF0000";
-		this.addDrawable(this.dykeHealth, settings.guiLayer);
+		this.dykeHealthBox.position = { x: FIELD_SIZE+10, y: 90 };
+		this.dykeHealthBox.size = { x:100, y: 20 };
+		this.dykeHealthBox.font = "bold 14px Arial";
+		this.dykeHealthBox.color = "#FF0000";
+		this.addDrawable(this.dykeHealthBox, settings.guiLayer);
     },
     // Starts the main menu
     startMenu : function() {
@@ -90,7 +90,7 @@ Game.extend({
         this.stopButton.visible = true;
         this.fpsTextBox.visible = true;
         this.creditsTextBox.visible = true;
-        this.dykeHealth.visible = true;
+        this.dykeHealthBox.visible = true;
         this.pauseButton.load("./images/pauseButton.png");
         this.active = true;
         this.dyke = this.spawnActor(vec2(0,0), Dyke);
@@ -103,7 +103,7 @@ Game.extend({
             this.updateCredits();
         }
         this.creditsTextBox.text = "Credits: " + PlayerData.credits;
-        this.dykeHealth.text = "Dyke HP: " + this.dyke.health;
+        this.dykeHealthBox.text = "Dyke HP: " + this.dyke.health;
     },
     updateCredits : function() {
         PlayerData.creditsTimer += deltaTime;
@@ -130,7 +130,7 @@ Game.extend({
         this.stopButton.visible = false;
         this.fpsTextBox.visible = false;
         this.creditsTextBox.visible = false;
-        this.dykeHealth.visible = false;
+        this.dykeHealthBox.visible = false;
         this.active = false;
         EnemyController.stop();
         EnemyController.reset();
