@@ -1,7 +1,7 @@
 /* This file links to the other files, and contains some global utility functions
 and constants */
 includeJS("./script/game/language.json");
-includeJS("./script/game/settings.json");
+includeJS("./settings.json");
 includeJS("./script/game/waves.json");
 includeJS("./script/game/enemycontroller.js");
 includeJS("./script/game/heimeiden.js");
