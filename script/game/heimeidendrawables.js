@@ -50,19 +50,28 @@ Actor.extend({
     invulnerable : false,
     direction : 0,
     speed : 0,
+    absoluteSpeed : 0,
     solid : true, // if false, it can move while colliding with objects
     reach : 1, // used for checking movement collisions
     ignoreCollisions : [], /* array of name tags of objects it won't check
                               collisions with */
     actorList : null, // list of actors to check collisions with
     onDrawInit : function() {
-        this.onInit();
+        this.absoluteSpeed = this.calculateAbsoluteSpeed();
         this.centre = this.calculateCentre();
+        this.onInit();
     },
     // Sets its size and then recalculates its centre
     setSize : function(size) {
         this.size = size;
         this.centre = this.calculateCentre();
+    },
+    setSpeed : function(speed) {
+        this.speed = speed;
+        this.absoluteSpeed = this.calculateAbsoluteSpeed();
+    },
+    calculateAbsoluteSpeed : function() {
+        return this.speed * settings.tileSize.x;
     },
     // Returns a vec2 object containing the amount of pixels to its centre
     calculateCentre : function() {
@@ -88,7 +97,7 @@ Actor.extend({
     },
     // Calculates its x position if it were to move now and returns it
     calculateMove : function() {
-        return (this.position.x + this.direction * this.speed * deltaTime);
+        return (this.position.x + this.direction * this.absoluteSpeed * deltaTime);
     },
     /* Checks collisions with all other actors of its actorList whose name tags
     aren't on the ignoreCollisions list */

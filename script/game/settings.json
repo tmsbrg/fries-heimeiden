@@ -31,7 +31,7 @@ var settings = {
         // enemies
             "paalwormHealth" : 20,
             "paalwormDamage" : 2,
-            "paalwormSpeed" : 25,
+            "paalwormSpeed" : 0.4,
             "paalwormCooldown" : 1,
             "paalwormAttritionTime" : 1.5,
             "paalwormAttritionAmount" : 1,
@@ -43,7 +43,7 @@ var settings = {
         // dyke
             "dykeHealth" : 20,
         // bullets
-            "bulletSpeed" : 80,
+            "bulletSpeed" : 1.2,
             "bulletDamage" : 4,
         // shipworm shells
             "shellWorth" : 2,
