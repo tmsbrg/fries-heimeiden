@@ -4,7 +4,7 @@ var settings = {
 
     // graphical settings
         "fieldPosition" : {"x":20, "y":20},
-        "tileSize" : {"x":60, "y":60},
+        "tileSize" : {"x":120, "y":120},
         // popupinfo
             "popupSpeed" : 50,
             "popupTimeout" : 1,
@@ -25,7 +25,7 @@ var settings = {
             "startingCredits" : 20,
             "secondsToCreditUpdate" : 2,
             "creditsPerCreditUpdate" : 2,
-        // field
+        // field, won't be able to change anymore once we have background image
             "tilesPerLane" : 8,
             "lanes" : 5,
         // enemies
@@ -37,14 +37,14 @@ var settings = {
             "paalwormAttritionAmount" : 1,
         // defences
             "defenceHealth" : 4,
-            "defenceBuildCost" : 15,
+            "defenceBuildCost" : 10,
             "defenceRange" : 5, // range for attacking enemies, in number of tiles
             "defenceCooldown" : 1.7,
         // dyke
             "dykeHealth" : 20,
         // bullets
             "bulletSpeed" : 1.2,
-            "bulletDamage" : 4,
+            "bulletDamage" : 2,
         // shipworm shells
             "shellWorth" : 2,
             "shellFadeTime" : 3,
