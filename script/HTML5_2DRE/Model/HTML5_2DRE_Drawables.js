@@ -597,6 +597,14 @@ Model.Drawables.AnimationDrawable._currentFrame = 0;
 Model.Drawables.AnimationDrawable._currentFrameOfRow = 0;
 Model.Drawables.AnimationDrawable._currentRow = 0;
 Model.Drawables.AnimationDrawable._secondsSinceNewFrame = 0.0;
+Model.Drawables.AnimationDrawable.loadAnimation = function(image, settings)
+{
+    this.load(image);
+    this.loadSettings(settings);
+}
+Model.Drawables.AnimationDrawable.loadSettings = function(settings)
+{
+}
 // WARNING: Magic onload function is called by this._image, not by this
 Model.Drawables.AnimationDrawable.onload = function ()
 {

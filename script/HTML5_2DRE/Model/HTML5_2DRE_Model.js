@@ -130,5 +130,14 @@ Model = {
 		xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		xmlhttp.oncomplete = functionToCall;
 		if(sendDataAsPost) xmlhttp.send(); else xmlhttp.send(data);
-	}
+	},
+
+    getLocalTextFile     :   function(filepath)
+    {
+        var filerequest = new XMLHttpRequest();
+        filerequest.open("GET", filepath, false);
+        filerequest.setRequestHeader('Content-Type', 'text/plain');
+        filerequest.send();
+        return filerequest.responseText;
+    }
 }

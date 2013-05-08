@@ -36,6 +36,7 @@ initialize = function() {
     rectAn.showAnimation(0);
     rectAn.randomPos();
     Model.addDrawable(rectAn);
+    console.log(Model.getLocalTextFile("./text.txt"));
 }
 
 d = 0; t = 4;
