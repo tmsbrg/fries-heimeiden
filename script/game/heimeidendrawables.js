@@ -41,7 +41,7 @@ Tile.extend({
 
 /* The main type of object in the game. Actors can move around, have collision
 detection, have health and some built in event functions. */
-Actor = Model.Drawables.RectangleDrawable.clone();
+Actor = Model.Drawables.AnimatedDrawable.clone();
 Actor.extend({
     name : "Actor",
     size : settings.tileSize.clone(),
@@ -188,7 +188,6 @@ Actor.extend({
 Enemy = Actor.clone();
 Enemy.extend({
     name : "Enemy",
-    color : 'brown',
     treasure : null,
     health : settings.paalwormHealth,
     damage : settings.paalwormDamage,
@@ -203,6 +202,13 @@ Enemy.extend({
     every time by attrition */
     attritionTimer : null,
     onInit : function () {
+        var moveAnim = Model.Drawables.AnimationDrawable.clone();
+        moveAnim.frameN = 36;
+        moveAnim.frameSize = {x: 115, y: 64};
+        moveAnim.secondsPerFrame = 0.2;
+        moveAnim.load("./animation/paalworm/move.png");
+        this.addAnimations(moveAnim);
+        this.showAnimation(0);
         this.treasure = Treasure;
         this.attritionTimer = this.attritionTime;
     },
