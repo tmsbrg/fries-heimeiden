@@ -5,8 +5,8 @@ includeJS("./settings.json");
 includeJS("./script/game/waves.json");
 includeJS("./script/game/audio.js");
 includeJS("./script/game/enemycontroller.js");
-includeJS("./script/game/heimeiden.js");
 includeJS("./script/game/heimeidendrawables.js");
+includeJS("./script/game/heimeiden.js");
 
 // function for easily generating objects with x and y co-ordinates
 vec2 = function (givenx, giveny) {
@@ -27,7 +27,7 @@ random = function(max, min) {
 
 // loads json file and returns it parsed as an object
 loadJSON = function(filepath) {
-    return JSON.parse(getLocalTextFile(filepath));
+    return JSON.parse(Model.getLocalTextFile(filepath));
 }
 
 // constants for actor movement directions

@@ -1,4 +1,3 @@
-//non-static object classes for Heimeiden belong here
 
 // Creates and maintains an array of tiles for a lane
 Lane = Model.Drawables.BaseDrawable.clone();
@@ -51,6 +50,7 @@ Actor.extend({
     direction : 0,
     speed : 0,
     absoluteSpeed : 0,
+    animations : [],
     solid : true, // if false, it can move while colliding with objects
     reach : 1, // used for checking movement collisions
     ignoreCollisions : [], /* array of name tags of objects it won't check
@@ -59,6 +59,8 @@ Actor.extend({
     onDrawInit : function() {
         this.absoluteSpeed = this.calculateAbsoluteSpeed();
         this.centre = this.calculateCentre();
+        this.addAnimationsWithJSON(this.animations);
+        this.showAnimation(0);
         this.onInit();
     },
     // Sets its size and then recalculates its centre
@@ -72,12 +74,18 @@ Actor.extend({
     },
     /* Takes animation base paths like ./animation/walk and loads the spritesheet
     ./animation/walk.png and settingst at ./animation/walk.json if it exists */
-    addAnimationsWithJSON : function() {
-        for(var i=0;i<arguments.length;i++) {
+    addAnimationsWithJSON : function(animationArray) {
+        for(var i=0;i<animationArray.length;i++) {
             var anim = Model.Drawables.AnimationDrawable.clone();
-            var json = loadJSON(arguments[i] + ".json");
+            var json = loadJSON(animationArray[i] + ".json");
             anim.extend(json);
-            anim.load(arguments[i] + ".png");
+            anim.load(animationArray[i] + ".png");
+            anim.onhover = function() {
+                this.parent.onhover();
+            };
+            anim.onclick = function() {
+                this.parent.onclick();
+            };
             this.addAnimations(anim);
         }
     },
@@ -205,6 +213,7 @@ Enemy.extend({
     speed : settings.paalwormSpeed,
     direction : LEFT,
     ignoreCollisions : ["Enemy", "Treasure"],
+    animations : ["./animation/paalworm/move"],
     attackTimer : 0,
     cooldown : settings.paalwormCooldown, // amount of seconds between attacks
     attritionTime : settings.paalwormAttritionTime, /* amount of seconds between 
@@ -213,8 +222,6 @@ Enemy.extend({
     every time by attrition */
     attritionTimer : null,
     onInit : function () {
-        this.addAnimationsWithJSON("./animation/paalworm/walk");
-        this.showAnimation(0);
         this.treasure = Treasure;
         this.attritionTimer = this.attritionTime;
     },
@@ -252,28 +259,14 @@ Defence = Actor.clone();
 Defence.extend({
     name : "Defence",
     health : settings.defenceHealth,
-    alpha : 0.7,
-    color : 'green',
-    bullet : null,
+    animations : ["./animation/temp_defence"],
     attackTimer : 0,
     cooldown : settings.defenceCooldown,
     range : settings.defenceRange,
     onInit : function () {
-        var tempAnim = Model.Drawables.AnimationDrawable.clone();
-        tempAnim.frameN = 1;
-        tempAnim.frameSize = {x: 100, y: 100};
-        tempAnim.secondsPerFrame = 10000;
-        tempAnim.load("./animation/temp_defence.png");
-        this.addAnimations(tempAnim);
-        this.showAnimation(0);
         this.bullet = Bullet;
     },
     attack : function () {
-        this.parent.spawnActor(vec2(
-                    this.position.x + this.size.x/2 - this.bullet.size.x/2,
-                    this.position.y + this.size.y/2 - this.bullet.size.y/2),
-                this.bullet,
-                settings.bulletLayer);
     },
     // return true if an enemy is in range and on the same lane
     enemyInRange : function () {
@@ -303,23 +296,25 @@ Defence.extend({
     }
 });
 
+ShootingDefence = Defence.clone();
+ShootingDefence.extend({
+    bullet : null,
+    attack : function () {
+        this.parent.spawnActor(vec2(
+                    this.position.x + this.size.x/2 - this.bullet.size.x/2,
+                    this.position.y + this.size.y/2 - this.bullet.size.y/2),
+                this.bullet,
+                settings.bulletLayer);
+    }
+});
+
 // If the dyke is destroyed, the player loses
 Dyke = Actor.clone();
 Dyke.extend({
     name : "Dyke",
     size : vec2(settings.tileSize.x, settings.tileSize.y * settings.lanes),
-    color : 'yellow',
-    alpha : 0.7,
+    animations : ["./animation/temp_dyke"],
     health : settings.dykeHealth,
-    onInit : function () {
-        var tempAnim = Model.Drawables.AnimationDrawable.clone();
-        tempAnim.frameN = 1;
-        tempAnim.frameSize = {x: 100, y: 100};
-        tempAnim.secondsPerFrame = 10000;
-        tempAnim.load("./animation/temp_dyke.png");
-        this.addAnimations(tempAnim);
-        this.showAnimation(0);
-    },
     onDeath : function () {
         console.log(this.name + " breaks!");
         this.parent.lose();
@@ -332,21 +327,12 @@ Bullet.extend({
     name : "Bullet",
     size : vec2(settings.tileSize.x * settings.bulletSizeInTiles,
                 settings.tileSize.y * settings.bulletSizeInTiles),
-    color : 'red',
+    animations : ["./animation/temp_bullet"],
     direction : RIGHT,
     invulnerable : true,
     speed : settings.bulletSpeed,
     damage : settings.bulletDamage,
     ignoreCollisions : ["Bullet", "Defence", "Treasure"],
-    onInit : function() {
-        var tempAnim = Model.Drawables.AnimationDrawable.clone();
-        tempAnim.frameN = 1;
-        tempAnim.frameSize = {x: 100, y: 100};
-        tempAnim.secondsPerFrame = 10000;
-        tempAnim.load("./animation/temp_bullet.png");
-        this.addAnimations(tempAnim);
-        this.showAnimation(0);
-    },
     onUpdate : function() {
         if (this.position.x + this.size.x >= FIELD_SIZE) {
             this.die();
@@ -364,26 +350,13 @@ Treasure.extend({
     name : "Treasure",
     color : 'purple',
     fadeCounter : 0,
+    animations : ["./animation/temp_shell"],
     fadeTime : settings.shellFadeTime,
-    alpha : 1,
     invulnerable : true,
     solid : false,
     size : vec2(settings.tileSize.x * settings.shellSizeInTiles,
                 settings.tileSize.y * settings.shellSizeInTiles),
     onInit : function() {
-        var tempAnim = Model.Drawables.AnimationDrawable.clone();
-        tempAnim.frameN = 1;
-        tempAnim.frameSize = {x: 100, y: 100};
-        tempAnim.secondsPerFrame = 10000;
-        tempAnim.load("./animation/temp_shell.png");
-        tempAnim.onhover = function() {
-            this.parent.onhover();
-        };
-        tempAnim.onclick = function() {
-            this.parent.onclick();
-        };
-        this.addAnimations(tempAnim);
-        this.showAnimation(0);
     },
     onUpdate : function() {
         this.fadeCounter += deltaTime;

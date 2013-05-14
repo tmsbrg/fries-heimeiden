@@ -138,7 +138,7 @@ Game.extend({
     buildDefence : function(position) {
         if (PlayerData.credits >= settings.defenceBuildCost) {
             PlayerData.credits -= settings.defenceBuildCost;
-            this.spawnActor(position, Defence);
+            this.spawnActor(position, ShootingDefence);
         } else {
             console.log("Not enough credits to build a defence!");
         }
