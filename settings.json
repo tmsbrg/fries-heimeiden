@@ -4,7 +4,7 @@ var settings = {
 
     // graphical settings
         "fieldPosition" : {"x":20, "y":20},
-        "tileSize" : {"x":120, "y":120},
+        "tileSize" : {"x":212, "y":246},
         // popupinfo
             "popupSpeed" : 50,
             "popupTimeout" : 1,
@@ -27,7 +27,7 @@ var settings = {
             "creditsPerCreditUpdate" : 2,
         // field, won't be able to change anymore once we have background image
             "tilesPerLane" : 8,
-            "lanes" : 5,
+            "lanes" : 4,
         // enemies
             "paalwormHealth" : 20,
             "paalwormDamage" : 2,
