@@ -3,12 +3,9 @@ var rectAn = Model.Drawables.AnimatedDrawable.clone()
 var rect = Model.Drawables.AnimationDrawable.clone();
 var rect2;
 var rect3;
+var txt;
 
 const rectsize = {x:873,y:486};
-
-rect.onclick = function() {
-    this.parent.onclick();
-}
 
 rectAn.onclick = function() {
     this.showAnimation(random(this.animationList.length-1));
@@ -34,9 +31,13 @@ initialize = function() {
     rect3.offset = {x:0, y:rectsize.y*2};
     rectAn.addAnimations(rect, rect2, rect3);
     rectAn.showAnimation(0);
+    rectAn.onclick = function() {
+        this.showAnimation(random(this.animationList.length-1));
+        console.log(txt);
+    }
     rectAn.randomPos();
     Model.addDrawable(rectAn);
-    console.log(Model.getLocalTextFile("./text.txt"));
+    txt = Model.getLocalTextFile("./text.txt");
 }
 
 d = 0; t = 4;

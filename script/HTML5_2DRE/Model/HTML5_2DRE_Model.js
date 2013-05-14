@@ -136,7 +136,7 @@ Model = {
     {
         var filerequest = new XMLHttpRequest();
         filerequest.open("GET", filepath, false);
-        filerequest.setRequestHeader('Content-Type', 'text/plain');
+        filerequest.overrideMimeType("text/plain");
         filerequest.send();
         return filerequest.responseText;
     }

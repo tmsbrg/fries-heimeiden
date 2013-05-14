@@ -298,7 +298,7 @@ View = {
 			for(var i = Model.drawableObjects.length - 1; i >= 0; i--)
 				if(	x >= Model.drawableObjects[i].position.x && x <= Model.drawableObjects[i].position.x + Model.drawableObjects[i].size.x &&
 					y >= Model.drawableObjects[i].position.y && y <= Model.drawableObjects[i].position.y + Model.drawableObjects[i].size.y &&
-					Model.drawableObjects[i].visible)
+					Model.drawableObjects[i].visible && Model.drawableObjects[i].ignoremouse == false)
 					return Model.drawableObjects[i].getobjectatpos(x, y);
 		
 		return null;

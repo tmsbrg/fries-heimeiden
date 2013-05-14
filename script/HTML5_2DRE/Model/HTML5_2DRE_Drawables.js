@@ -35,6 +35,8 @@
 	  color - Determines the colour to draw it with, if applicable.
 	  alpha - Determines its alpha channel between 1 and 0.
 	  visible - Determines whether it is visible (boolean).
+      active - If false, does not call the update function
+      ignoremouse - If true, this object is ignored by the mouse
 	  parent - Contains its parent. If the object has no parent, it contains "null".
 	  drawableObjects - Array which contains all of its children. See also: <BaseGame.drawableObjects>
 	  cursor - Determines which type of cursor is used when the mouse hovers over the object.
@@ -58,6 +60,7 @@ Model.Drawables.BaseDrawable = {
 		alpha			:	1,
 		visible			:	true,
 		active			:	true,
+        ignoremouse     :   false,
 		parent			:	null,
 		drawableObjects	:	new Array(),
 		cursor			:	"default",
@@ -249,7 +252,7 @@ Model.Drawables.BaseDrawable = {
 									for(var i = this.drawableObjects.length - 1; i >= 0; i--)
 										if(	x >= this.drawableObjects[i].position.x && x <= this.drawableObjects[i].position.x + this.drawableObjects[i].size.x &&
 											y >= this.drawableObjects[i].position.y && y <= this.drawableObjects[i].position.y + this.drawableObjects[i].size.y &&
-											this.drawableObjects[i].visible)
+											this.drawableObjects[i].visible && this.drawableObjects[i].ignoremouse == false)
 											return this.drawableObjects[i].getobjectatpos(x, y);
 								
 								return this;
@@ -668,6 +671,7 @@ Model.Drawables.AnimatedDrawable.addAnimations = function() {
         this.animationList[this.animationList.length] = arguments[i];
         arguments[i].visible = false;
         arguments[i].size = this.size.clone();
+        arguments[i].ignoremouse = true;
         this.addDrawable(arguments[i]);
     }
 }
