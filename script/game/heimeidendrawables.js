@@ -253,6 +253,13 @@ Defence.extend({
     cooldown : settings.defenceCooldown,
     range : settings.defenceRange,
     onInit : function () {
+        var tempAnim = Model.Drawables.AnimationDrawable.clone();
+        tempAnim.frameN = 1;
+        tempAnim.frameSize = {x: 100, y: 100};
+        tempAnim.secondsPerFrame = 10000;
+        tempAnim.load("./animation/temp_defence.png");
+        this.addAnimations(tempAnim);
+        this.showAnimation(0);
         this.bullet = Bullet;
     },
     attack : function () {
@@ -298,6 +305,15 @@ Dyke.extend({
     color : 'yellow',
     alpha : 0.7,
     health : settings.dykeHealth,
+    onInit : function () {
+        var tempAnim = Model.Drawables.AnimationDrawable.clone();
+        tempAnim.frameN = 1;
+        tempAnim.frameSize = {x: 100, y: 100};
+        tempAnim.secondsPerFrame = 10000;
+        tempAnim.load("./animation/temp_dyke.png");
+        this.addAnimations(tempAnim);
+        this.showAnimation(0);
+    },
     onDeath : function () {
         console.log(this.name + " breaks!");
         this.parent.lose();
@@ -316,6 +332,15 @@ Bullet.extend({
     speed : settings.bulletSpeed,
     damage : settings.bulletDamage,
     ignoreCollisions : ["Bullet", "Defence", "Treasure"],
+    onInit : function() {
+        var tempAnim = Model.Drawables.AnimationDrawable.clone();
+        tempAnim.frameN = 1;
+        tempAnim.frameSize = {x: 100, y: 100};
+        tempAnim.secondsPerFrame = 10000;
+        tempAnim.load("./animation/temp_bullet.png");
+        this.addAnimations(tempAnim);
+        this.showAnimation(0);
+    },
     onUpdate : function() {
         if (this.position.x + this.size.x >= FIELD_SIZE) {
             this.die();
@@ -339,9 +364,24 @@ Treasure.extend({
     solid : false,
     size : vec2(settings.tileSize.x * settings.shellSizeInTiles,
                 settings.tileSize.y * settings.shellSizeInTiles),
+    onInit : function() {
+        var tempAnim = Model.Drawables.AnimationDrawable.clone();
+        tempAnim.frameN = 1;
+        tempAnim.frameSize = {x: 100, y: 100};
+        tempAnim.secondsPerFrame = 10000;
+        tempAnim.load("./animation/temp_shell.png");
+        tempAnim.onhover = function() {
+            this.parent.onhover();
+        };
+        tempAnim.onclick = function() {
+            this.parent.onclick();
+        };
+        this.addAnimations(tempAnim);
+        this.showAnimation(0);
+    },
     onUpdate : function() {
         this.fadeCounter += deltaTime;
-        this.alpha = 1 - (this.fadeCounter / this.fadeTime);
+        this.currentAnimation.alpha = 1 - (this.fadeCounter / this.fadeTime);
         if (this.fadeCounter > this.fadeTime) {
             this.die();
         }
@@ -352,92 +392,11 @@ Treasure.extend({
             popupRect(this.position, this.size, this.color);
             this.die();
         }
+    },
+    onclick : function () {
+        this.onhover();
     }
 });
 
-// Plays and manages audio
-AudioPlayer = Model.Drawables.BaseDrawable.clone();
-AudioPlayer.extend({
-    audioList : new Array, // list of audio elements
-    paused : false, // whether the current audio is paused or not
-    currentAudio : null, // index number of current audio element
-    /* Loads one or more files and puts them in its audio list.
-    Files are given by relative filepath */
-    load : function() {
-        for (var i=0; i<arguments.length; i++) {
-            if (typeof arguments[i] === 'string') {
-                var audio = document.createElement('audio');
-                audio.setAttribute('src', arguments[i]);
-                this.audioList[this.audioList.length] = audio;
-            } else {
-                console.log("audioPlayer Error: arguments are not all strings");
-                break;
-            }
-        }
-    },
-    /* Plays audio at index number number, Loops if loop is set to true.
-    If no index number is given, it works as if 0 was given. */
-    play : function(number, loop) {
-        if (number==null) number = 0;
-        if (number >= 0 && number < this.audioList.length) {
-            if (this.currentAudio != null) {
-                this.stop();
-            }
-            this.reset();
-            this.currentAudio = number;
-            if (loop == true) this.startLoop();
-            this.audioList[number].play();
-        } else {
-            console.log("AudioPlayer Error: cannot play audio " + number + ", does not exist");
-            return 1;
-        }
-    },
-    /* Makes the current audio start from the beginning */
-    restart : function() {
-        if (this.currentAudio == null) return;
-        this.audioList[this.currentAudio].currentTime = 0;
-    },
-    /* Resets AudioPlayer variables, for when the current audio is stopped */
-    reset : function() {
-        this.paused = false;
-    },
-    /* Pauses the current audio */
-    pause : function() {
-        if (this.currentAudio == null) return;
-        this.paused = true;
-        this.audioList[this.currentAudio].pause();
-    },
-    /* Unpauses the current audio */
-    unpause : function() {
-        if (this.currentAudio == null) return;
-        this.paused = false;
-        this.audioList[this.currentAudio].play();
-    },
-    /* Stops the current audio and unselects it */
-    stop : function() {
-        if (this.currentAudio == null) return;
-        this.pause();
-        this.restart();
-        this.currentAudio = null;
-    },
-    /* Mutes the current audio */
-    mute : function() {
-        if (this.currentAudio == null) return;
-        this.audioList[this.currentAudio].muted = true;
-    },
-    /* Unmutes the current audio */
-    unmute : function() {
-        if (this.currentAudio == null) return;
-        this.audioList[this.currentAudio].muted = false;
-    },
-    /* Makes the current audio into a loop */
-    startLoop : function() {
-        if (this.currentAudio == null) return;
-        this.audioList[this.currentAudio].setAttribute('loop', 'loop');
-    },
-    /* Removes the loop property from the current audio */
-    endLoop : function() {
-        if (this.currentAudio == null) return;
-        this.audioList[this.currentAudio].removeAttribute('loop');
-    }
-});
+loadJSON(fileName) {
+}
