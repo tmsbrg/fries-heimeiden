@@ -25,6 +25,11 @@ random = function(max, min) {
     return Math.round(Math.random() * (max - min) + min);
 }
 
+// loads json file and returns it parsed as an object
+loadJSON = function(filepath) {
+    return JSON.parse(getLocalTextFile(filepath));
+}
+
 // constants for actor movement directions
 const LEFT = -1;
 const RIGHT = 1;

@@ -70,6 +70,17 @@ Actor.extend({
         this.speed = speed;
         this.absoluteSpeed = this.calculateAbsoluteSpeed();
     },
+    /* Takes animation base paths like ./animation/walk and loads the spritesheet
+    ./animation/walk.png and settingst at ./animation/walk.json if it exists */
+    addAnimationsWithJSON : function() {
+        for(var i=0;i<arguments.length;i++) {
+            var anim = Model.Drawables.AnimationDrawable.clone();
+            var json = loadJSON(arguments[i] + ".json");
+            anim.extend(json);
+            anim.load(arguments[i] + ".png");
+            this.addAnimations(anim);
+        }
+    },
     calculateAbsoluteSpeed : function() {
         return this.speed * settings.tileSize.x;
     },
@@ -202,12 +213,7 @@ Enemy.extend({
     every time by attrition */
     attritionTimer : null,
     onInit : function () {
-        var moveAnim = Model.Drawables.AnimationDrawable.clone();
-        moveAnim.frameN = 36;
-        moveAnim.frameSize = {x: 115, y: 64};
-        moveAnim.secondsPerFrame = 0.2;
-        moveAnim.load("./animation/paalworm/move.png");
-        this.addAnimations(moveAnim);
+        this.addAnimationsWithJSON("./animation/paalworm/walk");
         this.showAnimation(0);
         this.treasure = Treasure;
         this.attritionTimer = this.attritionTime;
@@ -397,6 +403,3 @@ Treasure.extend({
         this.onhover();
     }
 });
-
-loadJSON(fileName) {
-}
