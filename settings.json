@@ -3,7 +3,7 @@
 var settings = {
 
     // graphical settings
-        "fieldPosition" : {"x":20, "y":20},
+        "fieldPosition" : {"x":0, "y":0},
         "tileSize" : {"x":212, "y":246},
         // popupinfo
             "popupSpeed" : 50,
@@ -11,14 +11,26 @@ var settings = {
         // popuprect
             "popupRectTimeout" : 0.5,
         // actors
-            "bulletSizeInTiles" : 0.25,
-            "shellSizeInTiles" : 0.4,
+            "bulletSize" : 0.25,
+            "shellSize" : {
+                "x" : 1,
+                "y" : 0.402439
+            },
+            "paalwormSize" : {
+                "x" : 1,
+                "y" : 1
+            },
+            "defenseSize" : {
+                "x" : 0.6,
+                "y" : 0.9
+            },
         // layers
-            "groundLayer" : 0,
-            "characterLayer" : 1,
-            "bulletLayer" : 2,
-            "shellLayer" : 3,
-            "guiLayer" : 4,
+            "backgroundImageLayer" : 0,
+            "groundLayer" : 1,
+            "characterLayer" : 2,
+            "bulletLayer" : 3,
+            "shellLayer" : 4,
+            "guiLayer" : 5,
 
     // game settings
         // credits

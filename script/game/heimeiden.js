@@ -5,8 +5,10 @@ Game.extend({
     position : settings.fieldPosition.clone(),
     Lanes : new Array(settings.lanes),
     Actors : new Array(),
+    Popups : new Array(),
     dyke : null,
     active : false,
+    background : Model.Drawables.SpriteDrawable.clone(),
     pauseButton : Model.Drawables.ButtonDrawable.clone(),
     startButton : Model.Drawables.ButtonDrawable.clone(),
     stopButton : Model.Drawables.ButtonDrawable.clone(),
@@ -33,6 +35,11 @@ Game.extend({
         this.initFPS();
         this.initCreditsText();
         this.initDykeHealth();
+        this.background.size = vec2(settings.tileSize.x * (settings.tilesPerLane),
+                                    settings.tileSize.y * settings.lanes);
+        this.background.visible = false;
+        this.background.load("./images/game/water.png");
+        this.addDrawable(this.background, settings.backgroundImageLayer);
         this.pauseButton.visible = false;
         this.stopButton.visible = false;
         for (var i=0; i<this.Lanes.length; i++) {
@@ -86,6 +93,7 @@ Game.extend({
         for (var i=0; i<this.Lanes.length; i++) {
             this.Lanes[i].visible = true;
         }
+        this.background.visible = true;
         this.pauseButton.visible = true;
         this.stopButton.visible = true;
         this.fpsTextBox.visible = true;
@@ -120,12 +128,17 @@ Game.extend({
     // Stops the game
     gameStop : function() {
         for (var i=0; i<this.Lanes.length; i++) {
+            this.Lanes[i].reset();
             this.Lanes[i].visible = false;
         }
         for (var i=0; i<this.Actors.length; i++) {
             this.removeDrawable(this.Actors[i]);
         }
+        for (var i=0; i<this.Popups.length; i++) {
+            this.removeDrawable(this.Popups[i]);
+        }
         this.Actors = new Array();
+        this.background.visible = false;
         this.pauseButton.visible = false;
         this.stopButton.visible = false;
         this.fpsTextBox.visible = false;
@@ -138,7 +151,7 @@ Game.extend({
     buildDefence : function(position) {
         if (PlayerData.credits >= settings.defenceBuildCost) {
             PlayerData.credits -= settings.defenceBuildCost;
-            this.spawnActor(position, ShootingDefence);
+            return this.spawnActor(position, ShootingDefence);
         } else {
             console.log("Not enough credits to build a defence!");
         }
@@ -231,6 +244,7 @@ popupText = function(position, text) {
             Game.removeDrawable(this);
         }
     }
+    Game.Popups[Game.Popups.length] = popupText;
     Game.addDrawable(popupText);
 }
 
@@ -256,9 +270,34 @@ popupRect = function(position, size, color) {
             Game.removeDrawable(this);
         }
     }
+    Game.Popups[Game.Popups.length] = rect;
     Game.addDrawable(rect);
 }
 
+popupImage = function(position, size, image) {
+    var sprite = Model.Drawables.SpriteDrawable.clone();
+    sprite.startPosition = position.clone();
+    sprite.endSize = size.clone();
+    sprite.load(image);
+    sprite.timeout = settings.popupRectTimeout;
+    sprite.timeleft = sprite.timeout;
+    sprite.update = function() {
+        if (PlayerData.paused) return;
+        this.timeleft -= deltaTime;
+        this.alpha = this.timeleft / this.timeout;
+        this.size = vec2((1 - this.timeleft / this.timeout) * this.endSize.x,
+                         (1 - this.timeleft / this.timeout) * this.endSize.y);
+        this.position = vec2(this.startPosition.x -
+                (this.size.x-this.endSize.x) / 2,
+                this.startPosition.y - (this.size.y-this.endSize.y) / 2);
+        if (this.timeleft <= 0) {
+            Game.Popups
+            Game.removeDrawable(this);
+        }
+    }
+    Game.Popups[Game.Popups.length] = sprite;
+    Game.addDrawable(sprite);
+}
 // Called by rendering engine when everything is loaded
 initialize = function() {
         Game.initialize();

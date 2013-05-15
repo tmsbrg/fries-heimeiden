@@ -14,26 +14,33 @@ Lane.extend({
         for (var i=0; i<settings.tilesPerLane; i++) {
             this.Tiles[i] = Tile.clone();
             this.Tiles[i].position.x += settings.tileSize.x * i;
-            this.Tiles[i].color = (this.lanePos%2)?
-                         ((i%2)?"#335dc0":"#294994"):
-                         ((i%2)?"#294994":"#335dc0");
+            this.Tiles[i].tileIndex = i;
             this.addDrawable(this.Tiles[i]);
         }
     },
     // makes Game create a defence on his lane at given x position
     buildDefence : function(xpos) {
-        this.parent.buildDefence(vec2(xpos, this.position.y));
+        return this.parent.buildDefence(vec2(xpos, this.position.y));
+    },
+    reset : function() {
+        for (var i=0; i<this.Tiles.length; i++) {
+            this.Tiles[i].reset();
+        }
     }
 });
 
 // Stuff can be built on tiles
-Tile = Model.Drawables.RectangleDrawable.clone();
+Tile = Model.Drawables.BaseDrawable.clone();
 Tile.extend({
     size : settings.tileSize.clone(),
+    tileIndex : null,
     building : null,
+    reset : function() {
+        this.building = null;
+    },
     onclick : function () {
-        if (!PlayerData.paused) {
-            this.parent.buildDefence(this.position.x);
+        if (!PlayerData.paused && this.building == null && this.tileIndex == 0) {
+            this.building = this.parent.buildDefence(this.position.x);
         }
     }
 });
@@ -43,6 +50,7 @@ detection, have health and some built in event functions. */
 Actor = Model.Drawables.AnimatedDrawable.clone();
 Actor.extend({
     name : "Actor",
+    ignoremouse : true,
     size : settings.tileSize.clone(),
     centre: null,
     health : 2,
@@ -53,7 +61,8 @@ Actor.extend({
     animations : [],
     solid : true, // if false, it can move while colliding with objects
     reach : 1, // used for checking movement collisions
-    ignoreCollisions : [], /* array of name tags of objects it won't check
+    collisionTag : collisionDefault,
+    ignoreCollisions : [], /* array of collisionTags of objects it won't check
                               collisions with */
     actorList : null, // list of actors to check collisions with
     onDrawInit : function() {
@@ -72,6 +81,13 @@ Actor.extend({
         this.speed = speed;
         this.absoluteSpeed = this.calculateAbsoluteSpeed();
     },
+    centreOnTile : function(centreX) {
+        if (centreX == null) centreX = true;
+        this.position = vec2(centreX ?
+                    this.position.x + (settings.tileSize.x-this.size.x)/2
+                :   this.position.x,
+                             this.position.y + (settings.tileSize.y-this.size.y)/2);
+    },
     /* Takes animation base paths like ./animation/walk and loads the spritesheet
     ./animation/walk.png and settingst at ./animation/walk.json if it exists */
     addAnimationsWithJSON : function(animationArray) {
@@ -80,12 +96,6 @@ Actor.extend({
             var json = loadJSON(animationArray[i] + ".json");
             anim.extend(json);
             anim.load(animationArray[i] + ".png");
-            anim.onhover = function() {
-                this.parent.onhover();
-            };
-            anim.onclick = function() {
-                this.parent.onclick();
-            };
             this.addAnimations(anim);
         }
     },
@@ -127,7 +137,7 @@ Actor.extend({
             var ignore = false;
             if (this.actorList[i] == this) continue;
             for (var j=0; j<this.ignoreCollisions.length; j++) {
-                if (this.actorList[i].name == this.ignoreCollisions[j]) {
+                if (this.actorList[i].collisionTag === this.ignoreCollisions[j]) {
                     ignore = true;
                     break;
                 }
@@ -207,12 +217,15 @@ Actor.extend({
 Enemy = Actor.clone();
 Enemy.extend({
     name : "Enemy",
+    size : vec2(settings.paalwormSize.x*settings.tileSize.x,
+                settings.paalwormSize.y*settings.tileSize.y),
     treasure : null,
     health : settings.paalwormHealth,
     damage : settings.paalwormDamage,
     speed : settings.paalwormSpeed,
     direction : LEFT,
-    ignoreCollisions : ["Enemy", "Treasure"],
+    collisionTag : collisionEnemy,
+    ignoreCollisions : [collisionEnemy, collisionShell],
     animations : ["./animation/paalworm/move"],
     attackTimer : 0,
     cooldown : settings.paalwormCooldown, // amount of seconds between attacks
@@ -224,6 +237,7 @@ Enemy.extend({
     onInit : function () {
         this.treasure = Treasure;
         this.attritionTimer = this.attritionTime;
+        this.centreOnTile();
     },
     // attacks given actor
     attack : function (other) {
@@ -259,12 +273,16 @@ Defence = Actor.clone();
 Defence.extend({
     name : "Defence",
     health : settings.defenceHealth,
+    size : vec2(settings.defenseSize.x*settings.tileSize.x,
+                settings.defenseSize.y*settings.tileSize.y),
     animations : ["./animation/temp_defence"],
     attackTimer : 0,
+    collisionTag : collisionDefence,
     cooldown : settings.defenceCooldown,
     range : settings.defenceRange,
     onInit : function () {
         this.bullet = Bullet;
+        this.centreOnTile(false);
     },
     attack : function () {
     },
@@ -298,6 +316,7 @@ Defence.extend({
 
 ShootingDefence = Defence.clone();
 ShootingDefence.extend({
+    animations : ["./animation/heimeid/idle"],
     bullet : null,
     attack : function () {
         this.parent.spawnActor(vec2(
@@ -313,7 +332,7 @@ Dyke = Actor.clone();
 Dyke.extend({
     name : "Dyke",
     size : vec2(settings.tileSize.x, settings.tileSize.y * settings.lanes),
-    animations : ["./animation/temp_dyke"],
+    animations : ["./animation/objects/dyke"],
     health : settings.dykeHealth,
     onDeath : function () {
         console.log(this.name + " breaks!");
@@ -325,14 +344,15 @@ Dyke.extend({
 Bullet = Actor.clone();
 Bullet.extend({
     name : "Bullet",
-    size : vec2(settings.tileSize.x * settings.bulletSizeInTiles,
-                settings.tileSize.y * settings.bulletSizeInTiles),
-    animations : ["./animation/temp_bullet"],
+    size : vec2(settings.tileSize.x * settings.bulletSize,
+                settings.tileSize.y * settings.bulletSize),
+    animations : ["./animation/objects/stone"],
     direction : RIGHT,
     invulnerable : true,
     speed : settings.bulletSpeed,
     damage : settings.bulletDamage,
-    ignoreCollisions : ["Bullet", "Defence", "Treasure"],
+    collisionTag : collisionBullet,
+    ignoreCollisions : [collisionDefault, collisionDefence, collisionBullet, collisionShell],
     onUpdate : function() {
         if (this.position.x + this.size.x >= FIELD_SIZE) {
             this.die();
@@ -348,14 +368,15 @@ Bullet.extend({
 Treasure = Actor.clone();
 Treasure.extend({
     name : "Treasure",
-    color : 'purple',
+    ignoremouse : false,
     fadeCounter : 0,
-    animations : ["./animation/temp_shell"],
+    animations : ["./animation/objects/shell"],
     fadeTime : settings.shellFadeTime,
+    collisionTag : collisionShell,
     invulnerable : true,
     solid : false,
-    size : vec2(settings.tileSize.x * settings.shellSizeInTiles,
-                settings.tileSize.y * settings.shellSizeInTiles),
+    size : vec2(settings.tileSize.x * settings.shellSize.x,
+                settings.tileSize.y * settings.shellSize.y),
     onInit : function() {
     },
     onUpdate : function() {
@@ -368,7 +389,7 @@ Treasure.extend({
     onhover : function() {
         if (!PlayerData.paused) {
             this.parent.addCredits(settings.shellWorth);
-            popupRect(this.position, this.size, this.color);
+            popupImage(this.position, this.size, "./images/game/shell_fade.png");
             this.die();
         }
     },

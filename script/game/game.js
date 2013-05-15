@@ -34,3 +34,10 @@ loadJSON = function(filepath) {
 const LEFT = -1;
 const RIGHT = 1;
 const NONE = 0;
+
+// collision tags
+const collisionDefault = 0;
+const collisionEnemy = 1;
+const collisionDefence = 2;
+const collisionBullet = 3;
+const collisionShell = 4;
