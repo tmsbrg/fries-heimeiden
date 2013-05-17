@@ -35,6 +35,11 @@ initialize = function() {
         this.showAnimation(random(this.animationList.length-1));
         console.log(txt);
     }
+    rectAn.onAnimationComplete = function(index) {
+        console.log("completed animation: " + index);
+        this.showAnimation(random(this.animationList.length-1));
+        console.log("playing animation: " + this.currentAnimationIndex);
+    }
     rectAn.randomPos();
     Model.addDrawable(rectAn);
     txt = Model.getLocalTextFile("./text.txt");

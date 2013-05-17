@@ -645,6 +645,7 @@ Model.Drawables.AnimationDrawable.draw = function(ctx)
 			if (this._currentFrame >= this.frameN) {
 				this._currentFrame = 0;
 				this._currentFrameOfRow = this._currentFrame;
+                this.onAnimationComplete();
 				this._currentRow = this._currentFrame;
 			} else if (this._currentFrameOfRow >= this._framesPerRow) {
 				this._currentRow++;
@@ -662,16 +663,23 @@ Model.Drawables.AnimationDrawable.draw = function(ctx)
 					  this.frameSize.x, this.frameSize.y, -(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
 	}
 }
+Model.Drawables.AnimationDrawable.onAnimationComplete = function()
+{
+}
 
 Model.Drawables.AnimatedDrawable = Model.Drawables.BaseDrawable.clone();
 Model.Drawables.AnimatedDrawable.animationList = new Array();
 Model.Drawables.AnimatedDrawable.currentAnimation = null;
+Model.Drawables.AnimatedDrawable.currentAnimationIndex = null;
 Model.Drawables.AnimatedDrawable.addAnimations = function() {
     for (var i=0;i<arguments.length;i++) {
         this.animationList[this.animationList.length] = arguments[i];
         arguments[i].visible = false;
         arguments[i].size = this.size.clone();
         arguments[i].ignoremouse = true;
+        arguments[i].onAnimationComplete = function() {
+            this.parent.handleAnimationComplete();
+        };
         this.addDrawable(arguments[i]);
     }
 }
@@ -681,15 +689,23 @@ Model.Drawables.AnimatedDrawable.showAnimation = function(number) {
             this.stopAnimation();
         }
         this.currentAnimation = this.animationList[number];
+        this.currentAnimationIndex = number;
         this.currentAnimation.visible = true;
     } else {
         console.log("No animation with index number: " + number);
     }
 }
 Model.Drawables.AnimatedDrawable.stopAnimation = function() {
+    this.currentAnimationIndex = null;
     this.currentAnimation.visible = false;
     this.currentAnimation.reset();
     this.currentAnimation = null;
+}
+Model.Drawables.AnimatedDrawable.onAnimationComplete = function (index)
+{
+}
+Model.Drawables.AnimatedDrawable.handleAnimationComplete = function () {
+    this.onAnimationComplete(this.currentAnimationIndex);
 }
 Model.Drawables.AnimatedDrawable.reset = function ()
 {
