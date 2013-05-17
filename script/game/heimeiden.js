@@ -120,6 +120,12 @@ Game.extend({
         actor.actorList = this.Actors;
         this.addDrawable(actor, layer);
     },
+    spawnEffect : function(position, effectObject) {
+        var effect = effectObject.clone();
+        effect.position = vec2(position.x - effectObject.size.x / 2,
+                               position.y - effectObject.size.y / 2);
+        this.addDrawable(effect, settings.effectLayer);
+    },
     countActors : function(actorName) {
         var count = 0;
         for (var i=0; i<this.Actors.length; i++) {

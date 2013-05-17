@@ -1,4 +1,7 @@
 // have to do it this way to make it easy to load from local disk with includeJS
 var language = {
-    "a" : "b"
+    "dutch" : {
+    },
+    "english" : {
+    }
 }

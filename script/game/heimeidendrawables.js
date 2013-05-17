@@ -66,9 +66,24 @@ Tile.extend({
     }
 });
 
+ExtendedAnimation = Model.Drawables.AnimatedDrawable.clone();
+ExtendedAnimation.extend({
+    /* Takes animation base paths like ./animation/walk and loads the spritesheet
+    ./animation/walk.png and settingst at ./animation/walk.json if it exists */
+    addAnimationsWithJSON : function(animationArray) {
+        for(var i=0;i<animationArray.length;i++) {
+            var anim = Model.Drawables.AnimationDrawable.clone();
+            var json = loadJSON(animationArray[i] + ".json");
+            anim.extend(json);
+            anim.load(animationArray[i] + ".png");
+            this.addAnimations(anim);
+        }
+    },
+});
+
 /* The main type of object in the game. Actors can move around, have collision
 detection, have health and some built in event functions. */
-Actor = Model.Drawables.AnimatedDrawable.clone();
+Actor = ExtendedAnimation.clone();
 Actor.extend({
     name : "Actor",
     ignoremouse : true,
@@ -111,17 +126,6 @@ Actor.extend({
                              centreY ?
                     this.position.y + (settings.tileSize.y-this.size.y)/2
                 :   this.position.y);
-    },
-    /* Takes animation base paths like ./animation/walk and loads the spritesheet
-    ./animation/walk.png and settingst at ./animation/walk.json if it exists */
-    addAnimationsWithJSON : function(animationArray) {
-        for(var i=0;i<animationArray.length;i++) {
-            var anim = Model.Drawables.AnimationDrawable.clone();
-            var json = loadJSON(animationArray[i] + ".json");
-            anim.extend(json);
-            anim.load(animationArray[i] + ".png");
-            this.addAnimations(anim);
-        }
     },
     calculateAbsoluteSpeed : function() {
         return this.speed * settings.tileSize.x;
@@ -385,12 +389,16 @@ Bullet.extend({
                 settings.tileSize.y * settings.bulletSize),
     animations : ["./animation/objects/stone"],
     direction : RIGHT,
+    poof : null,
     invulnerable : true,
     speed : settings.bulletSpeed,
     damage : settings.bulletDamage,
     collisionTag : collisionBullet,
     ignoreCollisions : [collisionDefault, collisionDefence, collisionPlatform,
                         collisionBullet, collisionShell],
+    onInit : function() {
+        this.poof = Effect;
+    },
     onUpdate : function() {
         if (this.position.x + this.size.x >= FIELD_SIZE) {
             this.die();
@@ -398,6 +406,7 @@ Bullet.extend({
     },
     onCollide : function (other) {
         other.changeHealth(-this.damage);
+        this.parent.spawnEffect(this.position, this.poof);
         this.die();
     }
 });
@@ -455,5 +464,19 @@ Platform.extend({
         if (this.tile) {
             this.tile.reset();
         }
+    }
+});
+
+Effect = ExtendedAnimation.clone()
+Effect.extend({
+    name : "Effect",
+    size : settings.tileSize.clone(),
+    animations : ["./animation/effects/poof"],
+    onDrawInit : function() {
+        this.addAnimationsWithJSON(this.animations);
+        this.showAnimation(0);
+    },
+    onAnimationComplete : function(currentAnimation) {
+        this.parent.removeDrawable(this);
     }
 });

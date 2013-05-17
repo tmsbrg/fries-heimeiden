@@ -10,7 +10,7 @@ var settings = {
             "popupTimeout" : 2,
         // popuprect
             "popupRectTimeout" : 0.5,
-        // actors
+        // actor sizes
             "bulletSize" : 0.25,
             "shellSize" : {
                 "x" : 1,
@@ -30,7 +30,8 @@ var settings = {
             "characterLayer" : 2,
             "bulletLayer" : 3,
             "shellLayer" : 4,
-            "guiLayer" : 5,
+            "effectLayer" : 5,
+            "guiLayer" : 6,
 
     // game settings
         // credits
