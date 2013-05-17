@@ -6,6 +6,7 @@ includeJS("./script/game/waves.json");
 includeJS("./script/game/audio.js");
 includeJS("./script/game/enemycontroller.js");
 includeJS("./script/game/heimeidendrawables.js");
+includeJS("./script/game/gui.js");
 includeJS("./script/game/heimeiden.js");
 
 // function for easily generating objects with x and y co-ordinates
@@ -39,5 +40,6 @@ const NONE = 0;
 const collisionDefault = 0;
 const collisionEnemy = 1;
 const collisionDefence = 2;
-const collisionBullet = 3;
-const collisionShell = 4;
+const collisionPlatform = 3;
+const collisionBullet = 4;
+const collisionShell = 5;

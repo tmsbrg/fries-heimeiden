@@ -19,12 +19,20 @@ Lane.extend({
         }
     },
     // makes Game create a defence on his lane at given x position
-    buildDefence : function(xpos) {
-        return this.parent.buildDefence(vec2(xpos, this.position.y));
+    buildBuilding : function(xpos, buildingObject) {
+        return this.parent.buildBuilding(vec2(xpos, this.position.y),
+            buildingObject);
     },
     reset : function() {
         for (var i=0; i<this.Tiles.length; i++) {
             this.Tiles[i].reset();
+        }
+    },
+    getTile : function(tileIndex) {
+        if (tileIndex >= 0 && tileIndex < this.Tiles.length) {
+            return this.Tiles[tileIndex];
+        } else {
+            return null;
         }
     }
 });
@@ -34,13 +42,26 @@ Tile = Model.Drawables.BaseDrawable.clone();
 Tile.extend({
     size : settings.tileSize.clone(),
     tileIndex : null,
+    platform : null,
     building : null,
     reset : function() {
         this.building = null;
+        this.platform = null;
     },
     onclick : function () {
-        if (!PlayerData.paused && this.building == null && this.tileIndex == 0) {
-            this.building = this.parent.buildDefence(this.position.x);
+        if (!PlayerData.paused && this.building == null) {
+            if (this.tileIndex == 0 || this.platform) {
+                this.building = this.parent.buildBuilding(this.position.x,
+                    ShootingDefence);
+                if (this.platform) {
+                    this.platform.building = this.building;
+                }
+            } else if (this.tileIndex == 1 || 
+                this.parent.getTile(this.tileIndex-1).platform) {
+                this.platform = this.parent.buildBuilding(this.position.x,
+                    Platform);
+                this.platform.tile = this;
+            }
         }
     }
 });
@@ -81,12 +102,15 @@ Actor.extend({
         this.speed = speed;
         this.absoluteSpeed = this.calculateAbsoluteSpeed();
     },
-    centreOnTile : function(centreX) {
+    centreOnTile : function(centreX, centreY) {
         if (centreX == null) centreX = true;
+        if (centreY == null) centreY = true;
         this.position = vec2(centreX ?
                     this.position.x + (settings.tileSize.x-this.size.x)/2
                 :   this.position.x,
-                             this.position.y + (settings.tileSize.y-this.size.y)/2);
+                             centreY ?
+                    this.position.y + (settings.tileSize.y-this.size.y)/2
+                :   this.position.y);
     },
     /* Takes animation base paths like ./animation/walk and loads the spritesheet
     ./animation/walk.png and settingst at ./animation/walk.json if it exists */
@@ -182,6 +206,7 @@ Actor.extend({
             if (this.health <= 0) {
                 this.die();
             }
+            this.onChangeHealth();
         }
     },
     /* calls the onDeath function and removes the actor from
@@ -209,6 +234,9 @@ Actor.extend({
     },
     // called on collision with an object
     onCollide : function(other) {
+    },
+    // called when health is gained or lost with the changeHealth function
+    onChangeHealth : function() {
     }
 });
 
@@ -225,7 +253,7 @@ Enemy.extend({
     speed : settings.paalwormSpeed,
     direction : LEFT,
     collisionTag : collisionEnemy,
-    ignoreCollisions : [collisionEnemy, collisionShell],
+    ignoreCollisions : [collisionEnemy, collisionDefence, collisionShell],
     animations : ["./animation/paalworm/move"],
     attackTimer : 0,
     cooldown : settings.paalwormCooldown, // amount of seconds between attacks
@@ -272,7 +300,6 @@ Enemy.extend({
 Defence = Actor.clone();
 Defence.extend({
     name : "Defence",
-    health : settings.defenceHealth,
     size : vec2(settings.defenseSize.x*settings.tileSize.x,
                 settings.defenseSize.y*settings.tileSize.y),
     animations : ["./animation/temp_defence"],
@@ -280,9 +307,10 @@ Defence.extend({
     collisionTag : collisionDefence,
     cooldown : settings.defenceCooldown,
     range : settings.defenceRange,
+    cost : settings.defenceBuildCost,
     onInit : function () {
         this.bullet = Bullet;
-        this.centreOnTile(false);
+        this.centreOnTile(true, false);
     },
     attack : function () {
     },
@@ -332,8 +360,17 @@ Dyke = Actor.clone();
 Dyke.extend({
     name : "Dyke",
     size : vec2(settings.tileSize.x, settings.tileSize.y * settings.lanes),
-    animations : ["./animation/objects/dyke"],
+    animations : ["./animation/objects/dyke/healthfull",
+                  "./animation/objects/dyke/healthlost",
+                  "./animation/objects/dyke/healthcritical"],
     health : settings.dykeHealth,
+    onChangeHealth : function() {
+        if (this.health < 0.3 * settings.dykeHealth) {
+            this.showAnimation(2);
+        } else if (this.health < 0.6 * settings.dykeHealth) {
+            this.showAnimation(1);
+        }
+    },
     onDeath : function () {
         console.log(this.name + " breaks!");
         this.parent.lose();
@@ -352,7 +389,8 @@ Bullet.extend({
     speed : settings.bulletSpeed,
     damage : settings.bulletDamage,
     collisionTag : collisionBullet,
-    ignoreCollisions : [collisionDefault, collisionDefence, collisionBullet, collisionShell],
+    ignoreCollisions : [collisionDefault, collisionDefence, collisionPlatform,
+                        collisionBullet, collisionShell],
     onUpdate : function() {
         if (this.position.x + this.size.x >= FIELD_SIZE) {
             this.die();
@@ -391,9 +429,31 @@ Treasure.extend({
             this.parent.addCredits(settings.shellWorth);
             popupImage(this.position, this.size, "./images/game/shell_fade.png");
             this.die();
+            popupText(vec2(this.position.x + this.size.x/2,
+                            this.position.y + this.size.y/2),
+                            "+" + settings.shellWorth);
         }
     },
     onclick : function () {
         this.onhover();
+    }
+});
+
+Platform = Actor.clone()
+Platform.extend({
+    name : "Platform",
+    animations : ["./animation/objects/platform"],
+    health : settings.platformHealth,
+    building : null,
+    tile : null,
+    collisionTag : collisionPlatform,
+    cost : settings.platformBuildCost,
+    onDeath : function () {
+        if (this.building) {
+            this.building.die();
+        }
+        if (this.tile) {
+            this.tile.reset();
+        }
     }
 });

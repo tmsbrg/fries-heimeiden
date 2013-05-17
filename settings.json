@@ -3,11 +3,11 @@
 var settings = {
 
     // graphical settings
-        "fieldPosition" : {"x":0, "y":0},
-        "tileSize" : {"x":212, "y":246},
+        "fieldPosition" : {"x":224, "y":96}, // Do not modify!
+        "tileSize" : {"x":212, "y":246}, // Do not modify!
         // popupinfo
             "popupSpeed" : 50,
-            "popupTimeout" : 1,
+            "popupTimeout" : 2,
         // popuprect
             "popupRectTimeout" : 0.5,
         // actors
@@ -21,8 +21,8 @@ var settings = {
                 "y" : 1
             },
             "defenseSize" : {
-                "x" : 0.6,
-                "y" : 0.9
+                "x" : 0.5,
+                "y" : 0.7
             },
         // layers
             "backgroundImageLayer" : 0,
@@ -48,10 +48,12 @@ var settings = {
             "paalwormAttritionTime" : 1.5,
             "paalwormAttritionAmount" : 1,
         // defences
-            "defenceHealth" : 4,
             "defenceBuildCost" : 10,
-            "defenceRange" : 5, // range for attacking enemies, in number of tiles
+            "defenceRange" : 10, // range for attacking enemies, in number of tiles
             "defenceCooldown" : 1.7,
+
+            "platformBuildCost" : 5,
+            "platformHealth" : 4,
         // dyke
             "dykeHealth" : 20,
         // bullets
