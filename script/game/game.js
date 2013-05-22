@@ -26,6 +26,16 @@ random = function(max, min) {
     return Math.round(Math.random() * (max - min) + min);
 }
 
+// linear interpolation
+lerp = function(v1, v2, t) {
+    return v1+(v2-v1)*t;
+}
+
+// true if v1 and v2 are within the distance d
+inRange = function(v1, v2, d) {
+    return v1 - d > v2 && v1 + d < v2;
+}
+
 // loads json file and returns it parsed as an object
 loadJSON = function(filepath) {
     return JSON.parse(Model.getLocalTextFile(filepath));

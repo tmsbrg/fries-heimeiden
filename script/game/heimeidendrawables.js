@@ -348,7 +348,8 @@ Defence.extend({
 
 ShootingDefence = Defence.clone();
 ShootingDefence.extend({
-    animations : ["./animation/heimeid/idle"],
+    animations : ["./animation/heimeid/idle", "./animation/heimeid/move",
+    "./animation/heimeid/attack", "./animation/heimeid/die"],
     bullet : null,
     attack : function () {
         this.parent.spawnActor(vec2(
@@ -367,16 +368,26 @@ Dyke.extend({
     animations : ["./animation/objects/dyke/healthfull",
                   "./animation/objects/dyke/healthlost",
                   "./animation/objects/dyke/healthcritical"],
+    dykeFloor : null,
+    dykeSupports : null,
     health : settings.dykeHealth,
+    onInit : function() {
+        this.dykeFloor = DykeFloor;
+        this.dykeSupports = DykeSupports;
+    },
     onChangeHealth : function() {
         if (this.health < 0.3 * settings.dykeHealth) {
             this.showAnimation(2);
-        } else if (this.health < 0.6 * settings.dykeHealth) {
+            this.dykeFloor.changeWaterLevel(2);
+        } else if (this.health < 0.7 * settings.dykeHealth) {
             this.showAnimation(1);
+            this.dykeFloor.changeWaterLevel(1);
         }
     },
     onDeath : function () {
         console.log(this.name + " breaks!");
+        this.dykeFloor.visible = false;
+        this.dykeSupports.visible = false;
         this.parent.lose();
     }
 });
@@ -478,5 +489,51 @@ Effect.extend({
     },
     onAnimationComplete : function(currentAnimation) {
         this.parent.removeDrawable(this);
+    }
+});
+
+DykeSupports = Model.Drawables.BaseDrawable.clone();
+DykeSupports.extend({
+    supports : Model.Drawables.SpriteDrawable.clone(),
+    onDrawInit : function() {
+        this.supports.load("./images/game/dyke/supports_front.png");
+        this.supports.position = vec2(0, settings.tileSize.y * 2.5);
+        this.supports.size = vec2(212, 344);
+        this.addDrawable(this.supports);
+    },
+});
+
+DykeFloor = Model.Drawables.BaseDrawable.clone();
+DykeFloor.extend({
+    size : vec2(212, 984),
+    ignoremouse : true,
+    supports : Model.Drawables.SpriteDrawable.clone(),
+    grass : Model.Drawables.SpriteDrawable.clone(),
+    water : Model.Drawables.SpriteDrawable.clone(),
+    onDrawInit : function() {
+        this.grass.load("./images/game/dyke/grass.png");
+        this.grass.size = this.size;
+        this.addDrawable(this.grass);
+        this.supports.load("./images/game/dyke/supports_back.png");
+        this.supports.size = vec2(this.size.x, 558);
+        this.addDrawable(this.supports);
+        this.water.size = vec2(212, 984);
+        this.changeWaterLevel(0);
+        this.addDrawable(this.water);
+    },
+    changeWaterLevel : function(newLevel) {
+        if (newLevel > 2 || newLevel < 0) return;
+        if (newLevel == 2) {
+            this.water.visible = true;
+            this.water.load("./images/game/dyke/water_02.png");
+        } else if (newLevel == 1) {
+            this.water.visible = true;
+            this.water.load("./images/game/dyke/water_01.png");
+        } else {
+            this.water.visible = false;
+        }
+    },
+    reset : function() {
+        this.changeWaterLevel(0);
     }
 });

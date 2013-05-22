@@ -7,6 +7,7 @@ Game.extend({
     Actors : new Array(),
     Popups : new Array(),
     dyke : null,
+    dykeObjects : [DykeFloor, DykeSupports],
     active : false,
     background : Model.Drawables.SpriteDrawable.clone(),
     gui : GUI,
@@ -39,6 +40,11 @@ Game.extend({
             this.addDrawable(this.Lanes[i], settings.groundLayer);
         }
         this.addDrawable(EnemyController);
+        this.addDrawable(this.dykeObjects[0], settings.groundLayer);
+        this.addDrawable(this.dykeObjects[1], settings.dykeLayer);
+        for (i=0; i<this.dykeObjects.length; i++) {
+            this.dykeObjects[i].visible = false;
+        }
     },
     initGUI : function() {
         this.gui.init();
@@ -50,12 +56,16 @@ Game.extend({
         for (var i=0; i<this.Lanes.length; i++) {
             this.Lanes[i].visible = true;
         }
+        for (i=0; i<this.dykeObjects.length; i++) {
+            this.dykeObjects[i].visible = true;
+        }
         this.background.visible = true;
         this.active = true;
-        this.dyke = this.spawnActor(vec2(0,0), Dyke);
+        this.dyke = this.spawnActor(vec2(0,0), Dyke, settings.dykeLayer);
         this.gui.active = true;
         EnemyController.start();
         PlayerData.reset();
+        this.dykeObjects[0].reset();
     },
     update : function() {
         if (!PlayerData.paused) {
@@ -78,11 +88,14 @@ Game.extend({
             this.Lanes[i].reset();
             this.Lanes[i].visible = false;
         }
-        for (var i=0; i<this.Actors.length; i++) {
+        for (i=0; i<this.Actors.length; i++) {
             this.removeDrawable(this.Actors[i]);
         }
-        for (var i=0; i<this.Popups.length; i++) {
+        for (i=0; i<this.Popups.length; i++) {
             this.removeDrawable(this.Popups[i]);
+        }
+        for (i=0; i<this.dykeObjects.length; i++) {
+            this.dykeObjects[i].visible = false;
         }
         this.Actors = new Array();
         this.Popups = new Array();
@@ -135,8 +148,15 @@ Game.extend({
         }
         return count;
     },
+    win : function() {
+        console.log("You win the game!");
+        this.endGame();
+    },
     lose : function() {
         console.log("You lost the game!");
+        this.endGame();
+    },
+    endGame : function() {
         PlayerData.paused = true;
         PlayerData.endOfGame = true;
     }
@@ -149,12 +169,14 @@ PlayerData = {
     endOfGame : null,
     creditsTimer : null,
     selectedBuilding : null,
+    audioEnabled : null,
     reset : function() {
         this.paused = false;
         this.credits = settings.startingCredits;
         this.endOfGame = false;
         this.creditsTimer = 0;
         this.selectedBuilding = null;
+        this.audioEnabled = true;
     }
 };
 

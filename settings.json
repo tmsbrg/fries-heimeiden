@@ -21,17 +21,19 @@ var settings = {
                 "y" : 1
             },
             "defenseSize" : {
-                "x" : 0.5,
-                "y" : 0.7
+                "x" : 0.8,
+                "y" : 0.8
             },
         // layers
             "backgroundImageLayer" : 0,
             "groundLayer" : 1,
             "characterLayer" : 2,
-            "bulletLayer" : 3,
-            "shellLayer" : 4,
-            "effectLayer" : 5,
-            "guiLayer" : 6,
+            "dykeLayer" : 3,
+            "bulletLayer" : 4,
+            "shellLayer" : 5,
+            "effectLayer" : 6,
+        // menu
+            "menuMoveSpeed" : 0.2,
 
     // game settings
         // credits
