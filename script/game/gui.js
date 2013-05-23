@@ -20,7 +20,7 @@ GUIButton.extend({
 GUI = Model.Drawables.BaseDrawable.clone();
 GUI.extend({
     size : {x: 1920, y: 1080},
-    hudImage : Model.Drawables.SpriteDrawable.clone(),
+    sideImage : Model.Drawables.SpriteDrawable.clone(),
 
     startButton : Model.Drawables.ButtonDrawable.clone(),
 
@@ -42,32 +42,32 @@ GUI.extend({
         Model.addDrawable(this);
     },
     initHUD : function() {
-        this.hudImage.visible = false;
-        this.hudImage.size = {x:1920, y:1080};
-        this.hudImage.load("./images/gui/hud.png");
-        this.addDrawable(this.hudImage);
+        this.sideImage.visible = false;
+        this.sideImage.size = {x:1920, y:1080};
+        this.sideImage.load("./images/gui/hud.png");
+        this.addDrawable(this.sideImage);
     },
     initFPS : function() {
-		this.fpsTextBox.position = { x: 10, y:50};
-		this.fpsTextBox.size = { x:100, y: 20 };
-		this.fpsTextBox.font = "bold 14px Arial";
-		this.fpsTextBox.color = "#FF0000";
+		this.fpsTextBox.position = { x: 867, y:13};
+		this.fpsTextBox.size = { x:400, y: 20 };
+		this.fpsTextBox.font = "bold 52px US_Sans";
+		this.fpsTextBox.color = "#FE0000";
 		this.addDrawable(this.fpsTextBox);
     },
     initCreditsText : function() {
-		this.creditsTextBox.position = { x: 10,
-                                         y: 70 };
-		this.creditsTextBox.size = { x:100, y: 20 };
-		this.creditsTextBox.font = "bold 14px Arial";
-		this.creditsTextBox.color = "#FF0000";
+		this.creditsTextBox.position = { x: 1615,
+                                         y: 13 };
+		this.creditsTextBox.size = { x:400, y: 20 };
+		this.creditsTextBox.font = "bold 52px US_Sans";
+		this.creditsTextBox.color = "#FEF500" ;
 		this.addDrawable(this.creditsTextBox);
     },
     initDykeHealth : function() {
-		this.dykeHealthBox.position = { x: 10,
-                                        y: 90 };
-		this.dykeHealthBox.size = { x:100, y: 20 };
-		this.dykeHealthBox.font = "bold 14px Arial";
-		this.dykeHealthBox.color = "#FF0000";
+		this.dykeHealthBox.position = { x: 244,
+                                        y: 14 };
+		this.dykeHealthBox.size = { x:400, y: 20 };
+		this.dykeHealthBox.font = "bold 52px US_Sans";
+		this.dykeHealthBox.color = "#23F407";
 		this.addDrawable(this.dykeHealthBox);
     },
     initButtons : function() {
@@ -92,7 +92,7 @@ GUI.extend({
         this.fpsTextBox.visible = true;
         this.creditsTextBox.visible = true;
         this.dykeHealthBox.visible = true;
-        this.hudImage.visible = true;
+        this.sideImage.visible = true;
         this.menuBar.visible = true;
         this.removeDrawable(this.startButton);
         this.game.gameStart();
@@ -103,7 +103,7 @@ GUI.extend({
         this.fpsTextBox.visible = false;
         this.creditsTextBox.visible = false;
         this.dykeHealthBox.visible = false;
-        this.hudImage.visible = false;
+        this.sideImage.visible = false;
         this.menuBar.visible = false;
         this.menuBar.reset();
         this.game.gameStop();
@@ -111,8 +111,8 @@ GUI.extend({
     },
     update : function() {
         this.fpsTextBox.text = "FPS: " + View.lastfps;
-        this.creditsTextBox.text = "Credits: " + PlayerData.credits;
-        this.dykeHealthBox.text = "Dyke HP: " + this.game.dyke.health;
+        this.creditsTextBox.text = "F " + PlayerData.credits + ",-";
+        this.dykeHealthBox.text = "HP: " + (this.game.dyke.health / settings.dykeHealth * 100) + "%";
     }
 });
 
@@ -130,6 +130,7 @@ GUI.menuBar.extend({
     textSize : {x: 386, y:72},
     originPosition : null,
     destination : null,
+    slidedOut : false,
     speed : settings.menuMoveSpeed,
     cursor : "pointer",
     gui : GUI,
@@ -165,14 +166,14 @@ GUI.menuBar.extend({
         this.soundButton.addDrawable(this.soundButton.audioMutedIcon);
     },
     onclick : function() {
-        if (!PlayerData.endOfGame) {
-            if (PlayerData.paused) {
-                this.slideIn();
-                this.unPause();
-            } else if (!PlayerData.paused) {
-                this.slideOut();
-                this.pause();
-            }
+        if (this.slidedOut) {
+            this.slideIn();
+            this.unPause();
+            this.slidedOut = false;
+        } else {
+            this.slideOut();
+            this.pause();
+            this.slidedOut = true;
         }
     },
     slideOut : function() {
@@ -182,10 +183,14 @@ GUI.menuBar.extend({
         this.destination = this.originPosition.x;
     },
     pause : function() {
-        PlayerData.paused = true;
+        if (!PlayerData.endOfGame) {
+            PlayerData.paused = true;
+        }
     },
     unPause : function() {
-        PlayerData.paused = false;
+        if (!PlayerData.endOfGame) {
+            PlayerData.paused = false;
+        }
     },
     update : function() {
         if (this.destination != null) {
@@ -198,6 +203,7 @@ GUI.menuBar.extend({
     },
     reset : function() {
         this.destination = null;
+        this.slidedOut = false;
         this.position = this.originPosition.clone();
     },
 });

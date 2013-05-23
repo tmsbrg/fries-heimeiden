@@ -44,7 +44,7 @@ var settings = {
             "tilesPerLane" : 8,
             "lanes" : 4,
         // enemies
-            "paalwormHealth" : 20,
+            "paalwormHealth" : 16,
             "paalwormDamage" : 2,
             "paalwormSpeed" : 0.4,
             "paalwormCooldown" : 1,
@@ -55,7 +55,7 @@ var settings = {
             "defenceRange" : 10, // range for attacking enemies, in number of tiles
             "defenceCooldown" : 1.7,
 
-            "platformBuildCost" : 5,
+            "platformBuildCost" : 4,
             "platformHealth" : 4,
         // dyke
             "dykeHealth" : 20,

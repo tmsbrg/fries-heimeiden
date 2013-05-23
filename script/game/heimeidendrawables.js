@@ -284,6 +284,7 @@ Enemy.extend({
         if (this.attackTimer > 0) {
             this.attackTimer -= deltaTime;
         }
+        this.absoluteSpeed = (Math.sin(this.currentAnimation._currentFrame / this.currentAnimation.frameN * (2*Math.PI) + Math.PI * 0.5) * 0.5 + 0.5) * settings.tileSize.x;
     },
     onCollide : function (other) {
         if (this.attackTimer <= 0) {
@@ -514,12 +515,12 @@ DykeFloor.extend({
         this.grass.load("./images/game/dyke/grass.png");
         this.grass.size = this.size;
         this.addDrawable(this.grass);
-        this.supports.load("./images/game/dyke/supports_back.png");
-        this.supports.size = vec2(this.size.x, 558);
-        this.addDrawable(this.supports);
         this.water.size = vec2(212, 984);
         this.changeWaterLevel(0);
         this.addDrawable(this.water);
+        this.supports.load("./images/game/dyke/supports_back.png");
+        this.supports.size = vec2(this.size.x, 558);
+        this.addDrawable(this.supports);
     },
     changeWaterLevel : function(newLevel) {
         if (newLevel > 2 || newLevel < 0) return;

@@ -1,8 +1,8 @@
 {
-    "frameN" : 6,
+    "frameN" : 8,
     "frameSize" : {
         "x" : 212,
         "y" : 246
     },
-    "secondsPerFrame" : 0.05
+    "secondsPerFrame" : 0.1
 }

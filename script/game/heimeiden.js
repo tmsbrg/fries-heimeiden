@@ -148,6 +148,22 @@ Game.extend({
         }
         return count;
     },
+    pauseAnimations : function() {
+        for (i=0; i<this.Actors.length; i++) {
+            this.Actors[i].pause();
+        }
+        for (i=0; i<this.Popups.length; i++) {
+            this.Popups[i].pause();
+        }
+    },
+    unPauseAnimations : function() {
+        for (i=0; i<this.Actors.length; i++) {
+            this.Actors[i].unpause();
+        }
+        for (i=0; i<this.Popups.length; i++) {
+            this.Popups[i].unpause();
+        }
+    },
     win : function() {
         console.log("You win the game!");
         this.endGame();
@@ -178,6 +194,9 @@ PlayerData = {
         this.selectedBuilding = null;
         this.audioEnabled = true;
     }
+};
+
+OldPlayerData = {
 };
 
 // Draws fading text popup at given position
