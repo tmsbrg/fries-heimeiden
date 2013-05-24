@@ -138,6 +138,7 @@ Game.extend({
         effect.position = vec2(position.x - effectObject.size.x / 2,
                                position.y - effectObject.size.y / 2);
         this.addDrawable(effect, settings.effectLayer);
+        this.Popups[this.Popups.length] = effect;
     },
     countActors : function(actorName) {
         var count = 0;

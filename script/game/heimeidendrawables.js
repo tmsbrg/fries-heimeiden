@@ -79,6 +79,18 @@ ExtendedAnimation.extend({
             this.addAnimations(anim);
         }
     },
+    /* Sync animation pause with global game pause */
+    syncPause : function() {
+        if(PlayerData.paused) {
+            if (!this.currentAnimation.paused) {
+                this.currentAnimation.paused = true;
+            }
+        } else {
+            if (this.currentAnimation.paused) {
+                this.currentAnimation.paused = false;
+            }
+        }
+    },
 });
 
 /* The main type of object in the game. Actors can move around, have collision
@@ -95,6 +107,7 @@ Actor.extend({
     speed : 0,
     absoluteSpeed : 0,
     animations : [],
+    deathAnimation : -1, // animation(index) to play before dying, none if -1
     solid : true, // if false, it can move while colliding with objects
     reach : 1, // used for checking movement collisions
     collisionTag : collisionDefault,
@@ -136,6 +149,7 @@ Actor.extend({
     },
     // Calls this.onUpdate, moves if needed and checks collisions if moving
     update : function() {
+        this.syncPause();
         if (PlayerData.paused) return;
         var other;
         this.onUpdate();
@@ -208,7 +222,11 @@ Actor.extend({
         if (!this.invulnerable || amount > 0) {
             this.health += amount;
             if (this.health <= 0) {
-                this.die();
+                if (this.deathAnimation == -1) {
+                    this.die();
+                } else {
+                    this.showAnimation(this.deathAnimation);
+                }
             }
             this.onChangeHealth();
         }
@@ -226,6 +244,15 @@ Actor.extend({
             }
         }
         this.parent.removeDrawable(this);
+    },
+    onAnimationComplete : function(currentAnimation) {
+        if (currentAnimation === this.deathAnimation) {
+            this.die();
+        } else {
+            this.customOnAnimationComplete(currentAnimation);
+        }
+    },
+    customOnAnimationComplete : function(currentAnimation) {
     },
     // called when the actor is added to the field
     onInit : function() {
@@ -350,8 +377,10 @@ Defence.extend({
 ShootingDefence = Defence.clone();
 ShootingDefence.extend({
     animations : ["./animation/heimeid/idle", "./animation/heimeid/move",
-    "./animation/heimeid/attack", "./animation/heimeid/die"],
+    "./animation/heimeid/attack_wait", "./animation/heimeid/attack",
+    "./animation/heimeid/die"],
     bullet : null,
+    deathAnimation : 4,
     attack : function () {
         this.parent.spawnActor(vec2(
                     this.position.x + this.size.x/2 - this.bullet.size.x/2,
@@ -471,7 +500,7 @@ Platform.extend({
     cost : settings.platformBuildCost,
     onDeath : function () {
         if (this.building) {
-            this.building.die();
+            this.building.changeHealth(-9999);
         }
         if (this.tile) {
             this.tile.reset();
@@ -488,6 +517,9 @@ Effect.extend({
         this.addAnimationsWithJSON(this.animations);
         this.showAnimation(0);
     },
+    update : function() {
+        this.syncPause();
+    },
     onAnimationComplete : function(currentAnimation) {
         this.parent.removeDrawable(this);
     }
@@ -498,8 +530,8 @@ DykeSupports.extend({
     supports : Model.Drawables.SpriteDrawable.clone(),
     onDrawInit : function() {
         this.supports.load("./images/game/dyke/supports_front.png");
-        this.supports.position = vec2(0, settings.tileSize.y * 2.5);
-        this.supports.size = vec2(212, 344);
+        this.supports.position = vec2(0, settings.tileSize.y * 1.4);
+        this.supports.size = vec2(212, 632);
         this.addDrawable(this.supports);
     },
 });
@@ -519,7 +551,7 @@ DykeFloor.extend({
         this.changeWaterLevel(0);
         this.addDrawable(this.water);
         this.supports.load("./images/game/dyke/supports_back.png");
-        this.supports.size = vec2(this.size.x, 558);
+        this.supports.size = vec2(this.size.x, 353);
         this.addDrawable(this.supports);
     },
     changeWaterLevel : function(newLevel) {

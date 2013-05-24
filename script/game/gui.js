@@ -21,6 +21,7 @@ GUI = Model.Drawables.BaseDrawable.clone();
 GUI.extend({
     size : {x: 1920, y: 1080},
     sideImage : Model.Drawables.SpriteDrawable.clone(),
+    upImage : Model.Drawables.SpriteDrawable.clone(),
 
     startButton : Model.Drawables.ButtonDrawable.clone(),
 
@@ -43,9 +44,14 @@ GUI.extend({
     },
     initHUD : function() {
         this.sideImage.visible = false;
-        this.sideImage.size = {x:1920, y:1080};
-        this.sideImage.load("./images/gui/hud.png");
+        this.sideImage.size = {x:224, y:1080};
+        this.sideImage.load("./images/gui/hud_left.png");
         this.addDrawable(this.sideImage);
+        this.upImage.visible = false;
+        this.upImage.position.x = 222;
+        this.upImage.size = {x:1699, y:98};
+        this.upImage.load("./images/gui/hud_up.png");
+        this.addDrawable(this.upImage);
     },
     initFPS : function() {
 		this.fpsTextBox.position = { x: 867, y:13};
@@ -92,6 +98,7 @@ GUI.extend({
         this.fpsTextBox.visible = true;
         this.creditsTextBox.visible = true;
         this.dykeHealthBox.visible = true;
+        this.upImage.visible = true;
         this.sideImage.visible = true;
         this.menuBar.visible = true;
         this.removeDrawable(this.startButton);
@@ -103,6 +110,7 @@ GUI.extend({
         this.fpsTextBox.visible = false;
         this.creditsTextBox.visible = false;
         this.dykeHealthBox.visible = false;
+        this.upImage.visible = false;
         this.sideImage.visible = false;
         this.menuBar.visible = false;
         this.menuBar.reset();
