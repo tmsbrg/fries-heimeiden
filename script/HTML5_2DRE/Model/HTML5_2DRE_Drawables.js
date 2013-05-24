@@ -642,10 +642,12 @@ Model.Drawables.AnimationDrawable.draw = function(ctx)
 			this._secondsSinceNewFrame = 0;
 			this._currentFrame++;
 			this._currentFrameOfRow++;
+            if (this._currentFrame == this.frameN - 1) {
+                this.onAnimationComplete();
+            }
 			if (this._currentFrame >= this.frameN) {
 				this._currentFrame = 0;
 				this._currentFrameOfRow = this._currentFrame;
-                this.onAnimationComplete();
 				this._currentRow = this._currentFrame;
 			} else if (this._currentFrameOfRow >= this._framesPerRow) {
 				this._currentRow++;
