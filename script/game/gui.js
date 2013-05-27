@@ -1,5 +1,26 @@
 buildingSelectButton = Model.Drawables.ButtonDrawable.clone()
 buildingSelectButton.extend({
+    name : "buildingSelectButton",
+    visible : false,
+    building : null,
+    baseImage : null,
+    size : vec2(170,170),
+    onclick : function() {
+        if (!PlayerData.paused) {
+            GUI.deselectBuilding();
+            PlayerData.selectedBuilding = this.building;
+            this.load(this.baseImage + "_selected.png");
+        }
+    },
+    loadBase : function(src) {
+        this.baseImage = src;
+        this.resetImage();
+    },
+    resetImage : function() {
+        if (this.curImage != this.baseImage + ".png") {
+            this.load(this.baseImage + ".png");
+        }
+    }
 });
 
 GUIButton = Model.Drawables.ButtonDrawable.clone();
@@ -19,7 +40,11 @@ GUIButton.extend({
 
 GUI = Model.Drawables.BaseDrawable.clone();
 GUI.extend({
+    name : "GUI",
     size : {x: 1920, y: 1080},
+    buildingSelectButtonY : 80,
+    buildingSelectButtonX : 25,
+    buildingSelectButtonSpace : 20,
     sideImage : Model.Drawables.SpriteDrawable.clone(),
     upImage : Model.Drawables.SpriteDrawable.clone(),
 
@@ -30,6 +55,7 @@ GUI.extend({
     dykeHealthBox : Model.Drawables.TextDrawable.clone(),
 
     menuBar : Model.Drawables.ButtonDrawable.clone(),
+    buildingSelectButtons : new Array(),
     game : null,
     init : function() {
         this.game = Game;
@@ -82,12 +108,35 @@ GUI.extend({
             View.canvasWidth / 2 - this.startButton.size.x / 2,
             View.canvasHeight / 2 - this.startButton.size.y / 2); 
         this.startButton.load("./images/startButton.png");
+        this.addBuildingSelectButton(null, "./images/gui/icons/pickup");
+        this.addBuildingSelectButton(Platform, "./images/gui/icons/platform");
+        this.addBuildingSelectButton(ShootingDefence, "./images/gui/icons/heimeid_stone");
     },
     initMenuBar : function() {
         this.menuBar.visible = false;
         this.menuBar.load("./images/gui/menubar.png");
-        this.menuBar.position = {x: 1860, y: 540 - this.menuBar.size.y / 2},
+        this.menuBar.position = {x: 1860, y: 540 - this.menuBar.size.y / 2};
         Model.addDrawable(this.menuBar); // has to be clickable outside of GUI
+    },
+    addBuildingSelectButton : function(building, image) {
+        button = buildingSelectButton.clone();
+        button.building = building;
+        button.loadBase(image);
+
+        var yposition = (this.buildingSelectButtons.length) ? 
+         this.buildingSelectButtons[this.buildingSelectButtons.length-1].position.y
+           + buildingSelectButton.size.y + this.buildingSelectButtonSpace
+         : this.buildingSelectButtonY;
+
+        button.position = {x: this.buildingSelectButtonX, y: yposition};
+        this.addDrawable(button);
+        this.buildingSelectButtons[this.buildingSelectButtons.length] = button;
+    },
+    deselectBuilding : function() {
+        PlayerData.selectedBuilding = null;
+        for (var i=0; i<this.buildingSelectButtons.length; i++) {
+                this.buildingSelectButtons[i].resetImage();
+        }
     },
     // Starts the main menu
     startMenu : function() {
@@ -101,6 +150,9 @@ GUI.extend({
         this.upImage.visible = true;
         this.sideImage.visible = true;
         this.menuBar.visible = true;
+        for (var i=0; i<this.buildingSelectButtons.length; i++) {
+            this.buildingSelectButtons[i].visible = true;
+        }
         this.removeDrawable(this.startButton);
         this.game.gameStart();
         this.menuBar.soundButton.updateBasepath();
@@ -113,6 +165,9 @@ GUI.extend({
         this.upImage.visible = false;
         this.sideImage.visible = false;
         this.menuBar.visible = false;
+        for (var i=0; i<this.buildingSelectButtons.length; i++) {
+            this.buildingSelectButtons[i].visible = false;
+        }
         this.menuBar.reset();
         this.game.gameStop();
         this.startMenu();

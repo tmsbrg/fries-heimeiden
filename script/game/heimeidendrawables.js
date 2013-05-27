@@ -49,18 +49,24 @@ Tile.extend({
         this.platform = null;
     },
     onclick : function () {
-        if (!PlayerData.paused && this.building == null) {
-            if (this.tileIndex == 0 || this.platform) {
-                this.building = this.parent.buildBuilding(this.position.x,
-                    ShootingDefence);
-                if (this.platform) {
-                    this.platform.building = this.building;
+        if (!PlayerData.paused && this.building == null && 
+            PlayerData.selectedBuilding != null) {
+            if (PlayerData.selectedBuilding == Platform) {
+                if ((this.tileIndex == 1 || 
+                    this.parent.getTile(this.tileIndex-1).platform) &&
+                    this.platform == null) {
+                    this.platform = this.parent.buildBuilding(this.position.x,
+                        Platform);
+                    this.platform.tile = this;
                 }
-            } else if (this.tileIndex == 1 || 
-                this.parent.getTile(this.tileIndex-1).platform) {
-                this.platform = this.parent.buildBuilding(this.position.x,
-                    Platform);
-                this.platform.tile = this;
+            } else {
+                if (this.tileIndex == 0 || this.platform) {
+                    this.building = this.parent.buildBuilding(this.position.x,
+                        PlayerData.selectedBuilding);
+                    if (this.platform) {
+                        this.platform.building = this.building;
+                    }
+                }
             }
         }
     }
@@ -595,7 +601,7 @@ BackgroundWaves.extend({
         this.position = {
             x : this.originPosition.x + Math.sin(this.currentRotation) *
                 this.radius,
-            y : this.originPosition.y +Math.cos(this.currentRotation) *
+            y : this.originPosition.y + Math.cos(this.currentRotation) *
                 this.radius
         }
     }

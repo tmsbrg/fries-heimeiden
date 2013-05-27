@@ -47,7 +47,7 @@ Game.extend({
             this.dykeObjects[i].visible = false;
         }
         this.waves.visible = false;
-        //this.addDrawable(this.waves, settings.wavesLayer);
+        this.addDrawable(this.waves, settings.wavesLayer);
     },
     initGUI : function() {
         this.gui.init();
@@ -118,6 +118,7 @@ Game.extend({
     },
     buildBuilding : function(position, buildingObject) {
         if (PlayerData.credits >= buildingObject.cost) {
+            GUI.deselectBuilding();
             PlayerData.credits -= buildingObject.cost;
             return this.spawnActor(position, buildingObject);
         } else {
@@ -202,6 +203,7 @@ PlayerData = {
     selectedBuilding : null,
     audioEnabled : null,
     areWavesFinished : null,
+    selectedBuilding : null,
     reset : function() {
         this.paused = false;
         this.credits = settings.startingCredits;
@@ -210,6 +212,7 @@ PlayerData = {
         this.selectedBuilding = null;
         this.audioEnabled = true;
         this.areWavesFinished = false;
+        this.selectedBuilding = null;
     }
 };
 
