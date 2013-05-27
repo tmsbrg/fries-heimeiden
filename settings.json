@@ -27,12 +27,13 @@ var settings = {
             },
         // layers
             "backgroundImageLayer" : 0,
-            "groundLayer" : 1,
-            "characterLayer" : 2,
-            "dykeLayer" : 3,
-            "bulletLayer" : 4,
-            "shellLayer" : 5,
-            "effectLayer" : 6,
+            "wavesLayer" : 1,
+            "groundLayer" : 2,
+            "characterLayer" : 3,
+            "dykeLayer" : 4,
+            "bulletLayer" : 5,
+            "shellLayer" : 6,
+            "effectLayer" : 7,
         // menu
             "menuMoveSpeed" : 0.2,
 

@@ -10,6 +10,7 @@ Game.extend({
     dykeObjects : [DykeFloor, DykeSupports],
     active : false,
     background : Model.Drawables.SpriteDrawable.clone(),
+    waves : BackgroundWaves,
     gui : GUI,
     // Initializes the game, should only be called once per load
     initialize : function() {
@@ -45,6 +46,8 @@ Game.extend({
         for (i=0; i<this.dykeObjects.length; i++) {
             this.dykeObjects[i].visible = false;
         }
+        this.waves.visible = false;
+        //this.addDrawable(this.waves, settings.wavesLayer);
     },
     initGUI : function() {
         this.gui.init();
@@ -60,6 +63,7 @@ Game.extend({
             this.dykeObjects[i].visible = true;
         }
         this.background.visible = true;
+        this.waves.visible = true;
         this.active = true;
         this.dyke = this.spawnActor(vec2(0,0), Dyke, settings.dykeLayer);
         this.gui.active = true;
@@ -70,6 +74,11 @@ Game.extend({
     update : function() {
         if (!PlayerData.paused) {
             this.updateCredits();
+        }
+        if (PlayerData.areWavesFinished) {
+            if (this.countActors("Enemy") == 0) {
+                this.win();
+            }
         }
     },
     updateCredits : function() {
@@ -100,8 +109,10 @@ Game.extend({
         this.Actors = new Array();
         this.Popups = new Array();
         this.background.visible = false;
+        this.waves.visible = false;
         this.active = false;
         this.gui.active = false;
+        PlayerData.areWavesFinished = false;
         EnemyController.stop();
         EnemyController.reset();
     },
@@ -165,6 +176,9 @@ Game.extend({
             this.Popups[i].unpause();
         }
     },
+    wavesFinished : function() {
+        PlayerData.areWavesFinished = true;
+    },
     win : function() {
         console.log("You win the game!");
         this.endGame();
@@ -187,6 +201,7 @@ PlayerData = {
     creditsTimer : null,
     selectedBuilding : null,
     audioEnabled : null,
+    areWavesFinished : null,
     reset : function() {
         this.paused = false;
         this.credits = settings.startingCredits;
@@ -194,10 +209,8 @@ PlayerData = {
         this.creditsTimer = 0;
         this.selectedBuilding = null;
         this.audioEnabled = true;
+        this.areWavesFinished = false;
     }
-};
-
-OldPlayerData = {
 };
 
 // Draws fading text popup at given position

@@ -89,6 +89,7 @@ EnemyController.extend({
     },
     stop : function() {
         this.active = false;
+        this.parent.wavesFinished();
     },
     reset : function() {
         this.inWave = false;

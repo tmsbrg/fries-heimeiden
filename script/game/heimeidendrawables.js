@@ -570,3 +570,33 @@ DykeFloor.extend({
         this.changeWaterLevel(0);
     }
 });
+
+BackgroundWaves = Model.Drawables.SpriteDrawable.clone();
+BackgroundWaves.extend({
+    size : vec2(2174, 1512),
+    alpha : 0.2,
+    originPosition : null,
+    radius : 238,
+    rotationSpeed : Math.PI / 128,
+    currentRotation : 0,
+    onDrawInit : function() {
+        this.load("./images/game/water_waves_small.png");
+        this.originPosition = {
+            x : this.position.x - this.radius,
+            y : this.position.y - this.radius
+        }
+    },
+    update : function() {
+        if (PlayerData.paused) return;
+        this.currentRotation += this.rotationSpeed;
+        if (this.rotationSpeed > 2 * Math.PI) {
+            this.currentRotation = 0;
+        }
+        this.position = {
+            x : this.originPosition.x + Math.sin(this.currentRotation) *
+                this.radius,
+            y : this.originPosition.y +Math.cos(this.currentRotation) *
+                this.radius
+        }
+    }
+});
