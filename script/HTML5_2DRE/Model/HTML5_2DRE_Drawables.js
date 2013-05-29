@@ -600,6 +600,10 @@ Model.Drawables.AnimationDrawable._currentFrame = 0;
 Model.Drawables.AnimationDrawable._currentFrameOfRow = 0;
 Model.Drawables.AnimationDrawable._currentRow = 0;
 Model.Drawables.AnimationDrawable._secondsSinceNewFrame = 0.0;
+Model.Drawables.AnimationDrawable.base_update = function() {
+    Model.Drawables.BaseDrawable.base_update.apply(this);
+    this.updateAnimation();
+}
 Model.Drawables.AnimationDrawable.loadAnimation = function(image, settings)
 {
     this.load(image);
@@ -632,7 +636,7 @@ Model.Drawables.AnimationDrawable.unpause = function ()
 {
     this.paused = false;
 }
-Model.Drawables.AnimationDrawable.draw = function(ctx)
+Model.Drawables.AnimationDrawable.updateAnimation = function()
 {
 	if (this._image.loaded) {
 		if (!this.paused) {
@@ -654,6 +658,11 @@ Model.Drawables.AnimationDrawable.draw = function(ctx)
 				this._currentFrameOfRow = 0;
 			}
 		}
+    }
+}
+Model.Drawables.AnimationDrawable.draw = function(ctx)
+{
+	if (this._image.loaded) {
         if(this.borderWidth > 0) {
             ctx.lineWidth = this.borderWidth;
             ctx.strokeStyle = this.borderColor;
