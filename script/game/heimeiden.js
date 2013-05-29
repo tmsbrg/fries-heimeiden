@@ -32,6 +32,7 @@ Game.extend({
         this.background.size = vec2(settings.tileSize.x * (settings.tilesPerLane),
                                     settings.tileSize.y * settings.lanes);
         this.background.visible = false;
+        this.background.alpha = 0.99;
         this.background.load("./images/game/water.png");
         this.addDrawable(this.background, settings.backgroundImageLayer);
         for (var i=0; i<this.Lanes.length; i++) {
@@ -74,10 +75,17 @@ Game.extend({
     update : function() {
         if (!PlayerData.paused) {
             this.updateCredits();
-        }
-        if (PlayerData.areWavesFinished) {
-            if (this.countActors("Enemy") == 0) {
-                this.win();
+
+            if (PlayerData.areWavesFinished) {
+                if (this.countActors("Enemy") == 0) {
+                    this.win();
+                }
+            }
+            if (PlayerData.finalCountDown > INACTIVE) {
+                PlayerData.finalCountDown -= deltaTime;
+                if (PlayerData.finalCountDown < 0) {
+                    this.endGame();
+                }
             }
         }
     },
@@ -117,9 +125,12 @@ Game.extend({
         EnemyController.reset();
     },
     buildBuilding : function(position, buildingObject) {
+        if (!PlayerData.canBuild) return;
         if (PlayerData.credits >= buildingObject.cost) {
-            GUI.deselectBuilding();
             PlayerData.credits -= buildingObject.cost;
+            if (settings.deselectIconAfterBuild) {
+                GUI.deselectBuilding();
+            }
             return this.spawnActor(position, buildingObject);
         } else {
             console.log("Not enough credits to build this defence!");
@@ -127,7 +138,7 @@ Game.extend({
     },
     // Spawns an enemy at lane index lane
     spawnEnemy : function(lane) {
-        this.spawnActor(vec2((settings.tilesPerLane-1) * settings.tileSize.x,
+        this.spawnActor(vec2((settings.tilesPerLane) * settings.tileSize.x,
                              lane * settings.tileSize.y),
                         Enemy);
     },
@@ -161,20 +172,19 @@ Game.extend({
         }
         return count;
     },
-    pauseAnimations : function() {
-        for (i=0; i<this.Actors.length; i++) {
-            this.Actors[i].pause();
-        }
-        for (i=0; i<this.Popups.length; i++) {
-            this.Popups[i].pause();
-        }
+    killAllDefences : function() {
+        this.killAllWithName("Platform");
+        this.killAllWithName("Defence");
     },
-    unPauseAnimations : function() {
-        for (i=0; i<this.Actors.length; i++) {
-            this.Actors[i].unpause();
-        }
-        for (i=0; i<this.Popups.length; i++) {
-            this.Popups[i].unpause();
+    killAllWithName : function(name) {
+        for (var i=0; i<this.Actors.length;) {
+            if (this.Actors[i].name == name) {
+                if (this.Actors[i].animatedDie()) {
+                    i++;
+                }
+            } else {
+                i++;
+            }
         }
     },
     wavesFinished : function() {
@@ -182,11 +192,13 @@ Game.extend({
     },
     win : function() {
         console.log("You win the game!");
-        this.endGame();
+        PlayerData.finalCountDown = settings.timeUntilFreeze;
     },
     lose : function() {
         console.log("You lost the game!");
-        this.endGame();
+        this.killAllDefences();
+        PlayerData.canBuild = false;
+        PlayerData.finalCountDown = settings.timeUntilFreeze;
     },
     endGame : function() {
         PlayerData.paused = true;
@@ -204,6 +216,8 @@ PlayerData = {
     audioEnabled : null,
     areWavesFinished : null,
     selectedBuilding : null,
+    canBuild : null,
+    finalCountDown : null,
     reset : function() {
         this.paused = false;
         this.credits = settings.startingCredits;
@@ -213,6 +227,8 @@ PlayerData = {
         this.audioEnabled = true;
         this.areWavesFinished = false;
         this.selectedBuilding = null;
+        this.canBuild = true;
+        this.finalCountDown = INACTIVE;
     }
 };
 

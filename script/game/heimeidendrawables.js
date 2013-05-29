@@ -113,6 +113,7 @@ Actor.extend({
     speed : 0,
     absoluteSpeed : 0,
     animations : [],
+    goDie : false,
     deathAnimation : -1, // animation(index) to play before dying, none if -1
     solid : true, // if false, it can move while colliding with objects
     reach : 1, // used for checking movement collisions
@@ -157,14 +158,19 @@ Actor.extend({
     update : function() {
         this.syncPause();
         if (PlayerData.paused) return;
-        var other;
-        this.onUpdate();
-        if (this.direction && this.speed) {
-            if (other = !this.checkCollide({x:this.calculateMove(),
-                                            y:this.position.y})) {
-                this.move();
-            } else if (!this.solid || (other && !other.solid)) {
-                this.move();
+        if (this.goDie) {
+            this.goDie = false;
+            this.die();
+        } else {
+            var other;
+            this.onUpdate();
+            if (this.direction && this.speed) {
+                if (other = !this.checkCollide({x:this.calculateMove(),
+                                                y:this.position.y})) {
+                    this.move();
+                } else if (!this.solid || (other && !other.solid)) {
+                    this.move();
+                }
             }
         }
     },
@@ -231,10 +237,19 @@ Actor.extend({
                 if (this.deathAnimation == -1) {
                     this.die();
                 } else {
-                    this.showAnimation(this.deathAnimation);
+                    this.showActorAnimation(this.deathAnimation);
                 }
             }
             this.onChangeHealth();
+        }
+    },
+    animatedDie : function() {
+        if (this.deathAnimation >= 0) {
+            this.showActorAnimation(this.deathAnimation);
+            return 1;
+        } else {
+            this.die();
+            return 0;
         }
     },
     /* calls the onDeath function and removes the actor from
@@ -251,9 +266,14 @@ Actor.extend({
         }
         this.parent.removeDrawable(this);
     },
+    showActorAnimation : function(animation) {
+        if (this.currentAnimationIndex === this.deathAnimation) return;
+
+        this.showAnimation(animation);
+    },
     onAnimationComplete : function(currentAnimation) {
         if (currentAnimation === this.deathAnimation) {
-            this.die();
+            this.goDie = true;
         } else {
             this.customOnAnimationComplete(currentAnimation);
         }
@@ -342,6 +362,7 @@ Defence.extend({
                 settings.defenseSize.y*settings.tileSize.y),
     animations : ["./animation/temp_defence"],
     attackTimer : 0,
+    attackMode : false,
     collisionTag : collisionDefence,
     cooldown : settings.defenceCooldown,
     range : settings.defenceRange,
@@ -366,13 +387,26 @@ Defence.extend({
         }
         return false;
     },
+    enterAttackMode : function() {
+        this.attackMode = true;
+    },
+    exitAttackMode : function() {
+        this.attackMode = false;
+    },
     onUpdate : function () {
         if (this.attackTimer > 0) {
             this.attackTimer -= deltaTime;
         }
-        if (this.attackTimer <= 0 && this.enemyInRange()) {
-            this.attack();
-            this.attackTimer = this.cooldown;
+        if (this.enemyInRange()) {
+            if (this.attackMode == false) {
+                this.enterAttackMode();
+            }
+            if (this.attackTimer <= 0) {
+                this.attack();
+                this.attackTimer = this.cooldown;
+            }
+        } else if (this.attackMode == true) {
+            this.exitAttackMode();
         }
     },
     onDeath : function () {
@@ -386,13 +420,41 @@ ShootingDefence.extend({
     "./animation/heimeid/attack_wait", "./animation/heimeid/attack",
     "./animation/heimeid/die"],
     bullet : null,
+    goSpawnBullet : false,
+    attackAnimation : 3,
     deathAnimation : 4,
-    attack : function () {
-        this.parent.spawnActor(vec2(
+    onUpdate : function() {
+        Defence.onUpdate.apply(this);
+        if (this.goSpawnBullet) {
+            this.goSpawnBullet = false;
+            this.parent.spawnActor(vec2(
                     this.position.x + this.size.x/2 - this.bullet.size.x/2,
                     this.position.y + this.size.y/2 - this.bullet.size.y/2),
                 this.bullet,
                 settings.bulletLayer);
+            this.endAttack();
+        }
+    },
+    enterAttackMode : function() {
+        this.attackMode = true;
+        this.showActorAnimation(2);
+    },
+    exitAttackMode : function() {
+        this.attackMode = false;
+        this.showActorAnimation(0);
+    },
+    attack : function () {
+        this.showActorAnimation(this.attackAnimation);
+    },
+    endAttack : function() {
+        this.showActorAnimation(2);
+    },
+    customOnAnimationComplete : function(currentAnimation) {
+        switch(currentAnimation) {
+            case this.attackAnimation:
+                this.goSpawnBullet = true;
+                break;
+        }
     }
 });
 
@@ -413,10 +475,10 @@ Dyke.extend({
     },
     onChangeHealth : function() {
         if (this.health < 0.3 * settings.dykeHealth) {
-            this.showAnimation(2);
+            this.showActorAnimation(2);
             this.dykeFloor.changeWaterLevel(2);
         } else if (this.health < 0.7 * settings.dykeHealth) {
-            this.showAnimation(1);
+            this.showActorAnimation(1);
             this.dykeFloor.changeWaterLevel(1);
         }
     },
@@ -579,14 +641,14 @@ DykeFloor.extend({
 
 BackgroundWaves = Model.Drawables.SpriteDrawable.clone();
 BackgroundWaves.extend({
-    size : vec2(2174, 1512),
-    alpha : 0.2,
+    size : vec2(2106, 1306),
+    alpha : 1,
     originPosition : null,
-    radius : 238,
-    rotationSpeed : Math.PI / 128,
+    radius : 108,
+    rotationSpeed : settings.waveSpeed,
     currentRotation : 0,
     onDrawInit : function() {
-        this.load("./images/game/water_waves_small.png");
+        this.load("./images/game/water_waves.png");
         this.originPosition = {
             x : this.position.x - this.radius,
             y : this.position.y - this.radius
@@ -594,7 +656,7 @@ BackgroundWaves.extend({
     },
     update : function() {
         if (PlayerData.paused) return;
-        this.currentRotation += this.rotationSpeed;
+        this.currentRotation += this.rotationSpeed * deltaTime;
         if (this.rotationSpeed > 2 * Math.PI) {
             this.currentRotation = 0;
         }

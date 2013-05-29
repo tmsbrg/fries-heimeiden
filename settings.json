@@ -26,8 +26,8 @@ var settings = {
                 "y" : 0.85
             },
         // layers
-            "backgroundImageLayer" : 0,
-            "wavesLayer" : 1,
+            "wavesLayer" : 0,
+            "backgroundImageLayer" : 1,
             "groundLayer" : 2,
             "characterLayer" : 3,
             "dykeLayer" : 4,
@@ -36,8 +36,12 @@ var settings = {
             "effectLayer" : 7,
         // menu
             "menuMoveSpeed" : 0.2,
+        // water effects
+            "waveSpeed" : Math.PI / 8, // in radians per second
 
     // game settings
+        // input
+            "deselectIconAfterBuild" : false,
         // credits
             "startingCredits" : 20,
             "secondsToCreditUpdate" : 2,
@@ -71,4 +75,6 @@ var settings = {
             "defaultMaxEnemies" : 5, // max enemies on screen at the same time
             "defaultSpawnInterval" : {"min":2, "max":5},
             "defaultWaitBeforeWave" : 7, // in seconds
+        // end of game
+            "timeUntilFreeze" : 5, // after winning or losing
 }
