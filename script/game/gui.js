@@ -38,6 +38,17 @@ GUIButton.extend({
     },
 });
 
+StartButton = GUIButton.clone();
+StartButton.extend({
+    basepath : "./images/gui/playbutton",
+    onDrawInit : function() {
+        this.onmouseout();
+    },
+    onclick : function() {
+        this.parent.gameStart();
+    },
+});
+
 GUI = Model.Drawables.BaseDrawable.clone();
 GUI.extend({
     name : "GUI",
@@ -49,7 +60,7 @@ GUI.extend({
     upImage : Model.Drawables.SpriteDrawable.clone(),
 
     splashscreen : Model.Drawables.SpriteDrawable.clone(),
-    startButton : Model.Drawables.ButtonDrawable.clone(),
+    startButton : StartButton,
 
     fpsTextBox : Model.Drawables.TextDrawable.clone(),
     creditsTextBox : Model.Drawables.TextDrawable.clone(),
@@ -113,8 +124,7 @@ GUI.extend({
         this.startButton.size = vec2(250, 250);
         this.startButton.position = vec2(
             View.canvasWidth / 2 - this.startButton.size.x / 2,
-            View.canvasHeight / 2 - this.startButton.size.y / 2); 
-        this.startButton.load("./images/startButton.png");
+            View.canvasHeight / 2 - this.startButton.size.y * 0.7); 
         this.addBuildingSelectButton(null, "./images/gui/icons/pickup");
         this.addBuildingSelectButton(Platform, "./images/gui/icons/platform");
         this.addBuildingSelectButton(ShootingDefence, "./images/gui/icons/heimeid_stone");
@@ -188,10 +198,6 @@ GUI.extend({
         this.dykeHealthBox.text = "HP: " + (this.game.dyke.health / settings.dykeHealth * 100) + "%";
     }
 });
-
-GUI.startButton.onclick = function() {
-    this.parent.gameStart();
-}
 
 GUI.menuBar.extend({
     restartButton : GUIButton.clone(),
