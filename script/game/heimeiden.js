@@ -247,11 +247,14 @@ PlayerData = {
 };
 
 // Draws fading text popup at given position
-popupText = function(position, text) {
+popupText = function(position, text, color) {
+    if (color == null) {
+        color = "#FEF500";
+    }
     var popupText = Model.Drawables.TextDrawable.clone();
     popupText.position = position.clone();
     popupText.font = "normal 48px US_Sans";
-    popupText.color = "red";
+    popupText.color = color;
     popupText.setText(text);
     popupText.timeout = settings.popupTimeout; 
     popupText.timeleft = settings.popupTimeout;

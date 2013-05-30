@@ -328,7 +328,8 @@ Enemy.extend({
     onInit : function () {
         this.treasure = Treasure;
         this.attritionTimer = this.attritionTime;
-        this.centreOnTile();
+        this.centreOnTile(true, false);
+        this.position.y += settings.tileSize.y * 0.05;
     },
     // attacks given actor
     attack : function (other) {
@@ -404,6 +405,9 @@ Stone.extend({
     health : settings.stoneHealth,
     cost : settings.stoneBuldCost,
     tile : null,
+    onInit : function() {
+        this.centreOnTile(true, true);
+    },
     onChangeHealth : function() {
         if (this.health < 0.3 * settings.dykeHealth) {
             this.showActorAnimation(2);
@@ -427,38 +431,34 @@ Priest.extend({
     deathAnimation : 2,
     directions : [vec2(-1,0), vec2(0,1), vec2(1,0), vec2(0,-1)],
     tileXY : vec2(0,0),
-    onInit : function() {
-        Defence.onInit.apply(this);
-        console.log(this.tileXY);
-    },
     onUpdate : function() {
         for (var i=0; i<this.directions.length; i++) {
             this.buffAt(this.directions[i].x, this.directions[i].y);
         }
     },
-    onDie : function() {
+    onDeath : function() {
         for (var i=0; i<this.directions.length; i++) {
             this.unBuffAt(this.directions[i].x, this.directions[i].y);
         }
     },
     getShootingDefenseAt : function(X, Y) {
-        var obj =  this.parent.getTile(this.tileXY.x + X, this.tileXY.y + Y);
-        if (obj != null && obj.building && obj.building.name == "ShDefence") {
-            return obj.building;
+        var tile =  this.parent.getTile(this.tileXY.x + X, this.tileXY.y + Y);
+        if (tile != null && tile.building && tile.building.name == "ShDefence") {
+            return tile.building;
         } else {
             return null;
         }
     },
     buffAt : function(X, Y) {
-        var obj = this.getShootingDefenseAt(X, Y);
-        if (obj && !obj.isBuffed) {
-            obj.buff();
+        var defence = this.getShootingDefenseAt(X, Y);
+        if (defence && !defence.isBuffed) {
+            defence.buff();
         }
     },
     unBuffAt : function(X, Y) {
-        var obj = this.getShootingDefenseAt(X, Y);
-        if (obj && obj.isBuffed) {
-            obj.unBuff();
+        var defence = this.getShootingDefenseAt(X, Y);
+        if (defence && defence.isBuffed) {
+            defence.unBuff();
         }
     }
 });
@@ -474,16 +474,19 @@ ShootingDefence.extend({
     isBuffed : false,
     goSpawnBullet : false,
     attackAnimation : 3,
+    buffedAttackAnimation : 6,
+    asynchAnimation : 1,
+    playAfterasynchAnimation : 0,
     deathAnimation : 4,
     attackTimer : 0,
     attackMode : false,
-    asynchTimer : 0,
-    asynchMaxTime : 0.5,
+    maxAsynchTime : settings.defenceMaxAsynchTime,
     onInit : function() {
         this.bullet = Bullet;
         Defence.onInit.apply(this);
     },
     onUpdate : function() {
+        // Handle attacking
         if (this.attackTimer > 0) {
             this.attackTimer -= deltaTime;
         }
@@ -499,24 +502,18 @@ ShootingDefence.extend({
             this.exitAttackMode();
         }
 
+        // Throw a stone if ready
         if (this.goSpawnBullet) {
             this.goSpawnBullet = false;
-            bul = this.parent.spawnActor(vec2(
-                    this.position.x + this.size.x/2 - this.bullet.size.x/2,
-                    this.position.y + this.size.y/2 - this.bullet.size.y/2),
+            var bul = this.parent.spawnActor(vec2(
+                    this.position.x + this.size.x - this.bullet.size.x/2,
+                    this.position.y + this.size.y/3 - this.bullet.size.y/2),
                 this.bullet,
                 settings.bulletLayer);
             if (this.isBuffed) {
                 bul.buff();
             }
             this.endAttack();
-        }
-        if (this.asynchTimer) {
-            this.asynchTimer -= deltaTime;
-            if (this.asynchTimer < 0) {
-                this.asynchimer = 0;
-                this.unpause();
-            }
         }
     },
     enterAttackMode : function() {
@@ -529,7 +526,7 @@ ShootingDefence.extend({
     },
     attack : function () {
         if (this.isBuffed) {
-            this.showActorAnimation(6);
+            this.showActorAnimation(this.buffedAttackAnimation);
         } else {
             this.showActorAnimation(this.attackAnimation);
         }
@@ -540,17 +537,21 @@ ShootingDefence.extend({
     customOnAnimationComplete : function(currentAnimation) {
         switch(currentAnimation) {
             case this.attackAnimation:
-            case 6:
+            case this.buffedAttackAnimation:
                 this.goSpawnBullet = true;
+                break;
+            case this.asynchAnimation:
+                this.showActorAnimation(this.playAfterasynchAnimation);
                 break;
         }
     },
     asynchwait : function() {
-        this.pause();
-        this.asynchtimer = Math.random() * this.asynchMaxTime;
+        this.playAfterasynchAnimation = this.currentAnimationIndex;
+        this.showActorAnimation(this.asynchAnimation);
+        this.currentAnimation.frameN = 2;
+        this.currentAnimation.secondsPerFrame = Math.random()*this.maxAsynchTime/2;
     },
     buff : function() {
-        console.log("getting buffed!");
         this.isBuffed = true;
         this.cooldown = settings.defenceBuffedCooldown;
         if(this.currentAnimationIndex == 0) {
@@ -631,7 +632,9 @@ Bullet.extend({
     },
     onCollide : function (other) {
         other.changeHealth(-this.damage);
-        this.parent.spawnEffect(this.position, this.poof);
+        this.parent.spawnEffect(vec2(this.position.x + settings.tileSize.x * 0.125, 
+                                     this.position.y + settings.tileSize.y * 0.125),
+                                this.poof);
         this.die();
     },
     buff : function () {

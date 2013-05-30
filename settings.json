@@ -53,14 +53,15 @@ var settings = {
             "paalwormHealth" : 10,
             "paalwormDamage" : 2,
             "paalwormSpeed" : 0.4,
-            "paalwormCooldown" : 1,
+            "paalwormCooldown" : 2,
             "paalwormAttritionTime" : 1000,
             "paalwormAttritionAmount" : 0,
         // defences
-            "defenceBuildCost" : 4,
+            "defenceBuildCost" : 6,
             "defenceRange" : 10, // range for attacking enemies, in number of tiles
-            "defenceCooldown" : 4,
-            "defenceBuffedCooldown" : 3,
+            "defenceCooldown" : 3,
+            "defenceBuffedCooldown" : 2,
+            "defenceMaxAsynchTime" : 1,
 
             "platformBuildCost" : 4,
             "platformHealth" : 4,
