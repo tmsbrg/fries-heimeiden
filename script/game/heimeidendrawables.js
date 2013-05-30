@@ -51,7 +51,13 @@ Tile.extend({
     onclick : function () {
         if (!PlayerData.paused && this.building == null && 
             PlayerData.selectedBuilding != null) {
-            if (PlayerData.selectedBuilding == Platform) {
+            if (PlayerData.selectedBuilding == Stone) {
+                if (!this.platform) {
+                    this.building = this.parent.buildBuilding(this.position.x,
+                        PlayerData.selectedBuilding);
+                    this.building.tile = this;
+                }
+            } else if (PlayerData.selectedBuilding == Platform) {
                 if ((this.tileIndex == 1 || 
                     this.parent.getTile(this.tileIndex-1).platform) &&
                     this.platform == null) {
@@ -361,17 +367,15 @@ Defence.extend({
     size : vec2(settings.defenseSize.x*settings.tileSize.x,
                 settings.defenseSize.y*settings.tileSize.y),
     animations : ["./animation/temp_defence"],
-    attackTimer : 0,
-    attackMode : false,
     collisionTag : collisionDefence,
     cooldown : settings.defenceCooldown,
     range : settings.defenceRange,
     cost : settings.defenceBuildCost,
     onInit : function () {
-        this.bullet = Bullet;
         this.centreOnTile(true, false);
-    },
-    attack : function () {
+        if (this.position.x < settings.tileSize.x) {
+            this.position.x -= this.size.x / 4;
+        }
     },
     // return true if an enemy is in range and on the same lane
     enemyInRange : function () {
@@ -386,14 +390,100 @@ Defence.extend({
             }
         }
         return false;
+    }
+});
+
+Stone = Defence.clone();
+Stone.extend({
+    animations : ["./animation/objects/rockblock/healthfull",
+    "./animation/objects/rockblock/healthlost",
+    "./animation/objects/rockblock/healthcritical",
+    "./animation/objects/rockblock/break"],
+    deathAnimation : 3,
+    collisionTag : collisionStone,
+    health : settings.stoneHealth,
+    cost : settings.stoneBuldCost,
+    tile : null,
+    onChangeHealth : function() {
+        if (this.health < 0.3 * settings.dykeHealth) {
+            this.showActorAnimation(2);
+        } else if (this.health < 0.7 * settings.dykeHealth) {
+            this.showActorAnimation(1);
+        }
     },
-    enterAttackMode : function() {
-        this.attackMode = true;
+    onDeath : function () {
+        if (this.tile) {
+            this.tile.reset();
+        }
+    }
+});
+
+Priest = Defence.clone();
+Priest.extend({
+    name : "Priest",
+    cost : settings.priestBuildCost,
+    animations : ["./animation/dominee/idle", "./animation/dominee/active",
+        "./animation/dominee/die"],
+    deathAnimation : 2,
+    directions : [vec2(-1,0), vec2(0,1), vec2(1,0), vec2(0,-1)],
+    tileXY : vec2(0,0),
+    onInit : function() {
+        Defence.onInit.apply(this);
+        console.log(this.tileXY);
     },
-    exitAttackMode : function() {
-        this.attackMode = false;
+    onUpdate : function() {
+        for (var i=0; i<this.directions.length; i++) {
+            this.buffAt(this.directions[i].x, this.directions[i].y);
+        }
     },
-    onUpdate : function () {
+    onDie : function() {
+        for (var i=0; i<this.directions.length; i++) {
+            this.unBuffAt(this.directions[i].x, this.directions[i].y);
+        }
+    },
+    getShootingDefenseAt : function(X, Y) {
+        var obj =  this.parent.getTile(this.tileXY.x + X, this.tileXY.y + Y);
+        if (obj != null && obj.building && obj.building.name == "ShDefence") {
+            return obj.building;
+        } else {
+            return null;
+        }
+    },
+    buffAt : function(X, Y) {
+        var obj = this.getShootingDefenseAt(X, Y);
+        if (obj && !obj.isBuffed) {
+            obj.buff();
+        }
+    },
+    unBuffAt : function(X, Y) {
+        var obj = this.getShootingDefenseAt(X, Y);
+        if (obj && obj.isBuffed) {
+            obj.unBuff();
+        }
+    }
+});
+
+ShootingDefence = Defence.clone();
+ShootingDefence.extend({
+    name : "ShDefence",
+    animations : ["./animation/heimeid/idle", "./animation/heimeid/move",
+    "./animation/heimeid/attack_wait", "./animation/heimeid/attack",
+    "./animation/heimeid/die",
+    "./animation/heimeid/idle_buffed", "./animation/heimeid/attack_buffed"],
+    bullet : null,
+    isBuffed : false,
+    goSpawnBullet : false,
+    attackAnimation : 3,
+    deathAnimation : 4,
+    attackTimer : 0,
+    attackMode : false,
+    asynchTimer : 0,
+    asynchMaxTime : 0.5,
+    onInit : function() {
+        this.bullet = Bullet;
+        Defence.onInit.apply(this);
+    },
+    onUpdate : function() {
         if (this.attackTimer > 0) {
             this.attackTimer -= deltaTime;
         }
@@ -408,52 +498,77 @@ Defence.extend({
         } else if (this.attackMode == true) {
             this.exitAttackMode();
         }
-    },
-    onDeath : function () {
-        console.log(this.name + " has been destroyed!");
-    }
-});
 
-ShootingDefence = Defence.clone();
-ShootingDefence.extend({
-    animations : ["./animation/heimeid/idle", "./animation/heimeid/move",
-    "./animation/heimeid/attack_wait", "./animation/heimeid/attack",
-    "./animation/heimeid/die"],
-    bullet : null,
-    goSpawnBullet : false,
-    attackAnimation : 3,
-    deathAnimation : 4,
-    onUpdate : function() {
-        Defence.onUpdate.apply(this);
         if (this.goSpawnBullet) {
             this.goSpawnBullet = false;
-            this.parent.spawnActor(vec2(
+            bul = this.parent.spawnActor(vec2(
                     this.position.x + this.size.x/2 - this.bullet.size.x/2,
                     this.position.y + this.size.y/2 - this.bullet.size.y/2),
                 this.bullet,
                 settings.bulletLayer);
+            if (this.isBuffed) {
+                bul.buff();
+            }
             this.endAttack();
+        }
+        if (this.asynchTimer) {
+            this.asynchTimer -= deltaTime;
+            if (this.asynchTimer < 0) {
+                this.asynchimer = 0;
+                this.unpause();
+            }
         }
     },
     enterAttackMode : function() {
         this.attackMode = true;
-        this.showActorAnimation(2);
+        this.goIdle();
     },
     exitAttackMode : function() {
         this.attackMode = false;
-        this.showActorAnimation(0);
+        this.goIdle();
     },
     attack : function () {
-        this.showActorAnimation(this.attackAnimation);
+        if (this.isBuffed) {
+            this.showActorAnimation(6);
+        } else {
+            this.showActorAnimation(this.attackAnimation);
+        }
     },
     endAttack : function() {
-        this.showActorAnimation(2);
+        this.goIdle();
     },
     customOnAnimationComplete : function(currentAnimation) {
         switch(currentAnimation) {
             case this.attackAnimation:
+            case 6:
                 this.goSpawnBullet = true;
                 break;
+        }
+    },
+    asynchwait : function() {
+        this.pause();
+        this.asynchtimer = Math.random() * this.asynchMaxTime;
+    },
+    buff : function() {
+        console.log("getting buffed!");
+        this.isBuffed = true;
+        this.cooldown = settings.defenceBuffedCooldown;
+        if(this.currentAnimationIndex == 0) {
+            this.goIdle();
+        }
+    },
+    unBuff : function() {
+        this.isBuffed = false;
+        this.cooldown = settings.defenseCooldown;
+        if(this.currentAnimationIndex == 5) {
+            this.goIdle();
+        }
+    },
+    goIdle : function() {
+        if (this.isBuffed) {
+            this.showActorAnimation(5);
+        } else {
+            this.showActorAnimation(0);
         }
     }
 });
@@ -496,15 +611,16 @@ Bullet.extend({
     name : "Bullet",
     size : vec2(settings.tileSize.x * settings.bulletSize,
                 settings.tileSize.y * settings.bulletSize),
-    animations : ["./animation/objects/stone"],
+    animations : ["./animation/objects/stone", "./animation/objects/stone_buffed"],
     direction : RIGHT,
     poof : null,
     invulnerable : true,
+    isBuffed : false,
     speed : settings.bulletSpeed,
     damage : settings.bulletDamage,
     collisionTag : collisionBullet,
     ignoreCollisions : [collisionDefault, collisionDefence, collisionPlatform,
-                        collisionBullet, collisionShell],
+                        collisionBullet, collisionShell, collisionStone],
     onInit : function() {
         this.poof = Effect;
     },
@@ -517,6 +633,11 @@ Bullet.extend({
         other.changeHealth(-this.damage);
         this.parent.spawnEffect(this.position, this.poof);
         this.die();
+    },
+    buff : function () {
+        this.isBuffed = true;
+        this.showActorAnimation(1);
+        this.damage = settings.bulletBuffedDamage;
     }
 });
 
@@ -579,7 +700,7 @@ Platform.extend({
 Effect = ExtendedAnimation.clone()
 Effect.extend({
     name : "Effect",
-    size : settings.tileSize.clone(),
+    size : vec2(settings.tileSize.x * 0.75, settings.tileSize.y * 0.75),
     animations : ["./animation/effects/poof"],
     onDrawInit : function() {
         this.addAnimationsWithJSON(this.animations);

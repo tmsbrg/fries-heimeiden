@@ -62,7 +62,7 @@ GUI.extend({
     splashscreen : Model.Drawables.SpriteDrawable.clone(),
     startButton : StartButton,
 
-    fpsTextBox : Model.Drawables.TextDrawable.clone(),
+    wavesTextBox : Model.Drawables.TextDrawable.clone(),
     creditsTextBox : Model.Drawables.TextDrawable.clone(),
     dykeHealthBox : Model.Drawables.TextDrawable.clone(),
 
@@ -74,7 +74,7 @@ GUI.extend({
         this.active = false;
         this.initSplash();
         this.initHUD();
-        this.initFPS();
+        this.initWavesText();
         this.initCreditsText();
         this.initDykeHealth();
         this.initButtons();
@@ -97,12 +97,12 @@ GUI.extend({
         this.upImage.load("./images/gui/hud_up.png");
         this.addDrawable(this.upImage);
     },
-    initFPS : function() {
-		this.fpsTextBox.position = { x: 867, y:13};
-		this.fpsTextBox.size = { x:400, y: 20 };
-		this.fpsTextBox.font = "bold 52px US_Sans";
-		this.fpsTextBox.color = "#FE0000";
-		this.addDrawable(this.fpsTextBox);
+    initWavesText : function() {
+		this.wavesTextBox.position = { x: 867, y:13};
+		this.wavesTextBox.size = { x:400, y: 20 };
+		this.wavesTextBox.font = "bold 52px US_Sans";
+		this.wavesTextBox.color = "#FE0000";
+		this.addDrawable(this.wavesTextBox);
     },
     initCreditsText : function() {
 		this.creditsTextBox.position = { x: 1615,
@@ -128,6 +128,8 @@ GUI.extend({
         this.addBuildingSelectButton(null, "./images/gui/icons/pickup");
         this.addBuildingSelectButton(Platform, "./images/gui/icons/platform");
         this.addBuildingSelectButton(ShootingDefence, "./images/gui/icons/heimeid_stone");
+        this.addBuildingSelectButton(Stone, "./images/gui/icons/stone");
+        this.addBuildingSelectButton(Priest, "./images/gui/icons/dominee");
     },
     initMenuBar : function() {
         this.menuBar.visible = false;
@@ -161,7 +163,7 @@ GUI.extend({
     },
     gameStart : function() {
         this.size.x = 1920 - settings.tileSize.x * settings.tilesPerLane;
-        this.fpsTextBox.visible = true;
+        this.wavesTextBox.visible = true;
         this.creditsTextBox.visible = true;
         this.dykeHealthBox.visible = true;
         this.upImage.visible = true;
@@ -178,7 +180,7 @@ GUI.extend({
     },
     gameStop : function() {
         this.size.x = 1920;
-        this.fpsTextBox.visible = false;
+        this.wavesTextBox.visible = false;
         this.creditsTextBox.visible = false;
         this.dykeHealthBox.visible = false;
         this.upImage.visible = false;
@@ -193,9 +195,11 @@ GUI.extend({
         this.startMenu();
     },
     update : function() {
-        this.fpsTextBox.text = "FPS: " + View.lastfps;
+        this.wavesTextBox.text = "WAVE " + (EnemyController.currentWave +
+            !PlayerData.areWavesFinished) +
+            "/" + Waves.waves.length;
         this.creditsTextBox.text = "F " + PlayerData.credits + ",-";
-        this.dykeHealthBox.text = "HP: " + (this.game.dyke.health / settings.dykeHealth * 100) + "%";
+        this.dykeHealthBox.text = "DIJK: " + (this.game.dyke.health / settings.dykeHealth * 100) + "%";
     }
 });
 

@@ -76,7 +76,8 @@ Game.extend({
         if (!PlayerData.paused) {
             this.updateCredits();
 
-            if (PlayerData.areWavesFinished) {
+            if (PlayerData.areWavesFinished &&
+                PlayerData.finalCountDown == INACTIVE) {
                 if (this.countActors("Enemy") == 0) {
                     this.win();
                 }
@@ -146,6 +147,10 @@ Game.extend({
     spawnActor : function (position, actorObject, layer) {
         if (layer == null) layer = settings.characterLayer;
         var actor = actorObject.clone();
+        if (actor.name == "Priest") {
+            actor.tileXY = vec2(position.x / settings.tileSize.x,
+                                position.y / settings.tileSize.y);
+        }
         actor.position = position.clone();
         this.addActor(actor, layer);
         return actor;
@@ -174,7 +179,9 @@ Game.extend({
     },
     killAllDefences : function() {
         this.killAllWithName("Platform");
+        this.killAllWithName("ShDefence");
         this.killAllWithName("Defence");
+        this.killAllWithName("Priest");
     },
     killAllWithName : function(name) {
         for (var i=0; i<this.Actors.length;) {
@@ -203,6 +210,13 @@ Game.extend({
     endGame : function() {
         PlayerData.paused = true;
         PlayerData.endOfGame = true;
+    },
+    getTile : function(X, Y) {
+        if (Y >= 0 && Y < this.Lanes.length) {
+            return this.Lanes[Y].getTile(X);
+        } else {
+            return null;
+        }
     }
 });
 

@@ -3,10 +3,11 @@
 Waves = {
 "waves" : [
     {"subWaves" : [
-        {"enemies" : { "Enemy" : 7 } },
-        {"enemies" : { "Enemy" : 10 } }
+        {"enemies" : { "Enemy" : 4 } },
+        {"enemies" : { "Enemy" : 6 } }
         ],
-        "waitBeforeWave" : 5
+        "spawnInterval" : {"min": 3, "max": 6},
+        "waitBeforeWave" : 3
     },
     {"subWaves" : [
         {"enemies" : { "Enemy" : 15}},

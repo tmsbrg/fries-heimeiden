@@ -6,10 +6,10 @@ var settings = {
     // graphical settings
         "fieldPosition" : {"x":224, "y":96}, // Do not modify!
         "tileSize" : {"x":212, "y":246}, // Do not modify!
-        // popupinfo
+        // for popup texts like +2
             "popupSpeed" : 50,
             "popupTimeout" : 2,
-        // popuprect
+        // popuprect, unused
             "popupRectTimeout" : 0.5,
         // actor sizes
             "bulletSize" : 0.25,
@@ -46,28 +46,35 @@ var settings = {
             "startingCredits" : 20,
             "secondsToCreditUpdate" : 2,
             "creditsPerCreditUpdate" : 2,
-        // field, won't be able to change anymore once we have background image
-            "tilesPerLane" : 8,
-            "lanes" : 4,
+        // field
+            "tilesPerLane" : 8, // do not modify!
+            "lanes" : 4, // do not modify!
         // enemies
-            "paalwormHealth" : 16,
+            "paalwormHealth" : 10,
             "paalwormDamage" : 2,
             "paalwormSpeed" : 0.4,
             "paalwormCooldown" : 1,
-            "paalwormAttritionTime" : 1.5,
-            "paalwormAttritionAmount" : 1,
+            "paalwormAttritionTime" : 1000,
+            "paalwormAttritionAmount" : 0,
         // defences
-            "defenceBuildCost" : 10,
+            "defenceBuildCost" : 4,
             "defenceRange" : 10, // range for attacking enemies, in number of tiles
-            "defenceCooldown" : 1.7,
+            "defenceCooldown" : 4,
+            "defenceBuffedCooldown" : 3,
 
             "platformBuildCost" : 4,
             "platformHealth" : 4,
+
+            "stoneBuldCost" : 6,
+            "stoneHealth" : 16,
+
+            "priestBuildCost" : 10,
         // dyke
             "dykeHealth" : 20,
         // bullets
             "bulletSpeed" : 1.2,
             "bulletDamage" : 2,
+            "bulletBuffedDamage" : 4,
         // shipworm shells
             "shellWorth" : 2,
             "shellFadeTime" : 3,

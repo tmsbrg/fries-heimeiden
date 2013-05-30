@@ -53,5 +53,6 @@ const collisionDefence = 2;
 const collisionPlatform = 3;
 const collisionBullet = 4;
 const collisionShell = 5;
+const collisionStone = 6;
 
 const INACTIVE = -1000;
