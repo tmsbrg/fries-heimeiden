@@ -27,17 +27,22 @@ var settings = {
             },
         // layers
             "wavesLayer" : 0,
-            "backgroundImageLayer" : 1,
-            "groundLayer" : 2,
-            "characterLayer" : 3,
-            "dykeLayer" : 4,
-            "bulletLayer" : 5,
-            "shellLayer" : 6,
-            "effectLayer" : 7,
+            "fishLayer" : 1,
+            "backgroundImageLayer" : 2,
+            "groundLayer" : 3,
+            "characterLayer" : 4,
+            "dykeLayer" : 5,
+            "bulletLayer" : 6,
+            "shellLayer" : 7,
+            "effectLayer" : 8,
         // menu
             "menuMoveSpeed" : 0.2,
         // water effects
             "waveSpeed" : Math.PI / 8, // in radians per second
+            "fishSpawnRate" : {min: 12, max: 20},
+            "fishMoveDistance" : 400,
+            "fishSpeed" : 0.02,
+            "fishMaxAlpha" : 0.5,
 
     // game settings
         // input
@@ -52,8 +57,8 @@ var settings = {
         // enemies
             "paalwormHealth" : 10,
             "paalwormDamage" : 2,
-            "paalwormSpeed" : 0.4,
-            "paalwormCooldown" : 2,
+            "paalwormSpeed" : 1,
+            "paalwormCooldown" : 1.5,
             "paalwormAttritionTime" : 1000,
             "paalwormAttritionAmount" : 0,
         // defences
@@ -69,7 +74,7 @@ var settings = {
             "stoneBuldCost" : 6,
             "stoneHealth" : 16,
 
-            "priestBuildCost" : 10,
+            "priestBuildCost" : 20,
         // dyke
             "dykeHealth" : 20,
         // bullets

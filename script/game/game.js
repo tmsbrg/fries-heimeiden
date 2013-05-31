@@ -14,6 +14,30 @@ vec2 = function (givenx, giveny) {
     return {x:givenx,y:giveny};
 }
 
+vec2sum = function (a, b) {
+    if (typeof b == "number") {
+        return vec2(a.x + b, a.y + b);
+    } else {
+        return vec2(a.x + b.x, a.y + b.y);
+    }
+}
+
+vec2divide = function (a, b) {
+    if (typeof b == "number") {
+        return vec2(a.x / b, a.y / b);
+    } else {
+        return vec2(a.x / b.x, a.x / b.x);
+    }
+}
+
+vec2multiply = function (a, b) {
+    if (typeof b == "number") {
+        return vec2(a.x * b, a.y * b);
+    } else {
+        return vec2(a.x * b.x, a.x * b.x);
+    }
+}
+
 // no arguments given: returns random float between 0 and 1
 // only max given: returns random int between 0 and max
 // min and max given: returns random int between min and max

@@ -52,7 +52,7 @@ Tile.extend({
         if (!PlayerData.paused && this.building == null && 
             PlayerData.selectedBuilding != null) {
             if (PlayerData.selectedBuilding == Stone) {
-                if (!this.platform) {
+                if (!this.platform && this.tileIndex != 0) {
                     this.building = this.parent.buildBuilding(this.position.x,
                         PlayerData.selectedBuilding);
                     this.building.tile = this;
@@ -317,8 +317,12 @@ Enemy.extend({
     direction : LEFT,
     collisionTag : collisionEnemy,
     ignoreCollisions : [collisionEnemy, collisionDefence, collisionShell],
-    animations : ["./animation/paalworm/move"],
+    animations : ["./animation/paalworm/move", "./animation/paalworm/hit",
+                  "./animation/paalworm/attack"],
     attackTimer : 0,
+    attackAnimation : 2,
+    attackFrame : 19,
+    target : null,
     cooldown : settings.paalwormCooldown, // amount of seconds between attacks
     attritionTime : settings.paalwormAttritionTime, /* amount of seconds between 
     losing health automatically */
@@ -344,13 +348,43 @@ Enemy.extend({
         if (this.attackTimer > 0) {
             this.attackTimer -= deltaTime;
         }
-        this.absoluteSpeed = (Math.sin(this.currentAnimation._currentFrame / this.currentAnimation.frameN * (2*Math.PI) + Math.PI * 0.5) * 0.5 + 0.5) * settings.tileSize.x;
+        if (this.currentAnimationIndex == this.attackAnimation &&
+            this.currentAnimation._currentFrame == this.attackFrame) {
+            if (this.target != null) {
+                this.attack(this.target);
+                this.target = null;
+            }
+        }
+
+        this.absoluteSpeed = this.speed * 
+            (Math.sin(this.currentAnimation._currentFrame /
+                      this.currentAnimation.frameN * (2*Math.PI) + Math.PI * 0.5) *
+             0.5 + 0.5) * settings.tileSize.x;
+    },
+    onChangeHealth : function () {
+        this.showActorAnimation(1);
     },
     onCollide : function (other) {
         if (this.attackTimer <= 0) {
-            this.attack(other);
+            this.showActorAnimation(this.attackAnimation);
+            this.setTarget(other);
             this.attackTimer = this.cooldown;
         }
+    },
+    customOnAnimationComplete : function() {
+        switch (this.currentAnimationIndex) {
+            case this.attackAnimation:
+                if (this.target == null) {
+                    this.showActorAnimation(0);
+                }
+                break;
+            case 1:
+                this.showActorAnimation(0);
+                break;
+        }
+    },
+    setTarget : function(target) {
+        this.target = target;
     },
     onDeath : function () {
         this.parent.spawnActor(vec2(this.position.x + this.size.x/2
@@ -632,9 +666,13 @@ Bullet.extend({
     },
     onCollide : function (other) {
         other.changeHealth(-this.damage);
-        this.parent.spawnEffect(vec2(this.position.x + settings.tileSize.x * 0.125, 
+        var poof = this.parent.spawnEffect(vec2(this.position.x +
+                                                settings.tileSize.x * 0.125, 
                                      this.position.y + settings.tileSize.y * 0.125),
                                 this.poof);
+        if (this.isBuffed) {
+            poof.showAnimation(1);
+        }
         this.die();
     },
     buff : function () {
@@ -672,7 +710,7 @@ Treasure.extend({
             popupImage(this.position, this.size, "./images/game/shell_fade.png");
             this.die();
             popupText(vec2(this.position.x + this.size.x/2,
-                            this.position.y + this.size.y/2),
+                            this.position.y),
                             "+" + settings.shellWorth);
         }
     },
@@ -704,7 +742,7 @@ Effect = ExtendedAnimation.clone()
 Effect.extend({
     name : "Effect",
     size : vec2(settings.tileSize.x * 0.75, settings.tileSize.y * 0.75),
-    animations : ["./animation/effects/poof"],
+    animations : ["./animation/effects/poof", "./animation/effects/poof2"],
     onDrawInit : function() {
         this.addAnimationsWithJSON(this.animations);
         this.showAnimation(0);
@@ -789,6 +827,28 @@ BackgroundWaves.extend({
                 this.radius,
             y : this.originPosition.y + Math.cos(this.currentRotation) *
                 this.radius
+        }
+    }
+});
+
+BackgroundFish = Model.Drawables.SpriteDrawable.clone();
+BackgroundFish.extend({
+    name : "fish",
+    alpha : 1,
+    id : 0,
+    ignoremouse : true,
+    size : {x: 370, y: 131},
+    speed : settings.fishSpeed,
+    onDrawInit : function() {
+        this.load("./images/game/fish.png");
+        this.destination = this.position.x - settings.fishMoveDistance;
+    },
+    update : function() {
+        if (PlayerData.paused) return;
+        //this.alpha =
+        this.position.x = lerp(this.position.x, this.destination, this.speed);
+        if (inRange(this.position.x, this.destination, 10)) {
+            this.parent.removeFishWithId(this.id);
         }
     }
 });

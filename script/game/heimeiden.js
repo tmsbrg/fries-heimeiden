@@ -75,6 +75,7 @@ Game.extend({
     update : function() {
         if (!PlayerData.paused) {
             this.updateCredits();
+            PlayerData.timeUntilNextFish -= deltaTime;
 
             if (PlayerData.areWavesFinished &&
                 PlayerData.finalCountDown == INACTIVE) {
@@ -87,6 +88,11 @@ Game.extend({
                 if (PlayerData.finalCountDown < 0) {
                     this.endGame();
                 }
+            }
+            if (PlayerData.timeUntilNextFish <= 0) {
+                //this.spawnFish();
+                PlayerData.timeUntilNextFish = random(settings.fishSpawnRate.max,
+                                                      settings.fishSpawnRate.min);
             }
         }
     },
@@ -132,6 +138,10 @@ Game.extend({
             if (settings.deselectIconAfterBuild) {
                 GUI.deselectBuilding();
             }
+            popupText(vec2sum(position, vec2(settings.tileSize.x * 0.5,
+                                             settings.tileSize.y * 0.25)),
+                      "-" + buildingObject.cost,
+                      "#FE0000");
             return this.spawnActor(position, buildingObject);
         } else {
             console.log("Not enough credits to build this defence!");
@@ -155,6 +165,15 @@ Game.extend({
         this.addActor(actor, layer);
         return actor;
     },
+    spawnFish : function() {
+        console.log("New fish!");
+        var fish = BackgroundFish.clone();
+        fish.id = PlayerData.currentFishId;
+        PlayerData.currentFishId++;
+        fish.position = vec2(1000, random(1080 - fish.size.y));
+        this.addDrawable(fish, settings.fishLayer);
+        this.Popups[this.Popups.length] = fish;
+    },
     // Adds an actor to the field
     addActor : function(actor, layer) {
         this.Actors[this.Actors.length] = actor;
@@ -167,6 +186,16 @@ Game.extend({
                                position.y - effectObject.size.y / 2);
         this.addDrawable(effect, settings.effectLayer);
         this.Popups[this.Popups.length] = effect;
+        return effect;
+    },
+    removeFishWithId : function(id) {
+        for (var i=0; i<this.Popups.length; i++) {
+            if (this.Popups[i].id == id) {
+                this.removeDrawable(this.Popups[i].id);
+                this.Popups.splice(i, 1);
+                return;
+            }
+        }
     },
     countActors : function(actorName) {
         var count = 0;
@@ -232,6 +261,8 @@ PlayerData = {
     selectedBuilding : null,
     canBuild : null,
     finalCountDown : null,
+    timeUntilNextFish : null,
+    currentFishId : null,
     reset : function() {
         this.paused = false;
         this.credits = settings.startingCredits;
@@ -243,6 +274,8 @@ PlayerData = {
         this.selectedBuilding = null;
         this.canBuild = true;
         this.finalCountDown = INACTIVE;
+        this.timeUntilNextFish = 0;
+        this.currentFishId = 0;
     }
 };
 
@@ -252,13 +285,13 @@ popupText = function(position, text, color) {
         color = "#FEF500";
     }
     var popupText = Model.Drawables.TextDrawable.clone();
-    popupText.position = position.clone();
     popupText.font = "normal 48px US_Sans";
     popupText.color = color;
     popupText.setText(text);
-    popupText.timeout = settings.popupTimeout; 
+    popupText.timeout = settings.popupTimeout;
     popupText.timeleft = settings.popupTimeout;
     popupText.speed = settings.popupSpeed;
+    popupText.position = vec2(position.x - popupText.size.x / 2, position.y);
     popupText.update = function() {
         if (PlayerData.paused) return;
         this.position.y -= this.speed * deltaTime;
