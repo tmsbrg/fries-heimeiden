@@ -1,5 +1,4 @@
-// have to do it this way to make it easy to load from local disk with includeJS
-//TODO: make this real JSON
+// pseudo-JSON, because we need comments!
 
 var settings = {
 
@@ -39,10 +38,11 @@ var settings = {
             "menuMoveSpeed" : 0.2,
         // water effects
             "waveSpeed" : Math.PI / 8, // in radians per second
+
             "fishSpawnRate" : {min: 12, max: 20},
-            "fishMoveDistance" : 400,
-            "fishSpeed" : 0.02,
-            "fishMaxAlpha" : 0.5,
+            "fishMoveDistance" : 200,
+            "fishSpeed" : 0.01,
+            "fishMaxAlpha" : 0.25,
 
     // game settings
         // input
@@ -56,12 +56,16 @@ var settings = {
             "tilesPerLane" : 8, // do not modify!
             "lanes" : 4, // do not modify!
         // enemies
-            "paalwormHealth" : 10,
-            "paalwormDamage" : 2,
+            "weakPaalwormHealth" : 10,
+            "weakPaalwormDamage" : 2,
+
+            "strongPaalwormHealth" : 20,
+            "strongPaalwormDamage" : 2,
+
             "paalwormSpeed" : 1,
             "paalwormCooldown" : 1.5,
             "paalwormAttritionTime" : 1000,
-            "paalwormAttritionAmount" : 0,
+            "paalwormAttritionAmount" : 0, // attrition disabled
         // defences
             "defenceBuildCost" : 6,
             "defenceRange" : 10, // range for attacking enemies, in number of tiles

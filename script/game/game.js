@@ -1,8 +1,8 @@
 /* This file links to the other files, and contains some global utility functions
 and constants */
 includeJS("./script/game/vector2.js");
-includeJS("./script/game/language.json");
 includeJS("./settings.json");
+includeJS("./script/game/language.json");
 includeJS("./script/game/waves.json");
 includeJS("./script/game/audio.js");
 includeJS("./script/game/enemycontroller.js");
@@ -29,7 +29,7 @@ lerp = function(v1, v2, t) {
 
 // true if v1 and v2 are within the distance d
 inRange = function(v1, v2, d) {
-    return v1 - d > v2 && v1 + d < v2;
+    return v1 - d < v2 && v1 + d > v2;
 }
 
 // loads json file and returns it parsed as an object
@@ -51,4 +51,5 @@ const collisionBullet = 4;
 const collisionShell = 5;
 const collisionStone = 6;
 
+// used for final count down when not active
 const INACTIVE = -1000;

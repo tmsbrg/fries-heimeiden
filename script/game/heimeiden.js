@@ -18,7 +18,6 @@ Game.extend({
         this.initSelf();
         this.initDrawables();
         this.initGUI();
-
     },
     initConstants : function() {
         // calculated constants from settings
@@ -80,7 +79,7 @@ Game.extend({
 
             if (PlayerData.areWavesFinished &&
                 PlayerData.finalCountDown == INACTIVE) {
-                if (this.countActors("Enemy") == 0) {
+                if (this.countActors(collisionEnemy) == 0) {
                     this.win();
                 }
             }
@@ -91,7 +90,7 @@ Game.extend({
                 }
             }
             if (PlayerData.timeUntilNextFish <= 0) {
-                //this.spawnFish();
+                this.spawnFish();
                 PlayerData.timeUntilNextFish = random(settings.fishSpawnRate.max,
                                                       settings.fishSpawnRate.min);
             }
@@ -146,13 +145,14 @@ Game.extend({
             return this.spawnActor(position, buildingObject);
         } else {
             console.log("Not enough credits to build this defence!");
+            return null;
         }
     },
     // Spawns an enemy at lane index lane
-    spawnEnemy : function(lane) {
+    spawnEnemy : function(lane, enemyNumber) {
         this.spawnActor(new vec2((settings.tilesPerLane) * settings.tileSize.x,
                              lane * settings.tileSize.y),
-                        Enemy);
+                        EnemyTypes[enemyNumber]);
     },
     // Spawns an actor object at exact position position
     spawnActor : function (position, actorObject, layer) {
@@ -167,11 +167,14 @@ Game.extend({
         return actor;
     },
     spawnFish : function() {
-        console.log("New fish!");
         var fish = BackgroundFish.clone();
-        fish.id = PlayerData.currentFishId;
+        fish.fishId = PlayerData.currentFishId;
         PlayerData.currentFishId++;
-        fish.position = new vec2(1000, random(1080 - fish.size.y));
+        fish.position.x = random(1920 - fish.size.x,
+            fish.size.x + settings.fishMoveDistance + this.dyke.size.x);
+        fish.position.y = random(1080 - fish.size.y,
+            fish.size.y + settings.fishMoveDistance);
+        console.log(fish.position);
         this.addDrawable(fish, settings.fishLayer);
         this.Popups[this.Popups.length] = fish;
     },
@@ -191,17 +194,17 @@ Game.extend({
     },
     removeFishWithId : function(id) {
         for (var i=0; i<this.Popups.length; i++) {
-            if (this.Popups[i].id == id) {
-                this.removeDrawable(this.Popups[i].id);
+            if (this.Popups[i].fishId == id) {
+                this.removeDrawable(this.Popups[i]);
                 this.Popups.splice(i, 1);
                 return;
             }
         }
     },
-    countActors : function(actorName) {
+    countActors : function(collisionTag) {
         var count = 0;
         for (var i = this.Actors.length-1; i > -1; i--) {
-            if (this.Actors[i].name == actorName) {
+            if (this.Actors[i].collisionTag == collisionTag) {
                 count++;
             }
         }
@@ -209,7 +212,6 @@ Game.extend({
     },
     killAllDefences : function() {
         this.killAllWithName("Platform");
-        this.killAllWithName("ShDefence");
         this.killAllWithName("Defence");
         this.killAllWithName("Priest");
     },
@@ -278,7 +280,7 @@ PlayerData = {
         this.selectedBuilding = null;
         this.canBuild = true;
         this.finalCountDown = INACTIVE;
-        this.timeUntilNextFish = 0;
+        this.timeUntilNextFish = settings.fishSpawnRate.max;
         this.currentFishId = 0;
         this.lost = false;
     }

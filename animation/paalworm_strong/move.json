@@ -1,7 +1,11 @@
 {
     "frameN" : 20,
+    "framePadding" : {
+	    "x" : 1,
+	    "y" : 0
+    },
     "frameSize" : {
-        "x" : 212,
+        "x" : 210,
         "y" : 246
     },
     "secondsPerFrame" : 0.05

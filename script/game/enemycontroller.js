@@ -32,14 +32,15 @@ EnemyController.extend({
         if (this.spawnTimer <= 0) {
             this.spawnTimer = random(this.spawnInterval.max,
                                      this.spawnInterval.min);
-            if (this.parent.countActors("Enemy") < this.maxEnemies) {
-                if (this.enemyPool.Enemy > 0) {
+            if (this.parent.countActors(collisionEnemy) < this.maxEnemies) {
+                var enemyToSpawn = this.getEnemyFromPool();
+                if (enemyToSpawn != -1) {
                     var lane;
                     do {
                         lane = random(settings.lanes-1);
                     } while (this.lastLane == lane);
-                    this.parent.spawnEnemy(lane);
-                    this.enemyPool.Enemy--;
+                    this.parent.spawnEnemy(lane, enemyToSpawn);
+                    this.enemyPool[enemyToSpawn]--;
                     this.lastLane = lane;
                 } else {
                     this.currentSubWave++;
@@ -53,10 +54,46 @@ EnemyController.extend({
             }
         }
     },
+    // returns a random active enemy type from the pool
+    getEnemyFromPool : function() {
+        var activeEnemyTypes = this.getNumberOfActiveEnemyTypes();
+        if (activeEnemyTypes == 0) {
+            return -1; // No enemies in pool
+        }
+        var enemy = random(activeEnemyTypes-1);
+        return this.getActiveEnemy(enemy);
+    },
+    // returns the number of enemy types in the pool that are not empty
+    getNumberOfActiveEnemyTypes : function() {
+        var result = 0;
+        for (var i = this.enemyPool.length-1; i > -1; i--) {
+            if (this.enemyPool[i] > 0) {
+                result++;
+            }
+        }
+        return result;
+    },
+    // returns the enemy at index given by number, but ignoring inactive enemies
+    getActiveEnemy : function(number) {
+        var len = this.enemyPool.length;
+        for (var i = 0; i < len; i++) {
+            if (this.enemyPool[i] > 0) {
+                if (number == 0) {
+                    return i;
+                }
+                number--;
+            }
+        }
+        console.log("EnemyController Error: Cannot find Active Enemy " + number);
+        return -1;
+    },
+    // starts current wave
     startWave : function() {
         this.startSubWave();
         this.inWave = true;
     },
+    /* ends current wave and loads info for next wave, or stops if there are no
+       more waves */
     endWave : function() {
         this.inWave = false;
         this.spawnTimer = 0;
@@ -67,9 +104,11 @@ EnemyController.extend({
             this.stop();
         }
     },
+    // loads the current subwave's enemy pool
     startSubWave : function() {
         this.enemyPool = this.subWaves[this.currentSubWave].enemies.clone();
     },
+    // loads wave information for current wave
     setNewWaveInfo : function() {
         this.setWaveVariable("maxEnemies");
         this.setWaveVariable("spawnInterval");

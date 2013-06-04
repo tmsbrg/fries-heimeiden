@@ -66,7 +66,8 @@ InstructionScreen.extend({
     previousButton : GUIButton.clone(),
     nextButton : GUIButton.clone(),
     onDrawInit : function() {
-        this.position = new vec2(1920, 1080).add(new vec2(224, 0));
+        this.position = new vec2(1920, 1080).add(
+            new vec2(settings.fieldPosition.x, 0));
         this.position.divide(2);
         this.position.substract(new vec2(this.size).divide(2));
 

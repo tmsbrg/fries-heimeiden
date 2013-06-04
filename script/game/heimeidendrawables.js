@@ -61,9 +61,10 @@ Tile.extend({
                 if ((this.tileIndex == 1 || 
                     this.parent.getTile(this.tileIndex-1).platform) &&
                     this.platform == null) {
-                    this.platform = this.parent.buildBuilding(this.position.x,
-                        Platform);
-                    this.platform.tile = this;
+                    if ((this.platform = this.parent.buildBuilding(this.position.x,
+                        Platform)) != null) {
+                        this.platform.tile = this;
+                    }
                 }
             } else {
                 if (this.tileIndex == 0 || this.platform) {
@@ -308,26 +309,22 @@ Actor.extend({
 // Enemy moves to the left and attacks whatever defence or dyke comes in their way
 Enemy = Actor.clone();
 Enemy.extend({
-    name : "Enemy",
     size : new vec2(settings.paalwormSize.x*settings.tileSize.x,
                 settings.paalwormSize.y*settings.tileSize.y),
     treasure : null,
-    health : settings.paalwormHealth,
-    damage : settings.paalwormDamage,
-    speed : settings.paalwormSpeed,
     direction : LEFT,
     collisionTag : collisionEnemy,
     ignoreCollisions : [collisionEnemy, collisionDefence, collisionShell],
-    animations : ["./animation/paalworm/move", "./animation/paalworm/hit",
-                  "./animation/paalworm/attack"],
     attackTimer : 0,
     attackAnimation : 2,
+    moveAnimationOffset : 0, /* Number between 0 and Math.PI*2 that is used to 
+        synch the move animation with the movement speed */
     target : null,
     cooldown : settings.paalwormCooldown, // amount of seconds between attacks
     attritionTime : settings.paalwormAttritionTime, /* amount of seconds between 
-    losing health automatically */
+        losing health automatically */
     attritionAmount : settings.paalwormAttritionAmount, /* amount of health lost
-    every time by attrition */
+        every time by attrition */
     attritionTimer : null,
     onInit : function () {
         this.treasure = Treasure;
@@ -351,7 +348,7 @@ Enemy.extend({
 
         this.absoluteSpeed = this.speed * 
             (Math.sin(this.currentAnimation._currentFrame /
-                      this.currentAnimation.frameN * (2*Math.PI) + Math.PI * 0.5) *
+                      this.currentAnimation.frameN * (2*Math.PI) + this.moveAnimationOffset) *
              0.5 + 0.5) * settings.tileSize.x;
     },
     onChangeHealth : function () {
@@ -391,6 +388,28 @@ Enemy.extend({
     }
 });
 
+WeakEnemy = Enemy.clone();
+WeakEnemy.extend({
+    health : settings.weakPaalwormHealth,
+    damage : settings.weakPaalwormDamage,
+    speed : settings.paalwormSpeed,
+    moveAnimationOffset : Math.PI * 0.5,
+    animations : ["./animation/paalworm_weak/move", "./animation/paalworm_weak/hit",
+                  "./animation/paalworm_weak/attack"]
+});
+
+StrongEnemy = Enemy.clone();
+StrongEnemy.extend({
+    health : settings.strongPaalwormHealth,
+    damage : settings.strongPaalwormDamage,
+    speed : settings.paalwormSpeed,
+    moveAnimationOffset : Math.PI,
+    animations : ["./animation/paalworm_strong/move", "./animation/paalworm_strong/hit",
+                  "./animation/paalworm_weak/attack"]
+});
+
+EnemyTypes = [WeakEnemy, StrongEnemy];
+
 Defence = Actor.clone();
 Defence.extend({
     name : "Defence",
@@ -410,7 +429,7 @@ Defence.extend({
     // return true if an enemy is in range and on the same lane
     enemyInRange : function () {
         for (var i = this.actorList.length-1; i > -1; i--) {
-            if (this.actorList[i].name == "Enemy" && 
+            if (this.actorList[i].collisionTag == collisionEnemy && 
                 this.rayHitRect(new vec2(this.position.x + this.size.x,
                         this.position.y + this.centre.y),
                     this.range * settings.tileSize.x,
@@ -470,22 +489,22 @@ Priest.extend({
             this.unBuffAt(this.directions[i].x, this.directions[i].y);
         }
     },
-    getShootingDefenseAt : function(X, Y) {
+    getBuffableAt : function(X, Y) {
         var tile =  this.parent.getTile(this.tileXY.x + X, this.tileXY.y + Y);
-        if (tile != null && tile.building && tile.building.name == "ShDefence") {
+        if (tile != null && tile.building && tile.building.buff) {
             return tile.building;
         } else {
             return null;
         }
     },
     buffAt : function(X, Y) {
-        var defence = this.getShootingDefenseAt(X, Y);
+        var defence = this.getBuffableAt(X, Y);
         if (defence && !defence.isBuffed) {
             defence.buff();
         }
     },
     unBuffAt : function(X, Y) {
-        var defence = this.getShootingDefenseAt(X, Y);
+        var defence = this.getBuffableAt(X, Y);
         if (defence && defence.isBuffed) {
             defence.unBuff();
         }
@@ -494,7 +513,6 @@ Priest.extend({
 
 ShootingDefence = Defence.clone();
 ShootingDefence.extend({
-    name : "ShDefence",
     animations : ["./animation/heimeid/idle", "./animation/heimeid/move",
     "./animation/heimeid/attack_wait", "./animation/heimeid/attack",
     "./animation/heimeid/die",
@@ -830,20 +848,26 @@ BackgroundFish = Model.Drawables.SpriteDrawable.clone();
 BackgroundFish.extend({
     name : "fish",
     alpha : 1,
-    id : 0,
+    fishId : 0,
     ignoremouse : true,
     size : {x: 370, y: 131},
     speed : settings.fishSpeed,
+    destination : 0,
+    halfway : 0,
     onDrawInit : function() {
         this.load("./images/game/fish.png");
         this.destination = this.position.x - settings.fishMoveDistance;
+        this.halfway = this.position.x - settings.fishMoveDistance / 2;
     },
     update : function() {
         if (PlayerData.paused) return;
-        //this.alpha =
+
+        this.alpha = settings.fishMaxAlpha -
+                          (Math.abs(this.position.x - this.halfway) /
+                          this.halfway) * settings.fishMaxAlpha
         this.position.x = lerp(this.position.x, this.destination, this.speed);
-        if (inRange(this.position.x, this.destination, 10)) {
-            this.parent.removeFishWithId(this.id);
+        if (inRange(this.position.x, this.destination, 40)) {
+            this.parent.removeFishWithId(this.fishId);
         }
     }
 });
