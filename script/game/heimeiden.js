@@ -18,24 +18,25 @@ Game.extend({
         this.initSelf();
         this.initDrawables();
         this.initGUI();
+
     },
     initConstants : function() {
         // calculated constants from settings
         FIELD_SIZE = settings.tileSize.x * settings.tilesPerLane;
     },
     initSelf : function() {
-        this.size = vec2(View.canvasWidth, View.canvasHeight);
+        this.size = new vec2(View.canvasWidth, View.canvasHeight);
         Model.addDrawable(this);
     },
     // Initializes all static drawableObjects, should only be called once per load
     initDrawables : function() {
-        this.background.size = vec2(settings.tileSize.x * (settings.tilesPerLane),
+        this.background.size = new vec2(settings.tileSize.x * (settings.tilesPerLane),
                                     settings.tileSize.y * settings.lanes);
         this.background.visible = false;
         this.background.alpha = 0.99;
         this.background.load("./images/game/water.png");
         this.addDrawable(this.background, settings.backgroundImageLayer);
-        for (var i=0; i<this.Lanes.length; i++) {
+        for (var i = this.Lanes.length-1; i > -1; i--) {
             this.Lanes[i] = Lane.clone();
             this.Lanes[i].setLanePos(i);
             this.Lanes[i].visible = false;
@@ -44,7 +45,7 @@ Game.extend({
         this.addDrawable(EnemyController);
         this.addDrawable(this.dykeObjects[0], settings.groundLayer);
         this.addDrawable(this.dykeObjects[1], settings.dykeLayer);
-        for (i=0; i<this.dykeObjects.length; i++) {
+        for (i = this.dykeObjects.length-1; i > -1; i--) {
             this.dykeObjects[i].visible = false;
         }
         this.waves.visible = false;
@@ -52,21 +53,21 @@ Game.extend({
     },
     initGUI : function() {
         this.gui.init();
-        this.gui.startMenu();
+        this.gui.menuStart();
     },
     // Starts the game
     gameStart : function() {
         console.log("Starting Heimeiden...");
-        for (var i=0; i<this.Lanes.length; i++) {
+        for (var i = this.Lanes.length-1; i > -1; i--) {
             this.Lanes[i].visible = true;
         }
-        for (i=0; i<this.dykeObjects.length; i++) {
+        for (i = this.dykeObjects.length-1; i > -1; i--) {
             this.dykeObjects[i].visible = true;
         }
         this.background.visible = true;
         this.waves.visible = true;
         this.active = true;
-        this.dyke = this.spawnActor(vec2(0,0), Dyke, settings.dykeLayer);
+        this.dyke = this.spawnActor(new vec2(0,0), Dyke, settings.dykeLayer);
         this.gui.active = true;
         EnemyController.start();
         PlayerData.reset();
@@ -108,17 +109,17 @@ Game.extend({
     },
     // Stops the game
     gameStop : function() {
-        for (var i=0; i<this.Lanes.length; i++) {
+        for (var i = this.Lanes.length-1; i > -1; i--) {
             this.Lanes[i].reset();
             this.Lanes[i].visible = false;
         }
-        for (i=0; i<this.Actors.length; i++) {
+        for (i = this.Actors.length-1; i > -1; i--) {
             this.removeDrawable(this.Actors[i]);
         }
-        for (i=0; i<this.Popups.length; i++) {
+        for (i = this.Popups.length-1; i > -1; i--) {
             this.removeDrawable(this.Popups[i]);
         }
-        for (i=0; i<this.dykeObjects.length; i++) {
+        for (i = this.dykeObjects.length-1; i > -1; i--) {
             this.dykeObjects[i].visible = false;
         }
         this.Actors = new Array();
@@ -138,8 +139,8 @@ Game.extend({
             if (settings.deselectIconAfterBuild) {
                 GUI.deselectBuilding();
             }
-            popupText(vec2sum(position, vec2(settings.tileSize.x * 0.5,
-                                             settings.tileSize.y * 0.25)),
+            popupText(new vec2(settings.tileSize.x * 0.5,
+                               settings.tileSize.y * 0.25).add(position),
                       "-" + buildingObject.cost,
                       "#FE0000");
             return this.spawnActor(position, buildingObject);
@@ -149,7 +150,7 @@ Game.extend({
     },
     // Spawns an enemy at lane index lane
     spawnEnemy : function(lane) {
-        this.spawnActor(vec2((settings.tilesPerLane) * settings.tileSize.x,
+        this.spawnActor(new vec2((settings.tilesPerLane) * settings.tileSize.x,
                              lane * settings.tileSize.y),
                         Enemy);
     },
@@ -158,7 +159,7 @@ Game.extend({
         if (layer == null) layer = settings.characterLayer;
         var actor = actorObject.clone();
         if (actor.name == "Priest") {
-            actor.tileXY = vec2(position.x / settings.tileSize.x,
+            actor.tileXY = new vec2(position.x / settings.tileSize.x,
                                 position.y / settings.tileSize.y);
         }
         actor.position = position.clone();
@@ -170,7 +171,7 @@ Game.extend({
         var fish = BackgroundFish.clone();
         fish.id = PlayerData.currentFishId;
         PlayerData.currentFishId++;
-        fish.position = vec2(1000, random(1080 - fish.size.y));
+        fish.position = new vec2(1000, random(1080 - fish.size.y));
         this.addDrawable(fish, settings.fishLayer);
         this.Popups[this.Popups.length] = fish;
     },
@@ -182,7 +183,7 @@ Game.extend({
     },
     spawnEffect : function(position, effectObject) {
         var effect = effectObject.clone();
-        effect.position = vec2(position.x - effectObject.size.x / 2,
+        effect.position = new vec2(position.x - effectObject.size.x / 2,
                                position.y - effectObject.size.y / 2);
         this.addDrawable(effect, settings.effectLayer);
         this.Popups[this.Popups.length] = effect;
@@ -199,7 +200,7 @@ Game.extend({
     },
     countActors : function(actorName) {
         var count = 0;
-        for (var i=0; i<this.Actors.length; i++) {
+        for (var i = this.Actors.length-1; i > -1; i--) {
             if (this.Actors[i].name == actorName) {
                 count++;
             }
@@ -234,11 +235,13 @@ Game.extend({
         console.log("You lost the game!");
         this.killAllDefences();
         PlayerData.canBuild = false;
+        PlayerData.lost = true;
         PlayerData.finalCountDown = settings.timeUntilFreeze;
     },
     endGame : function() {
         PlayerData.paused = true;
         PlayerData.endOfGame = true;
+        this.gui.endGame();
     },
     getTile : function(X, Y) {
         if (Y >= 0 && Y < this.Lanes.length) {
@@ -263,6 +266,7 @@ PlayerData = {
     finalCountDown : null,
     timeUntilNextFish : null,
     currentFishId : null,
+    lost : null,
     reset : function() {
         this.paused = false;
         this.credits = settings.startingCredits;
@@ -276,6 +280,7 @@ PlayerData = {
         this.finalCountDown = INACTIVE;
         this.timeUntilNextFish = 0;
         this.currentFishId = 0;
+        this.lost = false;
     }
 };
 
@@ -291,7 +296,7 @@ popupText = function(position, text, color) {
     popupText.timeout = settings.popupTimeout;
     popupText.timeleft = settings.popupTimeout;
     popupText.speed = settings.popupSpeed;
-    popupText.position = vec2(position.x - popupText.size.x / 2, position.y);
+    popupText.position = new vec2(position.x - popupText.size.x / 2, position.y);
     popupText.update = function() {
         if (PlayerData.paused) return;
         this.position.y -= this.speed * deltaTime;
@@ -318,9 +323,9 @@ popupRect = function(position, size, color) {
         if (PlayerData.paused) return;
         this.timeleft -= deltaTime;
         this.alpha = this.timeleft / this.timeout;
-        this.size = vec2((1 - this.timeleft / this.timeout) * this.endSize.x,
+        this.size = new vec2((1 - this.timeleft / this.timeout) * this.endSize.x,
                          (1 - this.timeleft / this.timeout) * this.endSize.y);
-        this.position = vec2(this.startPosition.x -
+        this.position = new vec2(this.startPosition.x -
                 (this.size.x-this.endSize.x) / 2,
                 this.startPosition.y - (this.size.y-this.endSize.y) / 2);
         if (this.timeleft <= 0) {
@@ -342,9 +347,9 @@ popupImage = function(position, size, image) {
         if (PlayerData.paused) return;
         this.timeleft -= deltaTime;
         this.alpha = this.timeleft / this.timeout;
-        this.size = vec2((1 - this.timeleft / this.timeout) * this.endSize.x,
+        this.size = new vec2((1 - this.timeleft / this.timeout) * this.endSize.x,
                          (1 - this.timeleft / this.timeout) * this.endSize.y);
-        this.position = vec2(this.startPosition.x -
+        this.position = new vec2(this.startPosition.x -
                 (this.size.x-this.endSize.x) / 2,
                 this.startPosition.y - (this.size.y-this.endSize.y) / 2);
         if (this.timeleft <= 0) {

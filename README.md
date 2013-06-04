@@ -1,4 +1,4 @@
-Het Friese Heimeidenspel
+Het Fries Museum Heimeidenspel
 ========================
 
 Dutch
@@ -41,7 +41,7 @@ Komt nog: technisch ontwerp
 Dit product maakt gebruikt van software ontwikkeld door Eracle
 Software(http://www.eraclesoftware.com/) en Thomas van der Berg.
 
- * *HTML5_2DRE - Rendering Engine - Eracle Software / Ylon Schaeffer, Thomas van der Berg
+ * *HTML5_2DRE - Rendering Engine - Eracle Software / Ylon Schaeffer, Thomas van der Berg - 
    Onder de XFree86 licensie, zie ook: http://www.eraclesoftware.com/legal/*
 
 English

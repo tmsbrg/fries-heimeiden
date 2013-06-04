@@ -2,7 +2,7 @@
 // Creates and maintains an array of tiles for a lane
 Lane = Model.Drawables.BaseDrawable.clone();
 Lane.extend({
-    size : vec2(settings.tileSize.x*settings.tilesPerLane, settings.tileSize.y),
+    size : new vec2(settings.tileSize.x*settings.tilesPerLane, settings.tileSize.y),
     lanePos : 0,
     Tiles : new Array(settings.tilesPerLane),
     // sets its pixel position based on its lane position
@@ -11,7 +11,7 @@ Lane.extend({
         this.lanePos = pos;
     },
     onDrawInit : function() {
-        for (var i=0; i<settings.tilesPerLane; i++) {
+        for (var i = settings.tilesPerLane-1; i > -1; i--) {
             this.Tiles[i] = Tile.clone();
             this.Tiles[i].position.x += settings.tileSize.x * i;
             this.Tiles[i].tileIndex = i;
@@ -20,11 +20,11 @@ Lane.extend({
     },
     // makes Game create a defence on his lane at given x position
     buildBuilding : function(xpos, buildingObject) {
-        return this.parent.buildBuilding(vec2(xpos, this.position.y),
+        return this.parent.buildBuilding(new vec2(xpos, this.position.y),
             buildingObject);
     },
     reset : function() {
-        for (var i=0; i<this.Tiles.length; i++) {
+        for (var i = this.Tiles.length-1; i > -1; i--) {
             this.Tiles[i].reset();
         }
     },
@@ -83,7 +83,8 @@ ExtendedAnimation.extend({
     /* Takes animation base paths like ./animation/walk and loads the spritesheet
     ./animation/walk.png and settingst at ./animation/walk.json if it exists */
     addAnimationsWithJSON : function(animationArray) {
-        for(var i=0;i<animationArray.length;i++) {
+        len = animationArray.length;
+        for (var i = 0; i < len; i++) {
             var anim = Model.Drawables.AnimationDrawable.clone();
             var json = loadJSON(animationArray[i] + ".json");
             anim.extend(json);
@@ -146,7 +147,7 @@ Actor.extend({
     centreOnTile : function(centreX, centreY) {
         if (centreX == null) centreX = true;
         if (centreY == null) centreY = true;
-        this.position = vec2(centreX ?
+        this.position = new vec2(centreX ?
                     this.position.x + (settings.tileSize.x-this.size.x)/2
                 :   this.position.x,
                              centreY ?
@@ -156,9 +157,9 @@ Actor.extend({
     calculateAbsoluteSpeed : function() {
         return this.speed * settings.tileSize.x;
     },
-    // Returns a vec2 object containing the amount of pixels to its centre
+    // Returns a new vec2 object containing the amount of pixels to its centre
     calculateCentre : function() {
-        return vec2(this.size.x / 2 , this.size.y / 2);
+        return new vec2(this.size.x / 2 , this.size.y / 2);
     },
     // Calls this.onUpdate, moves if needed and checks collisions if moving
     update : function() {
@@ -193,17 +194,17 @@ Actor.extend({
     checkCollide : function(position) {
         if (this.actorList == null) return;
         if (position == null) position = this.position;
-        for (var i=0; i<this.actorList.length; i++) {
+        for (var i = this.actorList.length-1; i > -1; i--) {
             var ignore = false;
             if (this.actorList[i] == this) continue;
-            for (var j=0; j<this.ignoreCollisions.length; j++) {
+            for (var j = this.ignoreCollisions.length-1; j > -1; j--) {
                 if (this.actorList[i].collisionTag === this.ignoreCollisions[j]) {
                     ignore = true;
                     break;
                 }
             }
             if (ignore) continue;
-            if (this.rayHitRect(vec2(this.position.x + 
+            if (this.rayHitRect(new vec2(this.position.x + 
                         ((this.direction==LEFT) ? 0 : this.size.x),
                         this.position.y + this.centre.y),
                     this.direction * this.reach,
@@ -218,7 +219,7 @@ Actor.extend({
         }
         return null;
     },
-    /* Returns true if vec2 object point is in rectangle with position
+    /* Returns true if new vec2 object point is in rectangle with position
     rectPos and size rectSize, false otherwise. */
     pointInRect : function(point, rectPos, rectSize) {
         return (point.x > rectPos.x && point.x < rectPos.x + rectSize.x &&
@@ -263,7 +264,7 @@ Actor.extend({
     die : function () {
         this.onDeath();
         if (this.actorList != null) {
-            for (var i=0; i<this.actorList.length;i++) {
+            for (var i = this.actorList.length-1; i > -1; i--) {
                 if (this.actorList[i] == this) {
                     this.actorList.splice(i, 1);
                     break;
@@ -308,7 +309,7 @@ Actor.extend({
 Enemy = Actor.clone();
 Enemy.extend({
     name : "Enemy",
-    size : vec2(settings.paalwormSize.x*settings.tileSize.x,
+    size : new vec2(settings.paalwormSize.x*settings.tileSize.x,
                 settings.paalwormSize.y*settings.tileSize.y),
     treasure : null,
     health : settings.paalwormHealth,
@@ -321,7 +322,6 @@ Enemy.extend({
                   "./animation/paalworm/attack"],
     attackTimer : 0,
     attackAnimation : 2,
-    attackFrame : 19,
     target : null,
     cooldown : settings.paalwormCooldown, // amount of seconds between attacks
     attritionTime : settings.paalwormAttritionTime, /* amount of seconds between 
@@ -348,13 +348,6 @@ Enemy.extend({
         if (this.attackTimer > 0) {
             this.attackTimer -= deltaTime;
         }
-        if (this.currentAnimationIndex == this.attackAnimation &&
-            this.currentAnimation._currentFrame == this.attackFrame) {
-            if (this.target != null) {
-                this.attack(this.target);
-                this.target = null;
-            }
-        }
 
         this.absoluteSpeed = this.speed * 
             (Math.sin(this.currentAnimation._currentFrame /
@@ -374,9 +367,11 @@ Enemy.extend({
     customOnAnimationComplete : function() {
         switch (this.currentAnimationIndex) {
             case this.attackAnimation:
-                if (this.target == null) {
-                    this.showActorAnimation(0);
+                if (this.target != null) {
+                    this.attack(this.target);
+                    this.setTarget(null);
                 }
+                this.showActorAnimation(0);
                 break;
             case 1:
                 this.showActorAnimation(0);
@@ -387,7 +382,7 @@ Enemy.extend({
         this.target = target;
     },
     onDeath : function () {
-        this.parent.spawnActor(vec2(this.position.x + this.size.x/2
+        this.parent.spawnActor(new vec2(this.position.x + this.size.x/2
                                         - this.treasure.size.x/2,
                                     this.position.y + this.size.y/2
                                         - this.treasure.size.y/2),
@@ -399,7 +394,7 @@ Enemy.extend({
 Defence = Actor.clone();
 Defence.extend({
     name : "Defence",
-    size : vec2(settings.defenseSize.x*settings.tileSize.x,
+    size : new vec2(settings.defenseSize.x*settings.tileSize.x,
                 settings.defenseSize.y*settings.tileSize.y),
     animations : ["./animation/temp_defence"],
     collisionTag : collisionDefence,
@@ -414,9 +409,9 @@ Defence.extend({
     },
     // return true if an enemy is in range and on the same lane
     enemyInRange : function () {
-        for (var i=0; i<this.actorList.length; i++) {
+        for (var i = this.actorList.length-1; i > -1; i--) {
             if (this.actorList[i].name == "Enemy" && 
-                this.rayHitRect(vec2(this.position.x + this.size.x,
+                this.rayHitRect(new vec2(this.position.x + this.size.x,
                         this.position.y + this.centre.y),
                     this.range * settings.tileSize.x,
                     this.actorList[i].position,
@@ -463,15 +458,15 @@ Priest.extend({
     animations : ["./animation/dominee/idle", "./animation/dominee/active",
         "./animation/dominee/die"],
     deathAnimation : 2,
-    directions : [vec2(-1,0), vec2(0,1), vec2(1,0), vec2(0,-1)],
-    tileXY : vec2(0,0),
+    directions : [new vec2(-1,0), new vec2(0,1), new vec2(1,0), new vec2(0,-1)],
+    tileXY : new vec2(0,0),
     onUpdate : function() {
-        for (var i=0; i<this.directions.length; i++) {
+        for (var i = this.directions.length-1; i > -1; i--) {
             this.buffAt(this.directions[i].x, this.directions[i].y);
         }
     },
     onDeath : function() {
-        for (var i=0; i<this.directions.length; i++) {
+        for (var i = this.directions.length-1; i > -1; i--) {
             this.unBuffAt(this.directions[i].x, this.directions[i].y);
         }
     },
@@ -539,7 +534,7 @@ ShootingDefence.extend({
         // Throw a stone if ready
         if (this.goSpawnBullet) {
             this.goSpawnBullet = false;
-            var bul = this.parent.spawnActor(vec2(
+            var bul = this.parent.spawnActor(new vec2(
                     this.position.x + this.size.x - this.bullet.size.x/2,
                     this.position.y + this.size.y/3 - this.bullet.size.y/2),
                 this.bullet,
@@ -612,7 +607,7 @@ ShootingDefence.extend({
 Dyke = Actor.clone();
 Dyke.extend({
     name : "Dyke",
-    size : vec2(settings.tileSize.x, settings.tileSize.y * settings.lanes),
+    size : new vec2(settings.tileSize.x, settings.tileSize.y * settings.lanes),
     animations : ["./animation/objects/dyke/healthfull",
                   "./animation/objects/dyke/healthlost",
                   "./animation/objects/dyke/healthcritical"],
@@ -644,7 +639,7 @@ Dyke.extend({
 Bullet = Actor.clone();
 Bullet.extend({
     name : "Bullet",
-    size : vec2(settings.tileSize.x * settings.bulletSize,
+    size : new vec2(settings.tileSize.x * settings.bulletSize,
                 settings.tileSize.y * settings.bulletSize),
     animations : ["./animation/objects/stone", "./animation/objects/stone_buffed"],
     direction : RIGHT,
@@ -666,7 +661,7 @@ Bullet.extend({
     },
     onCollide : function (other) {
         other.changeHealth(-this.damage);
-        var poof = this.parent.spawnEffect(vec2(this.position.x +
+        var poof = this.parent.spawnEffect(new vec2(this.position.x +
                                                 settings.tileSize.x * 0.125, 
                                      this.position.y + settings.tileSize.y * 0.125),
                                 this.poof);
@@ -693,7 +688,7 @@ Treasure.extend({
     collisionTag : collisionShell,
     invulnerable : true,
     solid : false,
-    size : vec2(settings.tileSize.x * settings.shellSize.x,
+    size : new vec2(settings.tileSize.x * settings.shellSize.x,
                 settings.tileSize.y * settings.shellSize.y),
     onInit : function() {
     },
@@ -709,7 +704,7 @@ Treasure.extend({
             this.parent.addCredits(settings.shellWorth);
             popupImage(this.position, this.size, "./images/game/shell_fade.png");
             this.die();
-            popupText(vec2(this.position.x + this.size.x/2,
+            popupText(new vec2(this.position.x + this.size.x/2,
                             this.position.y),
                             "+" + settings.shellWorth);
         }
@@ -741,7 +736,7 @@ Platform.extend({
 Effect = ExtendedAnimation.clone()
 Effect.extend({
     name : "Effect",
-    size : vec2(settings.tileSize.x * 0.75, settings.tileSize.y * 0.75),
+    size : new vec2(settings.tileSize.x * 0.75, settings.tileSize.y * 0.75),
     animations : ["./animation/effects/poof", "./animation/effects/poof2"],
     onDrawInit : function() {
         this.addAnimationsWithJSON(this.animations);
@@ -760,15 +755,15 @@ DykeSupports.extend({
     supports : Model.Drawables.SpriteDrawable.clone(),
     onDrawInit : function() {
         this.supports.load("./images/game/dyke/supports_front.png");
-        this.supports.position = vec2(0, settings.tileSize.y * 1.4);
-        this.supports.size = vec2(212, 632);
+        this.supports.position = new vec2(0, settings.tileSize.y * 1.4);
+        this.supports.size = new vec2(212, 632);
         this.addDrawable(this.supports);
     },
 });
 
 DykeFloor = Model.Drawables.BaseDrawable.clone();
 DykeFloor.extend({
-    size : vec2(212, 984),
+    size : new vec2(212, 984),
     ignoremouse : true,
     supports : Model.Drawables.SpriteDrawable.clone(),
     grass : Model.Drawables.SpriteDrawable.clone(),
@@ -777,11 +772,11 @@ DykeFloor.extend({
         this.grass.load("./images/game/dyke/grass.png");
         this.grass.size = this.size;
         this.addDrawable(this.grass);
-        this.water.size = vec2(212, 984);
+        this.water.size = new vec2(212, 984);
         this.changeWaterLevel(0);
         this.addDrawable(this.water);
         this.supports.load("./images/game/dyke/supports_back.png");
-        this.supports.size = vec2(this.size.x, 353);
+        this.supports.size = new vec2(this.size.x, 353);
         this.addDrawable(this.supports);
     },
     changeWaterLevel : function(newLevel) {
@@ -803,7 +798,7 @@ DykeFloor.extend({
 
 BackgroundWaves = Model.Drawables.SpriteDrawable.clone();
 BackgroundWaves.extend({
-    size : vec2(2106, 1306),
+    size : new vec2(2106, 1306),
     alpha : 1,
     originPosition : null,
     radius : 108,

@@ -1,5 +1,6 @@
 /* This file links to the other files, and contains some global utility functions
 and constants */
+includeJS("./script/game/vector2.js");
 includeJS("./script/game/language.json");
 includeJS("./settings.json");
 includeJS("./script/game/waves.json");
@@ -8,35 +9,6 @@ includeJS("./script/game/enemycontroller.js");
 includeJS("./script/game/heimeidendrawables.js");
 includeJS("./script/game/gui.js");
 includeJS("./script/game/heimeiden.js");
-
-// function for easily generating objects with x and y co-ordinates
-vec2 = function (givenx, giveny) {
-    return {x:givenx,y:giveny};
-}
-
-vec2sum = function (a, b) {
-    if (typeof b == "number") {
-        return vec2(a.x + b, a.y + b);
-    } else {
-        return vec2(a.x + b.x, a.y + b.y);
-    }
-}
-
-vec2divide = function (a, b) {
-    if (typeof b == "number") {
-        return vec2(a.x / b, a.y / b);
-    } else {
-        return vec2(a.x / b.x, a.x / b.x);
-    }
-}
-
-vec2multiply = function (a, b) {
-    if (typeof b == "number") {
-        return vec2(a.x * b, a.y * b);
-    } else {
-        return vec2(a.x * b.x, a.x * b.x);
-    }
-}
 
 // no arguments given: returns random float between 0 and 1
 // only max given: returns random int between 0 and max

@@ -54,7 +54,6 @@ EnemyController.extend({
         }
     },
     startWave : function() {
-        console.log("Starting wave " + this.currentWave + ".");
         this.startSubWave();
         this.inWave = true;
     },
@@ -69,7 +68,6 @@ EnemyController.extend({
         }
     },
     startSubWave : function() {
-        console.log("Starting subwave " + this.currentSubWave + ".");
         this.enemyPool = this.subWaves[this.currentSubWave].enemies.clone();
     },
     setNewWaveInfo : function() {

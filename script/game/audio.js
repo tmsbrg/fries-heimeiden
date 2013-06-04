@@ -13,7 +13,7 @@ AudioPlayer.extend({
                 audio.setAttribute('src', arguments[i]);
                 this.audioList[this.audioList.length] = audio;
             } else {
-                console.log("audioPlayer Error: arguments are not all strings");
+                console.log("AudioPlayer Error: arguments are not all strings");
                 break;
             }
         }

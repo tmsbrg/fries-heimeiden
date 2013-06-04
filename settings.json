@@ -47,6 +47,7 @@ var settings = {
     // game settings
         // input
             "deselectIconAfterBuild" : false,
+            "canDeselectBuilding" : false,
         // credits
             "startingCredits" : 20,
             "secondsToCreditUpdate" : 2,
@@ -89,5 +90,5 @@ var settings = {
             "defaultSpawnInterval" : {"min":2, "max":5},
             "defaultWaitBeforeWave" : 7, // in seconds
         // end of game
-            "timeUntilFreeze" : 5, // after winning or losing
+            "timeUntilFreeze" : 3, // after winning or losing
 }
