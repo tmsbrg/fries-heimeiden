@@ -138,15 +138,22 @@ Game.extend({
             if (settings.deselectIconAfterBuild) {
                 GUI.deselectBuilding();
             }
-            popupText(new vec2(settings.tileSize.x * 0.5,
-                               settings.tileSize.y * 0.25).add(position),
-                      "-" + buildingObject.cost,
-                      "#FE0000");
+            this.creditsPopupOnTile(position, buildingObject.cost, false);
             return this.spawnActor(position, buildingObject);
         } else {
             console.log("Not enough credits to build this defence!");
             return null;
         }
+    },
+    // makes a popup on tile at tilePosition for credit add/remove feedback
+    creditsPopupOnTile : function(tilePosition, amount, positive) {
+        if (positive == null) {
+            positive = true;
+        }
+        popupText(new vec2(settings.tileSize.x * 0.5,
+                           settings.tileSize.y * 0.25).add(tilePosition),
+                  (positive? "+" : "-") + amount,
+                  (positive? null : "#FE0000"));
     },
     // Spawns an enemy at lane index lane
     spawnEnemy : function(lane, enemyNumber) {
@@ -170,11 +177,10 @@ Game.extend({
         var fish = BackgroundFish.clone();
         fish.fishId = PlayerData.currentFishId;
         PlayerData.currentFishId++;
-        fish.position.x = random(1920 - fish.size.x,
+        fish.position.x = random(1920 - settings.fieldPosition.x - fish.size.x,
             fish.size.x + settings.fishMoveDistance + this.dyke.size.x);
-        fish.position.y = random(1080 - fish.size.y,
-            fish.size.y + settings.fishMoveDistance);
-        console.log(fish.position);
+        fish.position.y = random(1080 - settings.fieldPosition.y - fish.size.y,
+            fish.size.y);
         this.addDrawable(fish, settings.fishLayer);
         this.Popups[this.Popups.length] = fish;
     },

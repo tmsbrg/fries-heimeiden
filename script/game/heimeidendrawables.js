@@ -23,6 +23,11 @@ Lane.extend({
         return this.parent.buildBuilding(new vec2(xpos, this.position.y),
             buildingObject);
     },
+    creditsPopupOnTile : function(xpos, amount, positive) {
+        this.parent.creditsPopupOnTile(new vec2(xpos, this.position.y),
+                                       amount,
+                                       positive);
+    },
     reset : function() {
         for (var i = this.Tiles.length-1; i > -1; i--) {
             this.Tiles[i].reset();
@@ -37,43 +42,86 @@ Lane.extend({
     }
 });
 
-// Stuff can be built on tiles
+// Tile object, handles mouse clicks and building stuff on them
 Tile = Model.Drawables.BaseDrawable.clone();
 Tile.extend({
     size : settings.tileSize.clone(),
     tileIndex : null,
     platform : null,
     building : null,
+    // Empties the Tile's references to its building and platform
     reset : function() {
         this.building = null;
         this.platform = null;
     },
+    // handles building on the tile
     onclick : function () {
-        if (!PlayerData.paused && this.building == null && 
-            PlayerData.selectedBuilding != null) {
-            if (PlayerData.selectedBuilding == Stone) {
-                if (!this.platform && this.tileIndex != 0) {
-                    this.building = this.parent.buildBuilding(this.position.x,
-                        PlayerData.selectedBuilding);
-                    this.building.tile = this;
-                }
-            } else if (PlayerData.selectedBuilding == Platform) {
-                if ((this.tileIndex == 1 || 
-                    this.parent.getTile(this.tileIndex-1).platform) &&
-                    this.platform == null) {
-                    if ((this.platform = this.parent.buildBuilding(this.position.x,
-                        Platform)) != null) {
-                        this.platform.tile = this;
-                    }
-                }
-            } else {
-                if (this.tileIndex == 0 || this.platform) {
-                    this.building = this.parent.buildBuilding(this.position.x,
-                        PlayerData.selectedBuilding);
-                    if (this.platform) {
-                        this.platform.building = this.building;
-                    }
-                }
+        if (!PlayerData.paused && PlayerData.selectedBuilding != null) {
+            switch (PlayerData.selectedBuilding) {
+            case Stone:
+                this.buildStone();
+                break;
+            case Platform:
+                this.buildPlatform();
+                break;
+            case RemoveDefence:
+                this.removeDefence();
+                break;
+            default:
+                this.buildDefault();
+                break;
+            }
+        }
+    },
+    // checks if a stone can be built here and attempts to build it
+    buildStone : function() {
+        if (!this.building && !this.platform && this.tileIndex != 0) {
+            this.building = this.parent.buildBuilding(this.position.x,
+                PlayerData.selectedBuilding);
+            if (this.building) {
+                this.building.tile = this;
+            }
+        }
+    },
+    // checks if a platform can be built and attempts to build it
+    buildPlatform : function() {
+        if (!this.building && (this.tileIndex == 1 || 
+            this.parent.getTile(this.tileIndex-1).platform) &&
+            this.platform == null) {
+            if ((this.platform = this.parent.buildBuilding(this.position.x,
+                Platform)) != null) {
+                this.platform.tile = this;
+            }
+        }
+    },
+    /* removes building if present, otherwise removes platform if present.
+       returns part of the money */
+    removeDefence : function() {
+        var returnMoney = 0;
+        if (this.building) {
+            returnMoney = this.building.cost * settings.sellRate;
+            this.building.die();
+            this.building = null;
+        } else if (this.platform) {
+            returnMoney = this.platform.cost * settings.sellRate;
+            this.platform.die();
+            this.reset();
+        }
+
+        returnMoney = Math.round(returnMoney);
+
+        if (returnMoney > 0) {
+            Game.addCredits(returnMoney);
+            this.parent.creditsPopupOnTile(this.position.x, returnMoney);
+        }
+    },
+    // attempts to build any other kind of defence, assuming it needs a platform
+    buildDefault : function() {
+        if (!this.building && (this.tileIndex == 0 || this.platform)) {
+            this.building = this.parent.buildBuilding(this.position.x,
+                PlayerData.selectedBuilding);
+            if (this.platform) {
+                this.platform.building = this.building;
             }
         }
     }
@@ -327,7 +375,6 @@ Enemy.extend({
         every time by attrition */
     attritionTimer : null,
     onInit : function () {
-        this.treasure = Treasure;
         this.attritionTimer = this.attritionTime;
         this.centreOnTile(true, false);
         this.position.y += settings.tileSize.y * 0.05;
@@ -395,7 +442,11 @@ WeakEnemy.extend({
     speed : settings.paalwormSpeed,
     moveAnimationOffset : Math.PI * 0.5,
     animations : ["./animation/paalworm_weak/move", "./animation/paalworm_weak/hit",
-                  "./animation/paalworm_weak/attack"]
+                  "./animation/paalworm_weak/attack"],
+    onInit : function() {
+        this.treasure = WeakTreasure;
+        Enemy.onInit.apply(this);
+    }
 });
 
 StrongEnemy = Enemy.clone();
@@ -405,7 +456,11 @@ StrongEnemy.extend({
     speed : settings.paalwormSpeed,
     moveAnimationOffset : Math.PI,
     animations : ["./animation/paalworm_strong/move", "./animation/paalworm_strong/hit",
-                  "./animation/paalworm_weak/attack"]
+                  "./animation/paalworm_strong/attack"],
+    onInit : function() {
+        this.treasure = StrongTreasure;
+        Enemy.onInit.apply(this);
+    }
 });
 
 EnemyTypes = [WeakEnemy, StrongEnemy];
@@ -700,16 +755,15 @@ Treasure = Actor.clone();
 Treasure.extend({
     name : "Treasure",
     ignoremouse : false,
+    fadeShell : "",
     fadeCounter : 0,
-    animations : ["./animation/objects/shell"],
     fadeTime : settings.shellFadeTime,
     collisionTag : collisionShell,
     invulnerable : true,
+    worth : 2,
     solid : false,
     size : new vec2(settings.tileSize.x * settings.shellSize.x,
                 settings.tileSize.y * settings.shellSize.y),
-    onInit : function() {
-    },
     onUpdate : function() {
         this.fadeCounter += deltaTime;
         this.currentAnimation.alpha = 1 - (this.fadeCounter / this.fadeTime);
@@ -719,17 +773,31 @@ Treasure.extend({
     },
     onhover : function() {
         if (!PlayerData.paused) {
-            this.parent.addCredits(settings.shellWorth);
-            popupImage(this.position, this.size, "./images/game/shell_fade.png");
-            this.die();
+            this.parent.addCredits(this.worth);
             popupText(new vec2(this.position.x + this.size.x/2,
                             this.position.y),
-                            "+" + settings.shellWorth);
+                            "+" + this.worth);
+            popupImage(this.position, this.size, this.fadeShell);
+            this.die();
         }
     },
     onclick : function () {
         this.onhover();
     }
+});
+
+WeakTreasure = Treasure.clone();
+WeakTreasure.extend({
+    worth : settings.weakShellWorth,
+    animations : ["./animation/objects/shell_weak"],
+    fadeShell : "./images/game/shell_weak_fade.png"
+});
+
+StrongTreasure = Treasure.clone();
+StrongTreasure.extend({
+    worth : settings.strongShellWorth,
+    animations : ["./animation/objects/shell_strong"],
+    fadeShell : "./images/game/shell_strong_fade.png"
 });
 
 Platform = Actor.clone()
@@ -743,7 +811,7 @@ Platform.extend({
     cost : settings.platformBuildCost,
     onDeath : function () {
         if (this.building) {
-            this.building.changeHealth(-9999);
+            this.building.animatedDie();
         }
         if (this.tile) {
             this.tile.reset();
@@ -854,20 +922,24 @@ BackgroundFish.extend({
     speed : settings.fishSpeed,
     destination : 0,
     halfway : 0,
+    disappearOffset : 40,
     onDrawInit : function() {
         this.load("./images/game/fish.png");
         this.destination = this.position.x - settings.fishMoveDistance;
-        this.halfway = this.position.x - settings.fishMoveDistance / 2;
+        this.halfway = this.position.x - (settings.fishMoveDistance - this.disappearOffset) / 2;
     },
     update : function() {
         if (PlayerData.paused) return;
 
         this.alpha = settings.fishMaxAlpha -
                           (Math.abs(this.position.x - this.halfway) /
-                          this.halfway) * settings.fishMaxAlpha
+                              (this.halfway - this.destination - this.disappearOffset))
+                          * settings.fishMaxAlpha;
         this.position.x = lerp(this.position.x, this.destination, this.speed);
-        if (inRange(this.position.x, this.destination, 40)) {
+        if (inRange(this.position.x, this.destination, this.disappearOffset)) {
             this.parent.removeFishWithId(this.fishId);
         }
     }
 });
+
+RemoveDefence = {};

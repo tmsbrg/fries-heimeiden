@@ -65,6 +65,7 @@ InstructionScreen.extend({
     screenObject : Model.Drawables.SpriteDrawable.clone(),
     previousButton : GUIButton.clone(),
     nextButton : GUIButton.clone(),
+    closeButton : GUIButton.clone(),
     onDrawInit : function() {
         this.position = new vec2(1920, 1080).add(
             new vec2(settings.fieldPosition.x, 0));
@@ -81,6 +82,7 @@ InstructionScreen.extend({
             this.parent.previousScreen();
         }
         this.addDrawable(this.previousButton);
+
         this.nextButton.setBasepath("./images/gui/instructions/next");
         this.nextButton.size = new vec2(430, 110);
         this.nextButton.position = new vec2(this.size).substract(this.nextButton.size);
@@ -88,11 +90,32 @@ InstructionScreen.extend({
             this.parent.nextScreen();
         }
         this.addDrawable(this.nextButton);
+
+        this.closeButton.setBasepath("./images/gui/instructions/close");
+        this.closeButton.size = new vec2(430, 110);
+        this.closeButton.position = new vec2(this.size.y - this.closeButton.size.y,
+                                             0);
+        this.closeButton.onclick = function() {
+            this.parent.close();
+        }
+        this.addDrawable(this.closeButton);
+
         this.reset();
     },
     loadScreen : function(number) {
         this.currentScreen = number;
         this.screenObject.load(this.screens[number]);
+        if (number == 0) {
+            this.previousButton.visible = false;
+        } else if (this.previousButton.visible == false) {
+            this.previousButton.visible = true;
+        }
+
+        if (number == this.screens.length-1) {
+            this.nextButton.visible = false;
+        } else if (this.nextButton.visible == false) {
+            this.nextButton.visible = true;
+        }
     },
     reset : function() {
         this.visible = false;
@@ -243,8 +266,9 @@ GUI.extend({
         this.addGUIElement(this.startButton, false);
         this.addBuildingSelectButton(ShootingDefence, "./images/gui/icons/heimeid_stone");
         this.addBuildingSelectButton(Platform, "./images/gui/icons/platform");
-        this.addBuildingSelectButton(Stone, "./images/gui/icons/stone");
         this.addBuildingSelectButton(Priest, "./images/gui/icons/dominee");
+        this.addBuildingSelectButton(Stone, "./images/gui/icons/stone");
+        this.addBuildingSelectButton(RemoveDefence, "./images/gui/icons/remove");
     },
     initMenuBar : function() {
         this.menuBar = MenuBar;

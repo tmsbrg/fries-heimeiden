@@ -30,7 +30,6 @@ Komt nog: technisch ontwerp
 #### Ontwikkelingsteam
  * *Thomas van der Berg - Programmeren*
  * *Remko Jansma - 2D art / animatie*
- * *Tijs van Klink - Game Design*
  * *Denise Tiam-Fook - 2D art / animatie*
 
 #### Externen
