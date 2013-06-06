@@ -13,8 +13,8 @@ var settings = {
         // actor sizes
             "bulletSize" : 0.25,
             "shellSize" : {
-                "x" : 0.8,
-                "y" : 0.3219512
+                "x" : 0.6,
+                "y" : 0.2414634
             },
             "paalwormSize" : {
                 "x" : 0.8,
@@ -43,6 +43,8 @@ var settings = {
             "fishMoveDistance" : 300,
             "fishSpeed" : 0.01,
             "fishMaxAlpha" : 1,
+        // actor fluff
+            "timeUntilPriestActive" : {min : 5, max: 15},
 
     // game settings
         // input

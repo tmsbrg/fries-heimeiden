@@ -184,6 +184,11 @@ Actor.extend({
         this.showAnimation(0);
         this.onInit();
     },
+    preload : function() {
+        for (var i = this.animations.length-1; i > -1; i--) {
+            preload(this.animations[i] + ".png");
+        }
+    },
     // Sets its size and then recalculates its centre
     setSize : function(size) {
         this.size = size;
@@ -470,7 +475,7 @@ Defence.extend({
     name : "Defence",
     size : new vec2(settings.defenseSize.x*settings.tileSize.x,
                 settings.defenseSize.y*settings.tileSize.y),
-    animations : ["./animation/temp_defence"],
+    animations : [],
     collisionTag : collisionDefence,
     cooldown : settings.defenceCooldown,
     range : settings.defenceRange,
@@ -532,11 +537,18 @@ Priest.extend({
     animations : ["./animation/dominee/idle", "./animation/dominee/active",
         "./animation/dominee/die"],
     deathAnimation : 2,
+    timeUntilActive : 0,
     directions : [new vec2(-1,0), new vec2(0,1), new vec2(1,0), new vec2(0,-1)],
     tileXY : new vec2(0,0),
     onUpdate : function() {
         for (var i = this.directions.length-1; i > -1; i--) {
             this.buffAt(this.directions[i].x, this.directions[i].y);
+        }
+        this.timeUntilActive -= deltaTime;
+        if (this.timeUntilActive < 0) {
+            this.showActorAnimation(1);
+            this.timeUntilActive = random(settings.timeUntilPriestActive.max,
+                                          settings.timeUntilPriestActive.min);
         }
     },
     onDeath : function() {
@@ -562,6 +574,11 @@ Priest.extend({
         var defence = this.getBuffableAt(X, Y);
         if (defence && defence.isBuffed) {
             defence.unBuff();
+        }
+    },
+    customOnAnimationComplete : function(currentAnimation) {
+        if (currentAnimation == 1) {
+            this.showActorAnimation(0);
         }
     }
 });
@@ -833,35 +850,46 @@ Effect.extend({
     },
     onAnimationComplete : function(currentAnimation) {
         this.parent.removeDrawable(this);
+    },
+    preload : function() {
+        Actor.preload.apply(this);
     }
 });
 
 DykeSupports = Model.Drawables.BaseDrawable.clone();
 DykeSupports.extend({
     supports : Model.Drawables.SpriteDrawable.clone(),
+    image : "./images/game/dyke/supports_front.png",
     onDrawInit : function() {
-        this.supports.load("./images/game/dyke/supports_front.png");
+        this.supports.load(this.image);
         this.supports.position = new vec2(0, settings.tileSize.y * 1.4);
         this.supports.size = new vec2(212, 632);
         this.addDrawable(this.supports);
     },
+    preload : function() {
+        preload(this.image);
+    }
 });
 
 DykeFloor = Model.Drawables.BaseDrawable.clone();
 DykeFloor.extend({
     size : new vec2(212, 984),
     ignoremouse : true,
+    grassImage : "./images/game/dyke/grass.png",
+    supportsImage : "./images/game/dyke/supports_back.png",
+    waterImage1 : "./images/game/dyke/water_01.png",
+    waterImage2 : "./images/game/dyke/water_02.png",
     supports : Model.Drawables.SpriteDrawable.clone(),
     grass : Model.Drawables.SpriteDrawable.clone(),
     water : Model.Drawables.SpriteDrawable.clone(),
     onDrawInit : function() {
-        this.grass.load("./images/game/dyke/grass.png");
+        this.grass.load(this.grassImage);
         this.grass.size = this.size;
         this.addDrawable(this.grass);
         this.water.size = new vec2(212, 984);
         this.changeWaterLevel(0);
         this.addDrawable(this.water);
-        this.supports.load("./images/game/dyke/supports_back.png");
+        this.supports.load(this.supportsImage);
         this.supports.size = new vec2(this.size.x, 353);
         this.addDrawable(this.supports);
     },
@@ -869,16 +897,22 @@ DykeFloor.extend({
         if (newLevel > 2 || newLevel < 0) return;
         if (newLevel == 2) {
             this.water.visible = true;
-            this.water.load("./images/game/dyke/water_02.png");
+            this.water.load(this.waterImage2);
         } else if (newLevel == 1) {
             this.water.visible = true;
-            this.water.load("./images/game/dyke/water_01.png");
+            this.water.load(this.waterImage1);
         } else {
             this.water.visible = false;
         }
     },
     reset : function() {
         this.changeWaterLevel(0);
+    },
+    preload : function() {
+        preload(this.grassImage);
+        preload(this.supportsImage);
+        preload(this.waterImage1);
+        preload(this.waterImage2);
     }
 });
 
@@ -889,9 +923,13 @@ BackgroundWaves.extend({
     originPosition : null,
     radius : 108,
     rotationSpeed : settings.waveSpeed,
+    wavesImage : "./images/game/water_waves.png",
     currentRotation : 0,
+    preload : function() {
+        preload(this.wavesImage);
+    },
     onDrawInit : function() {
-        this.load("./images/game/water_waves.png");
+        this.load(this.wavesImage);
         this.originPosition = {
             x : this.position.x - this.radius,
             y : this.position.y - this.radius
@@ -920,13 +958,17 @@ BackgroundFish.extend({
     ignoremouse : true,
     size : {x: 370, y: 131},
     speed : settings.fishSpeed,
+    fishImage : "./images/game/fish.png",
     destination : 0,
     halfway : 0,
     disappearOffset : 40,
     onDrawInit : function() {
-        this.load("./images/game/fish.png");
+        this.load(this.fishImage);
         this.destination = this.position.x - settings.fishMoveDistance;
         this.halfway = this.position.x - (settings.fishMoveDistance - this.disappearOffset) / 2;
+    },
+    preload : function() {
+        preload(this.fishImage);
     },
     update : function() {
         if (PlayerData.paused) return;

@@ -10,6 +10,14 @@ includeJS("./script/game/heimeidendrawables.js");
 includeJS("./script/game/gui.js");
 includeJS("./script/game/heimeiden.js");
 
+/* dummy object used to preload images */
+_preloadObject = Model.Drawables.SpriteDrawable.clone();
+
+/* preloads an image */
+preload = function(src) {
+    _preloadObject.load(src);
+}
+
 // no arguments given: returns random float between 0 and 1
 // only max given: returns random int between 0 and max
 // min and max given: returns random int between min and max

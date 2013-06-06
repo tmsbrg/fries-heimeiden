@@ -1,36 +1,56 @@
-/* Class Game contains all game objects and manages the game. Every object
+/* Class Game contains all game objects and manages the game. Every non-gui object
 in the game is eventually a child of Game. */
 Game = Model.Drawables.BaseDrawable.clone();
 Game.extend({
     position : settings.fieldPosition.clone(),
-    Lanes : new Array(settings.lanes),
-    Actors : new Array(),
-    Popups : new Array(),
-    dyke : null,
-    dykeObjects : [DykeFloor, DykeSupports],
-    active : false,
-    background : Model.Drawables.SpriteDrawable.clone(),
-    waves : BackgroundWaves,
-    gui : GUI,
-    // Initializes the game, should only be called once per load
+    Lanes : new Array(settings.lanes), /* array of lanes that contan all the tiles */
+    Actors : new Array(), /* array that contains all the actors on the field */
+    Popups : new Array(), /* array that contains all popups and
+                             effects on the field */
+    dyke : null, /* direct reference to the dyke actor */
+    dykeObjects : [DykeFloor, DykeSupports], /* reference to objects part of the
+                                                dyke but behind other actors */
+    active : false, /* do not start the update loop immediately */
+    background : Model.Drawables.SpriteDrawable.clone(), /* the tiled water
+                                                            background */
+    waves : BackgroundWaves, /* the moving waves in the background */
+    gui : GUI, /* direct reference to the GUI */
+
+    /* array of objects to preload images of */
+    preloadObjects : [FinalScreen, WeakEnemy, StrongEnemy, Stone, Priest,
+                      ShootingDefence, Dyke, Bullet, WeakTreasure, StrongTreasure,
+                      Platform, BackgroundFish, BackgroundWaves, DykeSupports,
+                      DykeFloor],
+
+    /* initializes the game, should only be called once per load */
     initialize : function() {
+        this.preload();
         this.initConstants();
         this.initSelf();
         this.initDrawables();
         this.initGUI();
     },
+    /* calls the preload function for each of the objects given by preloadObjects */
+    preload : function() {
+        for (i = this.preloadObjects.length-1; i > -1; i--) {
+            this.preloadObjects[i].preload();
+        }
+    },
+    /* calculates some constants from the settings */
     initConstants : function() {
-        // calculated constants from settings
         FIELD_SIZE = settings.tileSize.x * settings.tilesPerLane;
     },
+    /* initializes own values */
     initSelf : function() {
         this.size = new vec2(View.canvasWidth, View.canvasHeight);
         Model.addDrawable(this);
     },
-    // Initializes all static drawableObjects, should only be called once per load
+    /* initializes all static drawableObjects,
+       should only be called once per load */
     initDrawables : function() {
-        this.background.size = new vec2(settings.tileSize.x * (settings.tilesPerLane),
-                                    settings.tileSize.y * settings.lanes);
+        this.background.size = new vec2(settings.tileSize.x *
+                                            (settings.tilesPerLane),
+                                        settings.tileSize.y * settings.lanes);
         this.background.visible = false;
         this.background.alpha = 0.99;
         this.background.load("./images/game/water.png");
@@ -50,11 +70,12 @@ Game.extend({
         this.waves.visible = false;
         this.addDrawable(this.waves, settings.wavesLayer);
     },
+    /* initializes the GUI and starts the menu */
     initGUI : function() {
         this.gui.init();
         this.gui.menuStart();
     },
-    // Starts the game
+    /* starts the game */
     gameStart : function() {
         console.log("Starting Heimeiden...");
         for (var i = this.Lanes.length-1; i > -1; i--) {
@@ -72,30 +93,16 @@ Game.extend({
         PlayerData.reset();
         this.dykeObjects[0].reset();
     },
+    /* functions called constantly when the game is active */
     update : function() {
         if (!PlayerData.paused) {
             this.updateCredits();
-            PlayerData.timeUntilNextFish -= deltaTime;
-
-            if (PlayerData.areWavesFinished &&
-                PlayerData.finalCountDown == INACTIVE) {
-                if (this.countActors(collisionEnemy) == 0) {
-                    this.win();
-                }
-            }
-            if (PlayerData.finalCountDown > INACTIVE) {
-                PlayerData.finalCountDown -= deltaTime;
-                if (PlayerData.finalCountDown < 0) {
-                    this.endGame();
-                }
-            }
-            if (PlayerData.timeUntilNextFish <= 0) {
-                this.spawnFish();
-                PlayerData.timeUntilNextFish = random(settings.fishSpawnRate.max,
-                                                      settings.fishSpawnRate.min);
-            }
+            this.checkWin();
+            this.checkEndOfGame();
+            this.updateFish();
         }
     },
+    /* handles getting credits automatically over time */
     updateCredits : function() {
         PlayerData.creditsTimer += deltaTime;
         if (PlayerData.creditsTimer >= settings.secondsToCreditUpdate) {
@@ -103,10 +110,38 @@ Game.extend({
             this.addCredits(settings.creditsPerCreditUpdate);
         }
     },
+    /* checks if the player has won the game */
+    checkWin : function() {
+        if (PlayerData.areWavesFinished &&
+            PlayerData.finalCountDown == INACTIVE) {
+            if (this.countActors(collisionEnemy) == 0) {
+                this.win();
+            }
+        }
+    },
+    /* checks if the game has to be ended */
+    checkEndOfGame : function() {
+        if (PlayerData.finalCountDown > INACTIVE) {
+            PlayerData.finalCountDown -= deltaTime;
+            if (PlayerData.finalCountDown < 0) {
+                this.endGame();
+            }
+        }
+    },
+    /* handles adding fishes once in a while */
+    updateFish : function() {
+        PlayerData.timeUntilNextFish -= deltaTime;
+        if (PlayerData.timeUntilNextFish <= 0) {
+            this.spawnFish();
+            PlayerData.timeUntilNextFish = random(settings.fishSpawnRate.max,
+                                                  settings.fishSpawnRate.min);
+        }
+    },
+    /* adds given amount of credits to the player's credit count */
     addCredits : function(credits) {
         PlayerData.credits += credits;
     },
-    // Stops the game
+    /* stops the game */
     gameStop : function() {
         for (var i = this.Lanes.length-1; i > -1; i--) {
             this.Lanes[i].reset();
@@ -131,6 +166,8 @@ Game.extend({
         EnemyController.stop();
         EnemyController.reset();
     },
+    /* attempts to build buildingObject at given position, and substracts its cost
+       from the player's treasury if the player has enough */
     buildBuilding : function(position, buildingObject) {
         if (!PlayerData.canBuild) return;
         if (PlayerData.credits >= buildingObject.cost) {
@@ -145,7 +182,7 @@ Game.extend({
             return null;
         }
     },
-    // makes a popup on tile at tilePosition for credit add/remove feedback
+    /* makes a popup on tile at tilePosition for credit add/remove feedback */
     creditsPopupOnTile : function(tilePosition, amount, positive) {
         if (positive == null) {
             positive = true;
@@ -155,13 +192,14 @@ Game.extend({
                   (positive? "+" : "-") + amount,
                   (positive? null : "#FE0000"));
     },
-    // Spawns an enemy at lane index lane
+    /* spawns enemy enemyNumber at given lane index */
     spawnEnemy : function(lane, enemyNumber) {
         this.spawnActor(new vec2((settings.tilesPerLane) * settings.tileSize.x,
                              lane * settings.tileSize.y),
                         EnemyTypes[enemyNumber]);
     },
-    // Spawns an actor object at exact position position
+    /* spawns given actor object at given position and layer,
+       defaults to characterLayer */
     spawnActor : function (position, actorObject, layer) {
         if (layer == null) layer = settings.characterLayer;
         var actor = actorObject.clone();
@@ -173,6 +211,7 @@ Game.extend({
         this.addActor(actor, layer);
         return actor;
     },
+    /* spawns a fish at a random location in the water */
     spawnFish : function() {
         var fish = BackgroundFish.clone();
         fish.fishId = PlayerData.currentFishId;
@@ -184,12 +223,13 @@ Game.extend({
         this.addDrawable(fish, settings.fishLayer);
         this.Popups[this.Popups.length] = fish;
     },
-    // Adds an actor to the field
+    /* adds an actor to the field */
     addActor : function(actor, layer) {
         this.Actors[this.Actors.length] = actor;
         actor.actorList = this.Actors;
         this.addDrawable(actor, layer);
     },
+    /* spawns effectobject at given position */
     spawnEffect : function(position, effectObject) {
         var effect = effectObject.clone();
         effect.position = new vec2(position.x - effectObject.size.x / 2,
@@ -198,6 +238,7 @@ Game.extend({
         this.Popups[this.Popups.length] = effect;
         return effect;
     },
+    /* removes fish with given fishId */
     removeFishWithId : function(id) {
         for (var i=0; i<this.Popups.length; i++) {
             if (this.Popups[i].fishId == id) {
@@ -207,6 +248,7 @@ Game.extend({
             }
         }
     },
+    /* counts number of actors with given collision tags and returns it */
     countActors : function(collisionTag) {
         var count = 0;
         for (var i = this.Actors.length-1; i > -1; i--) {
@@ -216,11 +258,13 @@ Game.extend({
         }
         return count;
     },
+    /* kills all defences on the field */
     killAllDefences : function() {
         this.killAllWithName("Platform");
         this.killAllWithName("Defence");
         this.killAllWithName("Priest");
     },
+    /* kills all actors on the field whose name matches the one given */
     killAllWithName : function(name) {
         for (var i=0; i<this.Actors.length;) {
             if (this.Actors[i].name == name) {
@@ -232,25 +276,28 @@ Game.extend({
             }
         }
     },
+    /* called when no more enemies will be spawned */
     wavesFinished : function() {
         PlayerData.areWavesFinished = true;
     },
+    /* called when the player wins the game */
     win : function() {
-        console.log("You win the game!");
         PlayerData.finalCountDown = settings.timeUntilFreeze;
     },
+    /* called when the player loses the game */
     lose : function() {
-        console.log("You lost the game!");
         this.killAllDefences();
         PlayerData.canBuild = false;
         PlayerData.lost = true;
         PlayerData.finalCountDown = settings.timeUntilFreeze;
     },
+    /* freezes and ends the game */
     endGame : function() {
         PlayerData.paused = true;
         PlayerData.endOfGame = true;
         this.gui.endGame();
     },
+    /* gets tile at given X and Y indexes */
     getTile : function(X, Y) {
         if (Y >= 0 && Y < this.Lanes.length) {
             return this.Lanes[Y].getTile(X);
@@ -260,7 +307,7 @@ Game.extend({
     }
 });
 
-// Contains data for the player
+/* Contains player data to be reset on every play*/
 PlayerData = {
     paused : null,
     credits : null,
@@ -275,6 +322,7 @@ PlayerData = {
     timeUntilNextFish : null,
     currentFishId : null,
     lost : null,
+    /* called when the game gets started, sets all playerdata to initial values */
     reset : function() {
         this.paused = false;
         this.credits = settings.startingCredits;
@@ -292,7 +340,8 @@ PlayerData = {
     }
 };
 
-// Draws fading text popup at given position
+/* Draws fading text popup at given position, with given color.
+   Color defaults to yellow */
 popupText = function(position, text, color) {
     if (color == null) {
         color = "#FEF500";
@@ -319,7 +368,7 @@ popupText = function(position, text, color) {
 }
 
 /* Draws fading and expanding rect popup at given position,
-and color, expanding until given size */
+   and color, expanding until given size */
 popupRect = function(position, size, color) {
     var rect = Model.Drawables.RectangleDrawable.clone();
     rect.startPosition = position.clone();
@@ -344,6 +393,8 @@ popupRect = function(position, size, color) {
     Game.addDrawable(rect);
 }
 
+/* Draws fading and expanding image popup at given position,
+   and with given image, expanding until given size */
 popupImage = function(position, size, image) {
     var sprite = Model.Drawables.SpriteDrawable.clone();
     sprite.startPosition = position.clone();
@@ -368,7 +419,8 @@ popupImage = function(position, size, image) {
     Game.Popups[Game.Popups.length] = sprite;
     Game.addDrawable(sprite);
 }
-// Called by rendering engine when everything is loaded
+
+/* Called by rendering engine when everything is loaded */
 initialize = function() {
         Game.initialize();
 }

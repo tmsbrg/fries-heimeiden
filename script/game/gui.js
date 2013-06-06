@@ -161,6 +161,10 @@ FinalScreen.extend({
         this.position.substract(new vec2(this.size).divide(2));
         this.close();
     },
+    preload : function() {
+        preload(this.winImage);
+        preload(this.loseImage);
+    },
     show : function() {
         if (PlayerData.lost) {
             this.load(this.loseImage);
@@ -344,7 +348,7 @@ GUI.extend({
         FinalScreen.show();
     },
     update : function() {
-        this.wavesTextBox.text = "WAVE " + (EnemyController.currentWave +
+        this.wavesTextBox.text = "RONDE " + (EnemyController.currentWave +
             !PlayerData.areWavesFinished) +
             "/" + Waves.waves.length;
         this.creditsTextBox.text = "F " + PlayerData.credits + ",-";
