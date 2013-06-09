@@ -5,12 +5,12 @@ var settings = {
     // graphical settings
         "fieldPosition" : {"x":224, "y":96}, // Do not modify!
         "tileSize" : {"x":212, "y":246}, // Do not modify!
-        // for popup texts like +2
+        // for popup texts like "+2"
             "popupSpeed" : 50,
             "popupTimeout" : 2,
         // popuprect, unused
             "popupRectTimeout" : 0.5,
-        // actor sizes
+        // actor sizes, 1 is the size of one tile
             "bulletSize" : 0.25,
             "shellSize" : {
                 "x" : 0.6,
@@ -34,17 +34,17 @@ var settings = {
             "bulletLayer" : 6,
             "shellLayer" : 7,
             "effectLayer" : 8,
-        // menu
+        // side menu
             "menuMoveSpeed" : 0.2,
         // water effects
             "waveSpeed" : Math.PI / 8, // in radians per second
 
-            "fishSpawnRate" : {min: 5, max: 15},
-            "fishMoveDistance" : 300,
-            "fishSpeed" : 0.01,
+            "fishSpawnRate" : {min: 5, max: 15}, // in seconds
+            "fishMoveDistance" : 300, // in pixels
+            "fishSpeed" : 0.01, // used in lerp
             "fishMaxAlpha" : 1,
         // actor fluff
-            "timeUntilPriestActive" : {min : 5, max: 15},
+            "timeUntilPriestActive" : {min : 5, max: 15}, // in seconds
 
     // game settings
         // input
@@ -54,8 +54,8 @@ var settings = {
             "startingCredits" : 20,
             "secondsToCreditUpdate" : 2,
             "creditsPerCreditUpdate" : 2,
-            "sellRate" : 0.5, /* the part of the money returned after selling a
-                                 defence */
+            "sellRate" : 0.5, // the part of the money returned after selling a
+                              // defence
         // field
             "tilesPerLane" : 8, // do not modify!
             "lanes" : 4, // do not modify!
@@ -69,11 +69,11 @@ var settings = {
             "paalwormSpeed" : 1,
             "paalwormCooldown" : 1.5,
             "paalwormAttritionTime" : 1000,
-            "paalwormAttritionAmount" : 0, // attrition disabled
+            "paalwormAttritionAmount" : 0, // attrition no longer needed
         // defences
             "defenceBuildCost" : 6,
             "defenceRange" : 10, // range for attacking enemies, in number of tiles
-            "defenceCooldown" : 3,
+            "defenceCooldown" : 3, // in seconds
             "defenceBuffedCooldown" : 2,
             "defenceMaxAsynchTime" : 1, // unused
 
@@ -96,8 +96,9 @@ var settings = {
             "shellFadeTime" : 3,
         // waves, default values can be overwritten for specific waves in waves.json
             "defaultMaxEnemies" : 5, // max enemies on screen at the same time
-            "defaultSpawnInterval" : {"min":2, "max":5},
+            "defaultSpawnInterval" : {"min":2, "max":5}, // in seconds
             "defaultWaitBeforeWave" : 7, // in seconds
         // end of game
-            "timeUntilFreeze" : 3, // after winning or losing
+            "timeUntilFreeze" : 3 // seconds until game freezes and
+                                  // final screen pops up
 }

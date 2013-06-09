@@ -9,7 +9,7 @@ Waves = {
             {"enemies" : [6] }
         ],
         "spawnInterval" : {"min": 3, "max": 6},
-        "waitBeforeWave" : 3
+        "waitBeforeWave" : 5
     },
 
 // wave 2

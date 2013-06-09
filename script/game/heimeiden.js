@@ -35,6 +35,7 @@ Game.extend({
         for (i = this.preloadObjects.length-1; i > -1; i--) {
             this.preloadObjects[i].preload();
         }
+        startPreload();
     },
     /* calculates some constants from the settings */
     initConstants : function() {

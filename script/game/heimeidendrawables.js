@@ -1,15 +1,17 @@
+// TODO: comment all stuff here, and fix some old out of date comments
 
-// Creates and maintains an array of tiles for a lane
+/* creates and maintains an array of tiles for a lane */
 Lane = Model.Drawables.BaseDrawable.clone();
 Lane.extend({
     size : new vec2(settings.tileSize.x*settings.tilesPerLane, settings.tileSize.y),
     lanePos : 0,
     Tiles : new Array(settings.tilesPerLane),
-    // sets its pixel position based on its lane position
+    /* sets its pixel position based on its lane position */
     setLanePos : function(pos) {
         this.position.y = this.size.y * pos;
         this.lanePos = pos;
     },
+    /* initializes tiles */
     onDrawInit : function() {
         for (var i = settings.tilesPerLane-1; i > -1; i--) {
             this.Tiles[i] = Tile.clone();
@@ -18,21 +20,24 @@ Lane.extend({
             this.addDrawable(this.Tiles[i]);
         }
     },
-    // makes Game create a defence on his lane at given x position
+    /* makes Game create a defence on own y position and given x position */
     buildBuilding : function(xpos, buildingObject) {
         return this.parent.buildBuilding(new vec2(xpos, this.position.y),
             buildingObject);
     },
+    /* makes Game create a credits popup on own y position and given x position */
     creditsPopupOnTile : function(xpos, amount, positive) {
         this.parent.creditsPopupOnTile(new vec2(xpos, this.position.y),
                                        amount,
                                        positive);
     },
+    /* resets all tiles */
     reset : function() {
         for (var i = this.Tiles.length-1; i > -1; i--) {
             this.Tiles[i].reset();
         }
     },
+    /* gets tile at given index, or null if out of bounds */
     getTile : function(tileIndex) {
         if (tileIndex >= 0 && tileIndex < this.Tiles.length) {
             return this.Tiles[tileIndex];
@@ -42,19 +47,19 @@ Lane.extend({
     }
 });
 
-// Tile object, handles mouse clicks and building stuff on them
+/* Tile object, handles mouse clicks and building stuff on them */
 Tile = Model.Drawables.BaseDrawable.clone();
 Tile.extend({
     size : settings.tileSize.clone(),
     tileIndex : null,
     platform : null,
     building : null,
-    // Empties the Tile's references to its building and platform
+    /* empties the Tile's references to its building and platform */
     reset : function() {
         this.building = null;
         this.platform = null;
     },
-    // handles building on the tile
+    /* handles building on the tile */
     onclick : function () {
         if (!PlayerData.paused && PlayerData.selectedBuilding != null) {
             switch (PlayerData.selectedBuilding) {
@@ -73,7 +78,7 @@ Tile.extend({
             }
         }
     },
-    // checks if a stone can be built here and attempts to build it
+    /* checks if a stone can be built here and attempts to build it */
     buildStone : function() {
         if (!this.building && !this.platform && this.tileIndex != 0) {
             this.building = this.parent.buildBuilding(this.position.x,
@@ -83,7 +88,7 @@ Tile.extend({
             }
         }
     },
-    // checks if a platform can be built and attempts to build it
+    /* checks if a platform can be built and attempts to build it */
     buildPlatform : function() {
         if (!this.building && (this.tileIndex == 1 || 
             this.parent.getTile(this.tileIndex-1).platform) &&
@@ -95,7 +100,7 @@ Tile.extend({
         }
     },
     /* removes building if present, otherwise removes platform if present.
-       returns part of the money */
+       returns part of the money to the player */
     removeDefence : function() {
         var returnMoney = 0;
         if (this.building) {
@@ -115,7 +120,7 @@ Tile.extend({
             this.parent.creditsPopupOnTile(this.position.x, returnMoney);
         }
     },
-    // attempts to build any other kind of defence, assuming it needs a platform
+    /* attempts to build any other kind of defence, assuming it needs a platform */
     buildDefault : function() {
         if (!this.building && (this.tileIndex == 0 || this.platform)) {
             this.building = this.parent.buildBuilding(this.position.x,
@@ -127,6 +132,7 @@ Tile.extend({
     }
 });
 
+/* Animation with some added functions */
 ExtendedAnimation = Model.Drawables.AnimatedDrawable.clone();
 ExtendedAnimation.extend({
     /* Takes animation base paths like ./animation/walk and loads the spritesheet
@@ -143,40 +149,35 @@ ExtendedAnimation.extend({
     },
     /* Sync animation pause with global game pause */
     syncPause : function() {
-        if(PlayerData.paused) {
-            if (!this.currentAnimation.paused) {
-                this.currentAnimation.paused = true;
-            }
-        } else {
-            if (this.currentAnimation.paused) {
-                this.currentAnimation.paused = false;
-            }
+        if (PlayerData.paused == !this.currentAnimation.paused) {
+            this.currentAnimation.paused = !this.currentAnimation.paused;
         }
     },
 });
 
 /* The main type of object in the game. Actors can move around, have collision
-detection, have health and some built in event functions. */
+detection, have health and many built in event functions. */
 Actor = ExtendedAnimation.clone();
 Actor.extend({
     name : "Actor",
-    ignoremouse : true,
+    ignoremouse : true, /* let mouse clicks fall through to the tiles */
     size : settings.tileSize.clone(),
-    centre: null,
+    centre: null, /* centre position */
     health : 2,
-    invulnerable : false,
-    direction : 0,
-    speed : 0,
-    absoluteSpeed : 0,
-    animations : [],
-    goDie : false,
-    deathAnimation : -1, // animation(index) to play before dying, none if -1
-    solid : true, // if false, it can move while colliding with objects
-    reach : 1, // used for checking movement collisions
+    invulnerable : false, /* if true, cannot take damage */
+    direction : NONE, /* LEFT, RIGHT or NONE, used for movement */
+    speed : 0, /* speed, scaled by tileSize, set via the setSpeed function */
+    absoluteSpeed : 0, /* actual speed used for calculations */
+    animations : [], /* list of animation sources */
+    goDie : false, /* used by onAnimationComplete to signal the end of the death
+                      animation */
+    deathAnimation : -1, /* animation(index) to play before dying, none if -1 */
+    solid : true, /* if false, it can move while colliding with objects */
+    reach : 1, /* how far ahead to check movement collisions, in pixels */
     collisionTag : collisionDefault,
     ignoreCollisions : [], /* array of collisionTags of objects it won't check
                               collisions with */
-    actorList : null, // list of actors to check collisions with
+    actorList : null, /* list of actors to check collisions with */
     onDrawInit : function() {
         this.absoluteSpeed = this.calculateAbsoluteSpeed();
         this.centre = this.calculateCentre();

@@ -1,10 +1,13 @@
+/* Button used to select what to build */
 BuildingSelectButton = Model.Drawables.ButtonDrawable.clone()
 BuildingSelectButton.extend({
-    name : "buildingSelectButton",
     visible : false,
-    building : null,
-    baseImage : null,
+    building : null, /* building object bound to this button */
+    baseImage : null, /* part of image path from which to get the unselected
+                         version of the image and the selected version */
     size : new vec2(170,170),
+
+    /* deselect any other selected building and select ours */
     onclick : function() {
         if (!PlayerData.paused) {
             if (PlayerData.selectedBuilding != this.building) {
@@ -17,17 +20,21 @@ BuildingSelectButton.extend({
             }
         }
     },
+    /* load a baseImage and set current image to the unselected version */
     loadBase : function(src) {
         this.baseImage = src;
         this.resetImage();
     },
-    resetImage : function() {
+    /* show the unselected version of the image */
+    reset : function() {
         if (this.curImage != this.baseImage + ".png") {
             this.load(this.baseImage + ".png");
         }
     }
 });
 
+/* GUIButton is used for all buttons in the GUI that have a special onhover
+   version */
 GUIButton = Model.Drawables.ButtonDrawable.clone();
 GUIButton.extend({
     basepath : "",
@@ -46,6 +53,7 @@ GUIButton.extend({
     }
 });
 
+/* The button that starts the game */
 StartButton = GUIButton.clone();
 StartButton.extend({
     basepath : "./images/gui/playbutton",
@@ -57,12 +65,15 @@ StartButton.extend({
     },
 });
 
+/* Contains a number of pages of instructions for the player */
 InstructionScreen = Model.Drawables.BaseDrawable.clone();
 InstructionScreen.extend({
     size : new vec2(1123, 842),
+    /* array of instruction screens */
     screens : ["./images/gui/instructions/0.png",
         "./images/gui/instructions/1.png", "./images/gui/instructions/2.png"],
-    screenObject : Model.Drawables.SpriteDrawable.clone(),
+    screenObject : Model.Drawables.SpriteDrawable.clone(), /* object used to draw
+                                                              the current page */
     previousButton : GUIButton.clone(),
     nextButton : GUIButton.clone(),
     closeButton : GUIButton.clone(),
@@ -102,6 +113,7 @@ InstructionScreen.extend({
 
         this.reset();
     },
+    /* loads the instruction screen iamge for the given page number */
     loadScreen : function(number) {
         this.currentScreen = number;
         this.screenObject.load(this.screens[number]);
@@ -117,6 +129,7 @@ InstructionScreen.extend({
             this.nextButton.visible = true;
         }
     },
+    /* loads the first screen and makes it invisible */
     reset : function() {
         this.visible = false;
         this.loadScreen(0);
@@ -150,6 +163,7 @@ InstructionScreen.extend({
     }
 });
 
+/* the screen shown after the player wins or loses the game */
 FinalScreen = Model.Drawables.ButtonDrawable.clone();
 FinalScreen.extend({
     size : new vec2(1123, 842),
@@ -181,16 +195,22 @@ FinalScreen.extend({
     }
 });
 
+/* The GUI contains all HUD images, texts and buttons, but actually not all of the
+   GUI. The side menu and various popup menus were seperated from it because of
+   onclick problems */
 GUI = Model.Drawables.BaseDrawable.clone();
 GUI.extend({
     name : "GUI",
+    active : "false",
     size : {x: 1920, y: 1080},
-    buildingSelectButtonY : 80,
-    buildingSelectButtonX : 25,
-    buildingSelectButtonSpace : 20,
+    buildingSelectButtonY : 80, /* the X value for all buildingSelectButtons */
+    buildingSelectButtonX : 25, /* the Y value for the first buildingSelectButton */
+    buildingSelectButtonSpace : 20, /* space between each buildingSelectButton */
+    buildingSelectButtons : new Array(),
 
-    startscreenGUIElements : new Array(),
-    inGameGUIElements : new Array(),
+    startscreenGUIElements : new Array(), /* GUI elements to show before the game
+                                             begins */
+    inGameGUIElements : new Array(), /* GUI elements to show ingame */
 
     startButton : null,
 
@@ -198,24 +218,25 @@ GUI.extend({
     creditsTextBox : null,
     dykeHealthBox : null,
 
-    menuBar : null,
-    buildingSelectButtons : new Array(),
-    game : null,
+    menuBar : null, /* reference to the side menu */
+    game : null, /* reference to the game */
 
+    /* initializes all GUI stuff, should only be called once per game */
     init : function() {
         this.game = Game;
-        this.active = false;
         this.initSplash();
         this.initHUD();
         Model.addDrawable(this);
         Model.addDrawable(FinalScreen);
     },
+    /* initializes splash screen */
     initSplash : function() {
         var splashscreen = Model.Drawables.SpriteDrawable.clone()
         splashscreen.load("./images/gui/splashscreen.png");
         splashscreen.size = new vec2(1920, 1080);
         this.addGUIElement(splashscreen, false);
     },
+    /* initializes HUD elements */
     initHUD : function() {
         var sideImage = Model.Drawables.SpriteDrawable.clone();
         sideImage.visible = false;
@@ -261,6 +282,7 @@ GUI.extend({
 		this.dykeHealthBox.color = "#23F407";
 		this.addGUIElement(this.dykeHealthBox);
     },
+    /* initializes buttons and adds building select buttons */
     initButtons : function() {
         this.startButton = StartButton;
         this.startButton.size = new vec2(250, 250);
@@ -274,14 +296,17 @@ GUI.extend({
         this.addBuildingSelectButton(Stone, "./images/gui/icons/stone");
         this.addBuildingSelectButton(RemoveDefence, "./images/gui/icons/remove");
     },
+    /* initializes side menu, but keeps it seperate from the main GUI class */
     initMenuBar : function() {
         this.menuBar = MenuBar;
         this.menuBar.load("./images/gui/menubar.png");
         this.menuBar.position = {x: 1860, y: 540 - this.menuBar.size.y / 2};
-        Model.addDrawable(this.menuBar); // has to be clickable outside of GUI space
+        Model.addDrawable(this.menuBar);
 
         Model.addDrawable(InstructionScreen);
     },
+    /* adds a button, text or image to draw during the game or before the game
+       starts */
     addGUIElement : function(element, ingame) {
         if (ingame == null) ingame = true;
         this.addDrawable(element);
@@ -292,6 +317,8 @@ GUI.extend({
                 = element;
         }
     },
+    /* adds a buildingselectbutton for the given building and with given
+       image basepath in the correct position */
     addBuildingSelectButton : function(building, image) {
         button = BuildingSelectButton.clone();
         button.building = building;
@@ -306,12 +333,14 @@ GUI.extend({
         this.addGUIElement(button);
         this.buildingSelectButtons[this.buildingSelectButtons.length] = button;
     },
+    /* deselects currently selected building */
     deselectBuilding : function() {
         PlayerData.selectedBuilding = null;
         for (var i = this.buildingSelectButtons.length-1; i > -1; i--) {
                 this.buildingSelectButtons[i].resetImage();
         }
     },
+    /* starts the game */
     gameStart : function() {
         for (var i = this.inGameGUIElements.length-1; i > -1; i--) {
             this.inGameGUIElements[i].visible = true;
@@ -321,6 +350,7 @@ GUI.extend({
         this.buildingSelectButtons[0].onclick();
         this.menuStop();
     },
+    /* stops the game */
     gameStop : function() {
         for (var i = this.inGameGUIElements.length-1; i > -1; i--) {
             this.inGameGUIElements[i].visible = false;
@@ -332,21 +362,25 @@ GUI.extend({
         this.menuStart();
         FinalScreen.close();
     },
+    /* starts the menu */
     menuStart : function() {
         this.size.x = 1920;
         for (i = this.startscreenGUIElements.length-1; i > -1; i--) {
             this.startscreenGUIElements[i].visible = true;
         }
     },
+    /* stops the menu */
     menuStop : function() {
         this.size.x = 1920 - settings.tileSize.x * settings.tilesPerLane;
         for (i = this.startscreenGUIElements.length-1; i > -1; i--) {
             this.startscreenGUIElements[i].visible = false;
         }
     },
+    /* shows the final screen */
     endGame : function() {
         FinalScreen.show();
     },
+    /* updates HUD texts every frame */
     update : function() {
         this.wavesTextBox.text = "RONDE " + (EnemyController.currentWave +
             !PlayerData.areWavesFinished) +
@@ -357,6 +391,7 @@ GUI.extend({
     }
 });
 
+/* the side menu, which slides open from the right */
 MenuBar = Model.Drawables.ButtonDrawable.clone();
 MenuBar.extend({
     visible : false,
@@ -365,14 +400,15 @@ MenuBar.extend({
     stopButton : GUIButton.clone(),
     soundButton : GUIButton.clone(),
     size : {x: 679, y: 476},
-    textPosition : {x: 83, y: 15},
-    textSize : {x: 386, y:72},
+    textPosition : {x: 83, y: 15}, /* offset where the texts will be drawn */
+    textSize : {x: 386, y:72}, /* size for all text images */
     originPosition : null,
     destination : null,
     slidedOut : false,
     speed : settings.menuMoveSpeed,
     cursor : "pointer",
-    gui : GUI,
+    gui : GUI, /* reference to the GUI */
+    /* initializes all buttons */
     onDrawInit : function() {
         this.originPosition = this.position.clone();
 
@@ -404,10 +440,12 @@ MenuBar.extend({
         this.soundButton.audioMutedIcon.size = new vec2(123, 105);
         this.soundButton.addDrawable(this.soundButton.audioMutedIcon);
     },
+    /* resets stuff and makes itself visible for when the game starts */
     gameStart : function() {
         this.visible = true;
         this.soundButton.updateBasepath();
     },
+    /* makes itself invisible for when the game ends */
     gameStop : function() {
         this.visible = false;
     },
