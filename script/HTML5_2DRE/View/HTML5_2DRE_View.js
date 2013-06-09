@@ -169,6 +169,8 @@ View = {
 	{
 		var mposition = this.mouseposition(e);
 		this.mdownObject = this.getobjectatpos(mposition.x, mposition.y);
+		if(this.mdownObject !== null)
+			Controller.mouse_objectMouseDown(this.mdownObject);
 	},
 	
 	/*

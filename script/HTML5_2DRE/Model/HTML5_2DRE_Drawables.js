@@ -258,6 +258,16 @@ Model.Drawables.BaseDrawable = {
 								return this;
 							},
 		/* 
+			Function: onmousedown
+			
+			Triggered when the mouse button is pressed on the object.
+			
+			See Also:
+			
+				<BaseDrawable.onclick>
+		*/
+		onmousedown		:	function() {},
+		/* 
 			Function: onclick
 			
 			Triggered when the object is clicked.
@@ -602,8 +612,8 @@ Model.Drawables.AnimationDrawable._currentRow = 0;
 Model.Drawables.AnimationDrawable._secondsSinceNewFrame = 0.0;
 Model.Drawables.AnimationDrawable.loadAnimation = function(image, settings)
 {
-    this.load(image);
-    this.loadSettings(settings);
+	this.load(image);
+	this.loadSettings(settings);
 }
 Model.Drawables.AnimationDrawable.loadSettings = function(settings)
 {
@@ -620,31 +630,31 @@ Model.Drawables.AnimationDrawable.calculateFramesPerRow = function ()
 }
 Model.Drawables.AnimationDrawable.reset = function ()
 {
-    this._currentFrame = this._currentFrameOfRow = this._currentRow = 
-        this._secondsSinceNewFrame = 0;
-    this.paused = false;
+	this._currentFrame = this._currentFrameOfRow = this._currentRow = 
+		this._secondsSinceNewFrame = 0;
+	this.paused = false;
 }
 Model.Drawables.AnimationDrawable.pause = function ()
 {
-    this.paused = true;
+	this.paused = true;
 }
 Model.Drawables.AnimationDrawable.unpause = function ()
 {
-    this.paused = false;
+	this.paused = false;
 }
 Model.Drawables.AnimationDrawable.draw = function(ctx)
 {
 	if (this._image.loaded) {
 		if (!this.paused) {
-            this._secondsSinceNewFrame += deltaTime;
-        }
+			this._secondsSinceNewFrame += deltaTime;
+		}
 		if (this._secondsSinceNewFrame >= this.secondsPerFrame) {
 			this._secondsSinceNewFrame = 0;
 			this._currentFrame++;
 			this._currentFrameOfRow++;
-            if (this._currentFrame == this.frameN - 1) {
-                this.onAnimationComplete();
-            }
+			if (this._currentFrame == this.frameN - 1) {
+				this.onAnimationComplete();
+			}
 			if (this._currentFrame >= this.frameN) {
 				this._currentFrame = 0;
 				this._currentFrameOfRow = this._currentFrame;
@@ -654,13 +664,13 @@ Model.Drawables.AnimationDrawable.draw = function(ctx)
 				this._currentFrameOfRow = 0;
 			}
 		}
-        if(this.borderWidth > 0) {
-            ctx.lineWidth = this.borderWidth;
-            ctx.strokeStyle = this.borderColor;
-            ctx.strokeRect(-(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
-        }
+		if(this.borderWidth > 0) {
+			ctx.lineWidth = this.borderWidth;
+			ctx.strokeStyle = this.borderColor;
+			ctx.strokeRect(-(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
+		}
 		ctx.drawImage(this._image,
-                      this.offset.x + this.framePadding.x + this.framePadding.x * 2 * this._currentFrameOfRow + this.frameSize.x * this._currentFrameOfRow,
+					  this.offset.x + this.framePadding.x + this.framePadding.x * 2 * this._currentFrameOfRow + this.frameSize.x * this._currentFrameOfRow,
 					  this.offset.y + this.framePadding.y + this.framePadding.y * 2 * this._currentRow + this.frameSize.y * this._currentRow,
 					  this.frameSize.x, this.frameSize.y, -(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
 	}
@@ -674,56 +684,56 @@ Model.Drawables.AnimatedDrawable.animationList = new Array();
 Model.Drawables.AnimatedDrawable.currentAnimation = null;
 Model.Drawables.AnimatedDrawable.currentAnimationIndex = null;
 Model.Drawables.AnimatedDrawable.addAnimations = function() {
-    for (var i=0;i<arguments.length;i++) {
-        this.animationList[this.animationList.length] = arguments[i];
-        arguments[i].visible = false;
-        arguments[i].size = this.size.clone();
-        arguments[i].ignoremouse = true;
-        arguments[i].onAnimationComplete = function() {
-            this.parent.handleAnimationComplete();
-        };
-        this.addDrawable(arguments[i]);
-    }
+	for (var i=0;i<arguments.length;i++) {
+		this.animationList[this.animationList.length] = arguments[i];
+		arguments[i].visible = false;
+		arguments[i].size = this.size.clone();
+		arguments[i].ignoremouse = true;
+		arguments[i].onAnimationComplete = function() {
+			this.parent.handleAnimationComplete();
+		};
+		this.addDrawable(arguments[i]);
+	}
 }
 Model.Drawables.AnimatedDrawable.showAnimation = function(number) {
-    if (this.animationList[number]) {
-        if (this.currentAnimation) {
-            this.stopAnimation();
-        }
-        this.currentAnimation = this.animationList[number];
-        this.currentAnimationIndex = number;
-        this.currentAnimation.visible = true;
-    } else {
-        console.log("No animation with index number: " + number);
-    }
+	if (this.animationList[number]) {
+		if (this.currentAnimation) {
+			this.stopAnimation();
+		}
+		this.currentAnimation = this.animationList[number];
+		this.currentAnimationIndex = number;
+		this.currentAnimation.visible = true;
+	} else {
+		console.log("No animation with index number: " + number);
+	}
 }
 Model.Drawables.AnimatedDrawable.stopAnimation = function() {
-    this.currentAnimationIndex = null;
-    this.currentAnimation.visible = false;
-    this.currentAnimation.reset();
-    this.currentAnimation = null;
+	this.currentAnimationIndex = null;
+	this.currentAnimation.visible = false;
+	this.currentAnimation.reset();
+	this.currentAnimation = null;
 }
 Model.Drawables.AnimatedDrawable.onAnimationComplete = function (index)
 {
 }
 Model.Drawables.AnimatedDrawable.handleAnimationComplete = function () {
-    this.onAnimationComplete(this.currentAnimationIndex);
+	this.onAnimationComplete(this.currentAnimationIndex);
 }
 Model.Drawables.AnimatedDrawable.reset = function ()
 {
-    if (this.currentAnimation) {
-        this.currentAnimation.reset();
-    }
+	if (this.currentAnimation) {
+		this.currentAnimation.reset();
+	}
 }
 Model.Drawables.AnimatedDrawable.pause = function ()
 {
-    if (this.currentAnimation) {
-        this.currentAnimation.pause();
-    }
+	if (this.currentAnimation) {
+		this.currentAnimation.pause();
+	}
 }
 Model.Drawables.AnimatedDrawable.unpause = function ()
 {
-    if (this.currentAnimation) {
-        this.currentAnimation.unpause();
-    }
+	if (this.currentAnimation) {
+		this.currentAnimation.unpause();
+	}
 }

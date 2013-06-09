@@ -1,30 +1,86 @@
 // example game with HTML5 2DRE
-var rectAn = Model.Drawables.AnimatedDrawable.clone() 
-var rect = Model.Drawables.AnimationDrawable.clone();
 
-const rectsize = {x:873,y:486};
+View.fps = 40; // set max FPS
 
-rectAn.onclick = function() {
-    this.showAnimation(random(this.animationList.length-1));
-}
+const rectsize = 30; // the speed for our rectangle
+const rectspeed = 180; // the speed we will move our rectangle with in pixels per second
 
-// randomize position
-rectAn.randomPos = function() {
-        this.position = {x:0,y:0};
-}
+// the evil rect must be clicked on!
+var rect = Model.Drawables.RectangleDrawable.clone();
+rect.extend({
+    size : {x: rectsize, y: rectsize}, // size of rectangle
+    cursor : "pointer", // sets cursor to be a pointer when hovering over rect
+
+    speed : {x: rectspeed, y: rectspeed},
+    colors : ['red', 'green', 'blue', 'yellow', 'purple', 'pink', 'black'],
+
+    // automatically called when object is added to the game
+    onDrawInit : function() {
+        this.randomDirection();
+        this.randomColor();
+        this.randomPosition();
+    },
+    // called every frame
+    update : function() {
+        this.position.x += this.speed.x * deltaTime;
+        this.position.y += this.speed.y * deltaTime;
+        if (rect.position.x + rect.size.x > View.canvasWidth) {
+            this.speed.x = -rectspeed;
+        } else if (rect.position.x < 0) {
+            this.speed.x = rectspeed;
+        }
+        if (rect.position.y + rect.size.y > View.canvasHeight) {
+            this.speed.y = -rectspeed;
+        } else if (rect.position.y < 0) {
+            this.speed.y = rectspeed;
+        }
+    },
+    // automatically called when mouse button goes down over the drawableObject
+    onmousedown : function() {
+            console.log("boom!");
+            this.randomDirection();
+            this.randomColor();
+            this.randomPosition();
+    },
+    // randomize direction
+    randomDirection : function() {
+        this.speed.x = random(1) ? this.speed.x : -this.speed.x;
+        this.speed.y = random(1) ? this.speed.y : -this.speed.y;
+    },
+    // randomize color
+    randomColor : function() {
+        this.color = this.colors[random(this.colors.length-1)];
+    },
+    // randomize position
+    randomPosition : function() {
+        this.position = { x:random(View.canvasWidth - this.size.x),
+                          y:random(View.canvasHeight - this.size.y) };
+    }
+});
+
+// a text box that shows the FPS
+var fpsTextBox = Model.Drawables.TextDrawable.clone();
+fpsTextBox.extend({
+    position : { x: 5, y: 10 },
+    size : { x: 100, y: 20},
+    ignoremouse : true, // don't absorb mouse events
+    font : "bold 14px Arial",
+    color : "#FE0000",
+    update : function() {
+        this.text = "FPS: " + View.lastfps;
+    }
+});
 
 // initializes the game
 initialize = function() {
-    rectAn.size = rectsize;
-    rect.size = rectsize;
-	rect.frameN = 4;
-    rect.load("./images/test4p.png");
-    rectAn.addAnimations(rect);
-    rectAn.showAnimation(0);
-    rectAn.onAnimationComplete = function() {
-        this.pause();
-    },
-    Model.addDrawable(rectAn);
+    Model.addDrawable(rect); // adds the rect object to the game
+    Model.addDrawable(fpsTextBox); // adds the fpsTextBox object to the game
+
+    console.log(Model.getLocalTextFile("text.txt"));
+}
+
+// called every frame
+Controller.update = function() {
 }
 
 // no arguments given: returns random float between 0 and 1
@@ -38,3 +94,4 @@ random = function(max, min) {
     }
     return Math.round(Math.random() * (max - min) + min);
 }
+

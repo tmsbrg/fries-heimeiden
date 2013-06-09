@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Controller&#x2F;HTML5_2DRE_Controller.js - Eracle HTML5_2DRE</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0pr2&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="..&#x2F;assets&#x2F;css&#x2F;logo.jpg" title="Eracle HTML5_2DRE"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: Eracle HTML5_2DRE<br />
+             version: 0.0.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="..&#x2F;classes/Array.html">Array</a></li>
+            
+                <li><a href="..&#x2F;classes/BaseDrawable.html">BaseDrawable</a></li>
+            
+                <li><a href="..&#x2F;classes/Boolean.html">Boolean</a></li>
+            
+                <li><a href="..&#x2F;classes/ButtonDrawable.html">ButtonDrawable</a></li>
+            
+                <li><a href="..&#x2F;classes/Controller.html">Controller</a></li>
+            
+                <li><a href="..&#x2F;classes/Date.html">Date</a></li>
+            
+                <li><a href="..&#x2F;classes/HTML5_2DRE.html">HTML5_2DRE</a></li>
+            
+                <li><a href="..&#x2F;classes/Model.html">Model</a></li>
+            
+                <li><a href="..&#x2F;classes/Number.html">Number</a></li>
+            
+                <li><a href="..&#x2F;classes/Object.html">Object</a></li>
+            
+                <li><a href="..&#x2F;classes/RectangleDrawable.html">RectangleDrawable</a></li>
+            
+                <li><a href="..&#x2F;classes/SpriteDrawable.html">SpriteDrawable</a></li>
+            
+                <li><a href="..&#x2F;classes/String.html">String</a></li>
+            
+                <li><a href="..&#x2F;classes/TextDrawable.html">TextDrawable</a></li>
+            
+                <li><a href="..&#x2F;classes/View.html">View</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="..&#x2F;modules/Controller.html">Controller</a></li>
+            
+                <li><a href="..&#x2F;modules/Drawables.html">Drawables</a></li>
+            
+                <li><a href="..&#x2F;modules/Model.html">Model</a></li>
+            
+                <li><a href="..&#x2F;modules/root.html">root</a></li>
+            
+                <li><a href="..&#x2F;modules/View.html">View</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: Controller&#x2F;HTML5_2DRE_Controller.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+&#x2F;&#x2F; Copyright (c) 2012 All Right Reserved, Eracle Software and Thomas van der Berg
+&#x2F;&#x2F;
+&#x2F;&#x2F; This source is subject to the Eracle License.
+&#x2F;&#x2F; Please see the license page on http:&#x2F;&#x2F;eraclesoftware.com&#x2F;legal&#x2F; file for more information.
+&#x2F;&#x2F; All other rights reserved.
+&#x2F;&#x2F;
+&#x2F;&#x2F; THIS CODE AND INFORMATION ARE PROVIDED &quot;AS IS&quot; WITHOUT WARRANTY OF ANY 
+&#x2F;&#x2F; KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+&#x2F;&#x2F; IMPLIED WARRANTIES OF MERCHANTABILITY AND&#x2F;OR FITNESS FOR A
+&#x2F;&#x2F; PARTICULAR PURPOSE.
+&#x2F;&#x2F;
+&#x2F;&#x2F; authors:	Ylon Schaeffer, Thomas van der Berg
+&#x2F;&#x2F; email:	yschaeffer@eraclesoftware.com, thomas.van.der.berg@hotmail.com
+&#x2F;&#x2F; date:	14-11-2012
+&#x2F;&#x2F; summary:	Controller element of the HTML5_2DREngine.
+
+
+&#x2F;**
+Controller element
+@module Controller
+*&#x2F;
+&#x2F;**
+Controller element of the HTML5_2DREngine.
+@class Controller
+*&#x2F;
+Controller = {
+
+	&#x2F;**
+	True if control key is pressed down.
+	@property isCtrl
+	@type Boolean
+	*&#x2F;
+	isCtrl 			: false,
+	&#x2F;**
+	Array of all the keycodes and their boolean state.
+	@property keyDown
+	@type Array
+	*&#x2F;
+	keyDown 		: [],
+	
+	&#x2F;**
+	Initializes the Controller.
+	@method init
+	@returns {Boolean} True when everything has been loaded.
+	*&#x2F;
+	init			:	function()
+	{
+		document.onkeyup=function(e){
+			if(e.which == 17)
+				Controller.isCtrl=false;
+			
+			Controller.keyDown[e.which] = false;
+		}
+		
+		document.onkeydown=function(e){
+			if(e.which == 17)
+				Controller.isCtrl=true;
+			
+			Controller.keyDown[e.which] = true;
+		}
+		return true;
+	},
+	
+	&#x2F;**
+	update function will be called before every draw call.
+	@method base_update
+	*&#x2F;
+	base_update			:	function()
+	{
+		for(var i = 0; i &lt; Model.drawableObjects.length; i++)
+			if(Model.drawableObjects[i])
+				Model.drawableObjects[i].base_update();
+		
+		if(this.update)
+			this.update();
+	},
+	
+	&#x2F;**
+	update function will be called before every draw call.
+	Most of the game logic will be put in here.
+	@method update
+	*&#x2F;
+	update				:	function()
+	{
+		
+	},
+	
+	&#x2F;**
+	will be called by the &lt;View&gt; when an object has been pressed with the mouse button.
+	@method mouse_objectClick
+	@param object {BaseDrawable} Object that has been pressed by the mouse button.
+	*&#x2F;
+	mouse_objectClick		:	function(object)
+	{
+		object.onclick();
+	},
+	
+	&#x2F;**
+	will be called by the &lt;View&gt; when an object has been double clicked with the mouse button.
+	method mouse_objectDoubleClick
+	@param object {BaseDrawable} Object that has been double clicked by the mouse button.
+	*&#x2F;
+	mouse_objectDoubleClick		:	function(object)
+	{
+		object.onclick();
+	},
+	
+	&#x2F;**
+	will be called by the &lt;View&gt; when an object is being hovered the mouse.
+	@method mouse_objectHover
+	@param object {BaseDrawable} Object that is being hovered by the mouse.
+	*&#x2F;
+	mouse_objectHover		:	function(object)
+	{
+		object.onhover();
+	},
+	
+	&#x2F;**
+	will be called by the &lt;View&gt; when an object is not being hovered anymore by the mouse.
+	method mouse_objectHoverOut	   
+	@param object {BaseDrawable} Object that is not being hovered anymore by the mouse.
+	*&#x2F;
+	mouse_objectHoverOut	:	function(object)
+	{
+		object.onmouseout();
+	}	
+}
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="..&#x2F;assets/js/yui-prettify.js"></script>
+<script src="..&#x2F;assets/../api.js"></script>
+<script src="..&#x2F;assets/js/api-filter.js"></script>
+<script src="..&#x2F;assets/js/api-list.js"></script>
+<script src="..&#x2F;assets/js/api-search.js"></script>
+<script src="..&#x2F;assets/js/apidocs.js"></script>
+</body>
+</html>

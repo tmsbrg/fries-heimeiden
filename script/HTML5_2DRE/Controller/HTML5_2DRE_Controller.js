@@ -88,7 +88,13 @@ Controller = {
 	{
 		
 	},
-	
+
+	mouse_objectMouseDown		:	function(object)
+	{
+		if (object !== null)
+			object.onmousedown();
+	},
+
 	/*
 	   Function: mouse_objectClick
 	

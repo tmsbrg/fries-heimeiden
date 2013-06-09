@@ -1,0 +1,1616 @@
+{
+    "project": {
+        "name": "Eracle HTML5_2DRE",
+        "description": "A 2d rendering engine",
+        "logo": "../assets/css/logo.jpg",
+        "version": "0.0.1",
+        "url": "http://www.eraclesoftware.com"
+    },
+    "files": {
+        "Controller/HTML5_2DRE_Controller.js": {
+            "name": "Controller/HTML5_2DRE_Controller.js",
+            "modules": {
+                "Controller": 1
+            },
+            "classes": {
+                "Controller": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "Model/HTML5_2DRE_Drawables.js": {
+            "name": "Model/HTML5_2DRE_Drawables.js",
+            "modules": {
+                "Model": 1,
+                "Drawables": 1
+            },
+            "classes": {
+                "BaseDrawable": 1,
+                "RectangleDrawable": 1,
+                "TextDrawable": 1,
+                "SpriteDrawable": 1,
+                "ButtonDrawable": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "Model/HTML5_2DRE_Functions.js": {
+            "name": "Model/HTML5_2DRE_Functions.js",
+            "modules": {},
+            "classes": {
+                "Object": 1,
+                "Date": 1,
+                "Number": 1,
+                "Boolean": 1,
+                "String": 1,
+                "Array": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "Model/HTML5_2DRE_Model.js": {
+            "name": "Model/HTML5_2DRE_Model.js",
+            "modules": {},
+            "classes": {
+                "Model": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "View/HTML5_2DRE_View.js": {
+            "name": "View/HTML5_2DRE_View.js",
+            "modules": {
+                "View": 1
+            },
+            "classes": {
+                "View": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "HTML5_2DRE.js": {
+            "name": "HTML5_2DRE.js",
+            "modules": {
+                "root": 1
+            },
+            "classes": {
+                "HTML5_2DRE": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "Controller": {
+            "name": "Controller",
+            "submodules": {},
+            "classes": {
+                "Controller": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "Controller/HTML5_2DRE_Controller.js",
+            "line": 22,
+            "description": "Controller element"
+        },
+        "Model": {
+            "name": "Model",
+            "submodules": {
+                "Drawables": 1
+            },
+            "classes": {
+                "BaseDrawable": 1,
+                "RectangleDrawable": 1,
+                "TextDrawable": 1,
+                "SpriteDrawable": 1,
+                "ButtonDrawable": 1,
+                "Model": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "file": "Model/HTML5_2DRE_Model.js",
+            "line": 21,
+            "description": "This section contains all base drawable objects. These can be used as a basis for game-specific objects.",
+            "tag": "main",
+            "itemtype": "main"
+        },
+        "Drawables": {
+            "name": "Drawables",
+            "submodules": {},
+            "classes": {
+                "BaseDrawable": 1,
+                "RectangleDrawable": 1,
+                "TextDrawable": 1,
+                "SpriteDrawable": 1,
+                "ButtonDrawable": 1
+            },
+            "fors": {},
+            "is_submodule": 1,
+            "namespaces": {},
+            "module": "Model",
+            "namespace": "",
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 454,
+            "description": "This section contains all base drawable objects. These can be used as a basis for game-specific objects.",
+            "tag": "main",
+            "itemtype": "main"
+        },
+        "root": {
+            "name": "root",
+            "submodules": {
+                "undefined": 1
+            },
+            "classes": {
+                "HTML5_2DRE": 1,
+                "Object": 1,
+                "Date": 1,
+                "Number": 1,
+                "Boolean": 1,
+                "String": 1,
+                "Array": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "HTML5_2DRE.js",
+            "line": 17,
+            "description": "Initializes the engine."
+        },
+        "View": {
+            "name": "View",
+            "submodules": {},
+            "classes": {
+                "View": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 21,
+            "description": "View element"
+        }
+    },
+    "classes": {
+        "Controller": {
+            "name": "Controller",
+            "shortname": "Controller",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Controller",
+            "namespace": "",
+            "file": "Controller/HTML5_2DRE_Controller.js",
+            "line": 22,
+            "description": "Controller element of the HTML5_2DREngine."
+        },
+        "BaseDrawable": {
+            "name": "BaseDrawable",
+            "shortname": "BaseDrawable",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Model",
+            "submodule": "Drawables",
+            "namespace": "",
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 30,
+            "description": "This is the base drawable class from which all drawable objects inherit. It can also be used on its own as an empty object which contains children."
+        },
+        "RectangleDrawable": {
+            "name": "RectangleDrawable",
+            "shortname": "RectangleDrawable",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Model",
+            "submodule": "Drawables",
+            "namespace": "",
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 280,
+            "description": "Object that is drawn as a rectangle. As with every drawable object, it inherits from <BaseDrawable>.",
+            "extends": "Model.Drawables.BaseDrawable"
+        },
+        "TextDrawable": {
+            "name": "TextDrawable",
+            "shortname": "TextDrawable",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Model",
+            "submodule": "Drawables",
+            "namespace": "",
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 320,
+            "description": "A textbox. As with every drawable object, it inherits from <BaseDrawable>.",
+            "extends": "Model.Drawables.BaseDrawable"
+        },
+        "SpriteDrawable": {
+            "name": "SpriteDrawable",
+            "shortname": "SpriteDrawable",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Model",
+            "submodule": "Drawables",
+            "namespace": "",
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 400,
+            "description": "An object that is drawn as an image. As with every drawable object, it inherits from <BaseDrawable>.",
+            "extends": "Model.Drawables.BaseDrawable"
+        },
+        "ButtonDrawable": {
+            "name": "ButtonDrawable",
+            "shortname": "ButtonDrawable",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Model",
+            "submodule": "Drawables",
+            "namespace": "",
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 454,
+            "description": "A button object. Inherits from <SpriteDrawable>, which inherits from <BaseDrawable>.",
+            "extends": "Model.Drawables.SpriteDrawable"
+        },
+        "Object": {
+            "name": "Object",
+            "shortname": "Object",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "root",
+            "namespace": "",
+            "file": "Model/HTML5_2DRE_Functions.js",
+            "line": 17,
+            "description": "JavaScript object data type."
+        },
+        "Date": {
+            "name": "Date",
+            "shortname": "Date",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "root",
+            "namespace": "",
+            "file": "Model/HTML5_2DRE_Functions.js",
+            "line": 51,
+            "description": "JavaScript Date data type."
+        },
+        "Number": {
+            "name": "Number",
+            "shortname": "Number",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "root",
+            "namespace": "",
+            "file": "Model/HTML5_2DRE_Functions.js",
+            "line": 67,
+            "description": "JavaScript Number data type."
+        },
+        "Boolean": {
+            "name": "Boolean",
+            "shortname": "Boolean",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "root",
+            "namespace": "",
+            "file": "Model/HTML5_2DRE_Functions.js",
+            "line": 76,
+            "description": "JavaScript Boolean data type."
+        },
+        "String": {
+            "name": "String",
+            "shortname": "String",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "root",
+            "namespace": "",
+            "file": "Model/HTML5_2DRE_Functions.js",
+            "line": 85,
+            "description": "JavaScript String data type."
+        },
+        "Array": {
+            "name": "Array",
+            "shortname": "Array",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "root",
+            "namespace": "",
+            "file": "Model/HTML5_2DRE_Functions.js",
+            "line": 112
+        },
+        "Model": {
+            "name": "Model",
+            "shortname": "Model",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Model",
+            "namespace": "",
+            "file": "Model/HTML5_2DRE_Model.js",
+            "line": 21,
+            "description": "Base model class",
+            "itemtype": "property",
+            "type": "Array"
+        },
+        "View": {
+            "name": "View",
+            "shortname": "View",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "View",
+            "namespace": "",
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 21,
+            "description": "View element of the HTML5_2DREngine."
+        },
+        "HTML5_2DRE": {
+            "name": "HTML5_2DRE",
+            "shortname": "HTML5_2DRE",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "root",
+            "namespace": "",
+            "file": "HTML5_2DRE.js",
+            "line": 17,
+            "description": "Initializes the engine.",
+            "itemtype": "property",
+            "type": "Boolean"
+        }
+    },
+    "classitems": [
+        {
+            "file": "Controller/HTML5_2DRE_Controller.js",
+            "line": 28,
+            "description": "True if control key is pressed down.",
+            "itemtype": "property",
+            "name": "isCtrl",
+            "type": "Boolean",
+            "class": "Controller",
+            "module": "Controller"
+        },
+        {
+            "file": "Controller/HTML5_2DRE_Controller.js",
+            "line": 34,
+            "description": "Array of all the keycodes and their boolean state.",
+            "itemtype": "property",
+            "name": "keyDown",
+            "type": "Array",
+            "class": "Controller",
+            "module": "Controller"
+        },
+        {
+            "file": "Controller/HTML5_2DRE_Controller.js",
+            "line": 41,
+            "description": "Initializes the Controller.",
+            "itemtype": "method",
+            "name": "init",
+            "return": {
+                "description": "True when everything has been loaded.",
+                "type": "Boolean"
+            },
+            "class": "Controller",
+            "module": "Controller"
+        },
+        {
+            "file": "Controller/HTML5_2DRE_Controller.js",
+            "line": 64,
+            "description": "update function will be called before every draw call.",
+            "itemtype": "method",
+            "name": "base_update",
+            "class": "Controller",
+            "module": "Controller"
+        },
+        {
+            "file": "Controller/HTML5_2DRE_Controller.js",
+            "line": 78,
+            "description": "update function will be called before every draw call.\nMost of the game logic will be put in here.",
+            "itemtype": "method",
+            "name": "update",
+            "class": "Controller",
+            "module": "Controller"
+        },
+        {
+            "file": "Controller/HTML5_2DRE_Controller.js",
+            "line": 88,
+            "description": "will be called by the <View> when an object has been pressed with the mouse button.",
+            "itemtype": "method",
+            "name": "mouse_objectClick",
+            "params": [
+                {
+                    "name": "object",
+                    "description": "Object that has been pressed by the mouse button.",
+                    "type": "BaseDrawable"
+                }
+            ],
+            "class": "Controller",
+            "module": "Controller"
+        },
+        {
+            "file": "Controller/HTML5_2DRE_Controller.js",
+            "line": 98,
+            "description": "will be called by the <View> when an object has been double clicked with the mouse button.\nmethod mouse_objectDoubleClick",
+            "params": [
+                {
+                    "name": "object",
+                    "description": "Object that has been double clicked by the mouse button.",
+                    "type": "BaseDrawable"
+                }
+            ],
+            "class": "Controller",
+            "module": "Controller"
+        },
+        {
+            "file": "Controller/HTML5_2DRE_Controller.js",
+            "line": 108,
+            "description": "will be called by the <View> when an object is being hovered the mouse.",
+            "itemtype": "method",
+            "name": "mouse_objectHover",
+            "params": [
+                {
+                    "name": "object",
+                    "description": "Object that is being hovered by the mouse.",
+                    "type": "BaseDrawable"
+                }
+            ],
+            "class": "Controller",
+            "module": "Controller"
+        },
+        {
+            "file": "Controller/HTML5_2DRE_Controller.js",
+            "line": 118,
+            "description": "will be called by the <View> when an object is not being hovered anymore by the mouse.\nmethod mouse_objectHoverOut",
+            "params": [
+                {
+                    "name": "object",
+                    "description": "Object that is not being hovered anymore by the mouse.",
+                    "type": "BaseDrawable"
+                }
+            ],
+            "class": "Controller",
+            "module": "Controller"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 36,
+            "description": "The name of this object.",
+            "itemtype": "property",
+            "name": "name",
+            "type": "string",
+            "default": "\"Rectangle\"",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 43,
+            "description": "Where the variable will be drawn in pixels of the canvas. Relative to its parent if it has one.",
+            "itemtype": "property",
+            "name": "position",
+            "type": "Object",
+            "default": "{ x:0, y:0 }",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 50,
+            "description": "The size of the object is used to draw the object and to check for mouse input. Make sure all buttons that are childs of this object fall inside its size.",
+            "itemtype": "property",
+            "name": "size",
+            "type": "Object",
+            "default": "{ x:1, y:1 }",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 57,
+            "description": "Used to scale the size.",
+            "itemtype": "property",
+            "name": "scale",
+            "type": "Object",
+            "default": "{ x:1, y:1 };",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 64,
+            "description": "Determines its rotation in radians. Relative to its parent if it has one.",
+            "itemtype": "property",
+            "name": "rotation",
+            "type": "Number",
+            "default": "0",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 71,
+            "description": "The depth of this object is stored in here, changing this wont have effect.",
+            "itemtype": "property",
+            "name": "depth",
+            "type": "Number",
+            "default": "0",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 78,
+            "description": "Determines the colour to draw it with, if applicable.",
+            "itemtype": "property",
+            "name": "color",
+            "type": "String",
+            "default": "\"#000000\"",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 85,
+            "description": "Determines its alpha channel between 1 and 0.",
+            "itemtype": "property",
+            "name": "alpha",
+            "type": "Float/Double",
+            "default": "1",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 92,
+            "description": "Determines whether it is visible (boolean).",
+            "itemtype": "property",
+            "name": "visible",
+            "type": "Boolean",
+            "default": "true",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 99,
+            "description": "Determines if the objct is active, if it is the update method will be called.",
+            "itemtype": "property",
+            "name": "active",
+            "type": "Boolean",
+            "default": "true",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 106,
+            "description": "Contains its parent. If the object has no parent, it contains \"null\".",
+            "itemtype": "property",
+            "name": "parent",
+            "type": "Object",
+            "default": "null",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 113,
+            "description": "Array which contains all of its children.",
+            "itemtype": "property",
+            "name": "drawableObjects",
+            "type": "Array",
+            "default": "Empty array",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 120,
+            "description": "Determines which type of cursor is used when the mouse hovers over the object.",
+            "itemtype": "property",
+            "name": "cursor",
+            "type": "String",
+            "default": "\"default\"",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 128,
+            "description": "This function will be called when this object is being cloned.",
+            "itemtype": "method",
+            "name": "onCloneInit",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 133,
+            "description": "This function will be called when this object has been added into the drawable list.",
+            "itemtype": "method",
+            "name": "onDrawInit",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 138,
+            "description": "Will check if this object is visible and if so will render itself to the canvas plus all its children.",
+            "itemtype": "method",
+            "name": "base_draw",
+            "params": [
+                {
+                    "name": "ctx",
+                    "description": "Requires the canvas context element.",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "returns false if this object is not visible",
+                "type": "Boolean"
+            },
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 162,
+            "description": "Will check if this object is visible and if so will update itself to the canvas plus all its children.",
+            "itemtype": "method",
+            "name": "base_update",
+            "return": {
+                "description": "false if inactive",
+                "type": "Boolean"
+            },
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 178,
+            "description": "Contains the HTML5 redering part for this object.",
+            "itemtype": "method",
+            "name": "draw",
+            "params": [
+                {
+                    "name": "ctx",
+                    "description": "Requires the canvas context element.",
+                    "type": "Object"
+                }
+            ],
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 184,
+            "description": "Will be called before every draw call.",
+            "itemtype": "method",
+            "name": "update",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 189,
+            "description": "Will be called when this object is added into the drawlist of another object.",
+            "itemtype": "method",
+            "name": "setParent",
+            "params": [
+                {
+                    "name": "parent",
+                    "description": "the parent object",
+                    "type": "BaseDrawable"
+                }
+            ],
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 198,
+            "description": "Will add a new object as child and will render it in the future.",
+            "itemtype": "method",
+            "name": "addDrawable",
+            "params": [
+                {
+                    "name": "elem",
+                    "description": "Element (object) of base type <BaseDrawable> to be added into the rendering list.",
+                    "type": "BaseDrawable"
+                },
+                {
+                    "name": "depth",
+                    "description": "When should this element be drawn? the lowest will be drawn at the most back.",
+                    "type": "Number"
+                }
+            ],
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 224,
+            "description": "Removes a <BaseDrawable> from the drawing list.",
+            "itemtype": "method",
+            "name": "removeDrawable",
+            "params": [
+                {
+                    "name": "elem",
+                    "description": "Element (object) of base type <BaseDrawable> to be removed from the rendering list.",
+                    "type": "BaseDrawable"
+                }
+            ],
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 239,
+            "description": "Checks through its children and returns the first one that contains the position [x, y]. If none is found, returns itself.",
+            "itemtype": "method",
+            "name": "getobjectatpos",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "X co-ordinate to check at",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "Y co-ordinate to check at",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Most forward child at position [x, y] or itself.",
+                "type": "BaseDrawable"
+            },
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 263,
+            "description": "Triggered when the object is clicked.",
+            "itemtype": "method",
+            "name": "onclick",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 268,
+            "description": "Triggered when the mouse hovers over the object.",
+            "itemtype": "method",
+            "name": "onhover",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 273,
+            "description": "Triggered when the mouse moves out of the object.",
+            "itemtype": "method",
+            "name": "onmouseout",
+            "class": "BaseDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 287,
+            "description": "The colour of the rectangle's border",
+            "itemtype": "property",
+            "name": "borderColor",
+            "type": "String",
+            "default": "\"#000000\"",
+            "class": "RectangleDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 294,
+            "description": "The width of the rectangle's border",
+            "itemtype": "property",
+            "name": "borderWidth",
+            "type": "Number",
+            "default": "0",
+            "class": "RectangleDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 302,
+            "description": "Draws the rectangle.",
+            "itemtype": "method",
+            "name": "draw",
+            "params": [
+                {
+                    "name": "ctx",
+                    "description": "Requires the canvas context element.",
+                    "type": "Object"
+                }
+            ],
+            "class": "RectangleDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 326,
+            "description": "Contains the text to draw",
+            "itemtype": "property",
+            "name": "text",
+            "type": "String",
+            "default": "\"\"",
+            "class": "TextDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 333,
+            "description": "The colour of the text box's border",
+            "itemtype": "property",
+            "name": "borderColor",
+            "type": "String",
+            "default": "\"#000000\"",
+            "class": "TextDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 340,
+            "description": "The width of the text box's border",
+            "itemtype": "property",
+            "name": "BorderWidth",
+            "type": "Number",
+            "default": "0",
+            "class": "TextDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 347,
+            "description": "Determines the font information to use when drawing the text.",
+            "itemtype": "property",
+            "name": "font",
+            "type": "String",
+            "default": "\"normal 12px Arial\"",
+            "class": "TextDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 355,
+            "description": "Draws the text.",
+            "itemtype": "method",
+            "name": "draw",
+            "params": [
+                {
+                    "name": "ctx",
+                    "description": "Requires the canvas context element.",
+                    "type": "Object"
+                }
+            ],
+            "class": "TextDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 375,
+            "description": "Experimently function, goal is to make it only switch fonts if necesary.",
+            "itemtype": "method",
+            "name": "setStyle",
+            "params": [
+                {
+                    "name": "ctx",
+                    "description": "Requires the canvas context element.",
+                    "type": "Object"
+                }
+            ],
+            "class": "TextDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 386,
+            "description": "Sets the text. Automatically adjusts the width of the object so it fits the complete new text.",
+            "itemtype": "method",
+            "name": "setText",
+            "params": [
+                {
+                    "name": "ctx",
+                    "description": "Requires the canvas context element.",
+                    "type": "Object"
+                }
+            ],
+            "class": "TextDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 407,
+            "description": "Contains image element used to draw.",
+            "itemtype": "property",
+            "name": "_image",
+            "type": "Image",
+            "default": "Empty Image",
+            "class": "SpriteDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 414,
+            "description": "Contains the source link or path for the current image.",
+            "itemtype": "property",
+            "name": "curImage",
+            "type": "String",
+            "default": "\"\"",
+            "class": "SpriteDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 422,
+            "description": "Magic function that is called when the image has been loaded onto the user's computer.",
+            "itemtype": "method",
+            "name": "onload",
+            "class": "SpriteDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 430,
+            "description": "Used to load an image into the sprite. Also sets curImage to the given path.",
+            "itemtype": "method",
+            "name": "load",
+            "params": [
+                {
+                    "name": "src",
+                    "description": "The source of the image to load in as a full or relative link/path.",
+                    "type": "Image"
+                }
+            ],
+            "class": "SpriteDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 441,
+            "description": "Draws the image if it has been loaded.",
+            "itemtype": "method",
+            "name": "draw",
+            "params": [
+                {
+                    "name": "ctx",
+                    "description": "Requires the canvas context element.",
+                    "type": "Object"
+                }
+            ],
+            "class": "SpriteDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 460,
+            "description": "Text to draw on the button. Leave empty to draw no text.",
+            "itemtype": "property",
+            "name": "text",
+            "type": "String",
+            "default": "\"\"",
+            "class": "ButtonDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 467,
+            "description": "Font to use for drawing the text.",
+            "itemtype": "property",
+            "name": "font",
+            "type": "String",
+            "default": "\"normal 12px Arial\"",
+            "class": "ButtonDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 474,
+            "description": "Cursor type to show when hovering this object, see a html cursors table for this",
+            "itemtype": "property",
+            "name": "cursor",
+            "type": "String",
+            "default": "\"pointer\"",
+            "class": "ButtonDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 481,
+            "description": "Position of the button's text, relative to its own.",
+            "itemtype": "property",
+            "name": "textPos",
+            "type": "Object",
+            "default": "[5, 5]",
+            "class": "ButtonDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 489,
+            "description": "Triggered when the object is clicked. If this function is not changed, it will also trigger the function nameofobject_onclick if it is defined outside any class.",
+            "itemtype": "method",
+            "name": "onclick",
+            "class": "ButtonDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Drawables.js",
+            "line": 499,
+            "description": "Draws the button and its text if it has it.",
+            "itemtype": "method",
+            "name": "draw",
+            "params": [
+                {
+                    "name": "ctx",
+                    "description": "Requires the canvas context element.",
+                    "type": "Object"
+                }
+            ],
+            "class": "ButtonDrawable",
+            "module": "Model",
+            "submodule": "Drawables"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Functions.js",
+            "line": 22,
+            "description": "Clones the object and all it contains and returns the clone.",
+            "itemtype": "method",
+            "name": "clone",
+            "return": {
+                "description": "clone of the original object",
+                "type": "Object"
+            },
+            "class": "Object",
+            "module": "root"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Functions.js",
+            "line": 39,
+            "description": "Extend the object with functions and fields given.",
+            "itemtype": "method",
+            "name": "extend",
+            "params": [
+                {
+                    "name": "data",
+                    "description": "JSON which should be added to the current object.",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "original object plus all the content from the given data object.",
+                "type": "Object"
+            },
+            "class": "Object",
+            "module": "root"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Functions.js",
+            "line": 55,
+            "description": "Clones the Date and returns the clone.",
+            "itemtype": "method",
+            "name": "clone",
+            "return": {
+                "description": "Clone of the Date.",
+                "type": "Date"
+            },
+            "class": "Date",
+            "module": "root"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Functions.js",
+            "line": 71,
+            "description": "Clones the Number and returns the clone.",
+            "itemtype": "method",
+            "name": "clone",
+            "return": {
+                "description": "Clone of the Number.",
+                "type": "Number"
+            },
+            "class": "Number",
+            "module": "root"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Functions.js",
+            "line": 80,
+            "description": "Clones the Boolean and returns the clone.",
+            "itemtype": "method",
+            "name": "clone",
+            "return": {
+                "description": "Clone of the Boolean.",
+                "type": "Boolean"
+            },
+            "class": "Boolean",
+            "module": "root"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Functions.js",
+            "line": 89,
+            "description": "Clones the String and returns the clone.",
+            "itemtype": "method",
+            "name": "clone",
+            "return": {
+                "description": "Clone of the String.",
+                "type": "String"
+            },
+            "class": "String",
+            "module": "root"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Functions.js",
+            "line": 99,
+            "description": "Formats money to a more human-readable form and returns it.",
+            "itemtype": "method",
+            "name": "formatMoney",
+            "params": [
+                {
+                    "name": "c",
+                    "description": "Number of decimals to round at.",
+                    "type": "Number"
+                },
+                {
+                    "name": "d",
+                    "description": "Character set between numbers to keep them readable. (3000000 -> 3[d]000[d]000) Defaults to \",\"",
+                    "type": "String"
+                },
+                {
+                    "name": "t",
+                    "description": "Character set between full numbers and the decimal fractions. (1.5 -> 1[t]5) Defaults to \".\"",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "Formatted money as string.",
+                "type": "String"
+            },
+            "class": "String",
+            "module": "root"
+        },
+        {
+            "file": "Model/HTML5_2DRE_Functions.js",
+            "line": 115,
+            "description": "Inserts an item into an array at the given index",
+            "itemtype": "method",
+            "name": "insert",
+            "params": [
+                {
+                    "name": "index",
+                    "description": "position in the array the new item should take place.",
+                    "type": "Number"
+                },
+                {
+                    "name": "item",
+                    "description": "the new item to add.",
+                    "type": "Object"
+                }
+            ],
+            "class": "Array",
+            "module": "root"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 27,
+            "description": "HTML ID for the Canvas element to use.",
+            "itemtype": "property",
+            "name": "canvasID",
+            "type": "String",
+            "default": "\"HTML5_2DRE\"",
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 34,
+            "description": "Contains the canvas element.",
+            "itemtype": "property",
+            "name": "canvas",
+            "type": "HTMLDomObject",
+            "default": "null",
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 41,
+            "description": "Contains the Canvas' 2D renderer.",
+            "itemtype": "property",
+            "name": "ctx",
+            "type": "Object",
+            "default": "null",
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 48,
+            "description": "targeted fps which you like to run this game at (default 50).",
+            "itemtype": "property",
+            "name": "fps",
+            "type": "Number",
+            "default": "50",
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 55,
+            "description": "(do not set) time to start the next update/draw., will be set by start function",
+            "itemtype": "property",
+            "name": "fpsinterval",
+            "type": "Number",
+            "default": "0",
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 62,
+            "description": "Last FPS.",
+            "itemtype": "property",
+            "name": "lastfps",
+            "type": "Number",
+            "default": "0",
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 69,
+            "description": "will count up every frame it renders.",
+            "itemtype": "property",
+            "name": "fpscounter",
+            "type": "Number",
+            "default": "0",
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 76,
+            "description": "(do not set) will count to 1 with deltatime and when hit will grab <fpscounter> count and set it into <lastfps>.",
+            "itemtype": "property",
+            "name": "fpstimer",
+            "type": "Number",
+            "default": "0",
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 83,
+            "description": "The width of the game in pixels.",
+            "itemtype": "property",
+            "name": "canvasWidth",
+            "type": "Number",
+            "default": "0",
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 90,
+            "description": "The height of the game in pixels.",
+            "itemtype": "property",
+            "name": "canvasHeight",
+            "type": "Number",
+            "default": "0",
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 97,
+            "description": "Object currently being clicked on by the mouse.",
+            "itemtype": "property",
+            "name": "mhoverObject",
+            "type": "BaseDrawable",
+            "default": "null",
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 104,
+            "description": "Object which the mouse is hovering over.",
+            "itemtype": "property",
+            "name": "mdownObject",
+            "type": "BaseDrawable",
+            "default": "null",
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 112,
+            "description": "Initializes the View, Connects to the canvas and gets its variables. Sets desired FPS.",
+            "itemtype": "method",
+            "name": "init",
+            "return": {
+                "description": "True if it could connect to the HTML canvas with the canvas ID. Otherwise false.",
+                "type": "Boolean"
+            },
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 139,
+            "description": "Draws every object on the canvas every frame.",
+            "itemtype": "method",
+            "name": "base_draw",
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 172,
+            "description": "Will return the position of the mouse on the canvas.",
+            "itemtype": "method",
+            "name": "mouseposition",
+            "params": [
+                {
+                    "name": "e",
+                    "description": "event object",
+                    "type": "Event"
+                }
+            ],
+            "return": {
+                "description": "[x, y] JSON positions"
+            },
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 189,
+            "description": "Called when the mouse is clicked. Will set <mdownObject> to the currently clicked object.",
+            "itemtype": "method",
+            "name": "mousedown",
+            "params": [
+                {
+                    "name": "e",
+                    "description": "event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 215,
+            "description": "Called when the mouse moves.\n\nWill call the <Controller.mouse_objectHover> when <mhoverObject> is hovered by the mouse.\nWill call the <Controller.mouse_objectHoverOut> when <mhoverObject> is no longer being hovered.",
+            "itemtype": "method",
+            "name": "mousemove",
+            "params": [
+                {
+                    "name": "e",
+                    "description": "event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 244,
+            "description": "When the mouse hovers out of an object this function will be called to return settings to their defaults.",
+            "itemtype": "method",
+            "name": "setstyledefaults",
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 254,
+            "description": "Called when the mouse is clicked twice in short succession.\nWill call <Controller.mouse_objectDoubleClick>",
+            "itemtype": "method",
+            "name": "mousedblclick",
+            "params": [
+                {
+                    "name": "e",
+                    "description": "event object",
+                    "type": "Event"
+                }
+            ],
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "View/HTML5_2DRE_View.js",
+            "line": 270,
+            "description": "Will get the object at the given position.",
+            "itemtype": "method",
+            "name": "getobjectatpos",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "x position to check.",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "y position to check.",
+                    "type": "Number"
+                }
+            ],
+            "class": "View",
+            "module": "View"
+        },
+        {
+            "file": "HTML5_2DRE.js",
+            "line": 45,
+            "description": "Initializes MVC main objects, then initializes the game and starts the game loop.",
+            "itemtype": "method",
+            "name": "HTML5_2DRE_start",
+            "class": "HTML5_2DRE",
+            "module": "root"
+        },
+        {
+            "file": "HTML5_2DRE.js",
+            "line": 63,
+            "description": "Main loop which calls all the update and draw functions.",
+            "itemtype": "method",
+            "name": "HTML5_2DRE_gameLoop",
+            "class": "HTML5_2DRE",
+            "module": "root"
+        },
+        {
+            "file": "HTML5_2DRE.js",
+            "line": 82,
+            "description": "Initializes the game (not rendering engine).",
+            "itemtype": "method",
+            "name": "HTML5_2DRE_initialize",
+            "class": "HTML5_2DRE",
+            "module": "root"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " Controller/HTML5_2DRE_Controller.js:41"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " Model/HTML5_2DRE_Drawables.js:162"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " Model/HTML5_2DRE_Drawables.js:239"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " Model/HTML5_2DRE_Functions.js:22"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " Model/HTML5_2DRE_Functions.js:39"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " Model/HTML5_2DRE_Functions.js:55"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " Model/HTML5_2DRE_Functions.js:71"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " Model/HTML5_2DRE_Functions.js:80"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " Model/HTML5_2DRE_Functions.js:89"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " Model/HTML5_2DRE_Functions.js:99"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " View/HTML5_2DRE_View.js:112"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " View/HTML5_2DRE_View.js:172"
+        },
+        {
+            "message": "Missing item type\nwill be called by the <View> when an object has been double clicked with the mouse button.\nmethod mouse_objectDoubleClick",
+            "line": " Controller/HTML5_2DRE_Controller.js:98"
+        },
+        {
+            "message": "Missing item type\nwill be called by the <View> when an object is not being hovered anymore by the mouse.\nmethod mouse_objectHoverOut",
+            "line": " Controller/HTML5_2DRE_Controller.js:118"
+        }
+    ]
+}

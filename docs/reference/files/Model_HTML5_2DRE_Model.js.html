@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Model&#x2F;HTML5_2DRE_Model.js - Eracle HTML5_2DRE</title>
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.8.0pr2&#x2F;build&#x2F;cssgrids&#x2F;cssgrids-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="..&#x2F;assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="..&#x2F;assets/favicon.png">
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.8.0pr2&#x2F;build&#x2F;yui&#x2F;yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="..&#x2F;assets&#x2F;css&#x2F;logo.jpg" title="Eracle HTML5_2DRE"></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: Eracle HTML5_2DRE<br />
+             version: 0.0.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="..&#x2F;classes/Array.html">Array</a></li>
+            
+                <li><a href="..&#x2F;classes/BaseDrawable.html">BaseDrawable</a></li>
+            
+                <li><a href="..&#x2F;classes/Boolean.html">Boolean</a></li>
+            
+                <li><a href="..&#x2F;classes/ButtonDrawable.html">ButtonDrawable</a></li>
+            
+                <li><a href="..&#x2F;classes/Controller.html">Controller</a></li>
+            
+                <li><a href="..&#x2F;classes/Date.html">Date</a></li>
+            
+                <li><a href="..&#x2F;classes/HTML5_2DRE.html">HTML5_2DRE</a></li>
+            
+                <li><a href="..&#x2F;classes/Model.html">Model</a></li>
+            
+                <li><a href="..&#x2F;classes/Number.html">Number</a></li>
+            
+                <li><a href="..&#x2F;classes/Object.html">Object</a></li>
+            
+                <li><a href="..&#x2F;classes/RectangleDrawable.html">RectangleDrawable</a></li>
+            
+                <li><a href="..&#x2F;classes/SpriteDrawable.html">SpriteDrawable</a></li>
+            
+                <li><a href="..&#x2F;classes/String.html">String</a></li>
+            
+                <li><a href="..&#x2F;classes/TextDrawable.html">TextDrawable</a></li>
+            
+                <li><a href="..&#x2F;classes/View.html">View</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+                <li><a href="..&#x2F;modules/Controller.html">Controller</a></li>
+            
+                <li><a href="..&#x2F;modules/Drawables.html">Drawables</a></li>
+            
+                <li><a href="..&#x2F;modules/Model.html">Model</a></li>
+            
+                <li><a href="..&#x2F;modules/root.html">root</a></li>
+            
+                <li><a href="..&#x2F;modules/View.html">View</a></li>
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: Model&#x2F;HTML5_2DRE_Model.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+&#x2F;&#x2F; Copyright (c) 2012 All Right Reserved, Eracle Software and Thomas van der Berg
+&#x2F;&#x2F;
+&#x2F;&#x2F; This source is subject to the Eracle License.
+&#x2F;&#x2F; Please see the license page on http:&#x2F;&#x2F;eraclesoftware.com&#x2F;legal&#x2F; file for more information.
+&#x2F;&#x2F; All other rights reserved.
+&#x2F;&#x2F;
+&#x2F;&#x2F; THIS CODE AND INFORMATION ARE PROVIDED &quot;AS IS&quot; WITHOUT WARRANTY OF ANY 
+&#x2F;&#x2F; KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+&#x2F;&#x2F; IMPLIED WARRANTIES OF MERCHANTABILITY AND&#x2F;OR FITNESS FOR A
+&#x2F;&#x2F; PARTICULAR PURPOSE.
+&#x2F;&#x2F;
+&#x2F;&#x2F; authors:	Ylon Schaeffer, Thomas van der Berg
+&#x2F;&#x2F; email:	yschaeffer@eraclesoftware.com, thomas.van.der.berg@hotmail.com
+&#x2F;&#x2F; date:	14-11-2012
+&#x2F;&#x2F; summary:	Model element of the HTML5_2DREngine.
+
+&#x2F;**
+Model element
+@module Model
+*&#x2F;
+&#x2F;**
+Base model class
+@class Model
+@property {Array} drawableObjects Array which contains all the objects in this application.
+*&#x2F;
+
+Model = {
+	drawableObjects			: new Array(),
+	
+	&#x2F;*
+	   Function: init
+	
+	   	Initializes the Model.
+	   
+	   Returns:
+		
+		Boolean - True when everything has been loaded.
+	*&#x2F;
+	init					: function()
+	{
+		return true;
+	},
+	
+	&#x2F;*
+	   Function: addDrawable
+	
+	   Adds a new &lt;BaseDrawable&gt; into the drawing list.
+	
+	   Parameters:
+	
+		  elem - Element (object) of HTML5_2DRE type &lt;BaseDrawable&gt; to be added into the rendering list.
+		  depth - When should this element be drawn? the lowest will be drawn at the most back.
+	
+	   See Also:
+	
+		  &lt;BaseDrawable&gt;
+		  &lt;removeDrawable&gt;
+	*&#x2F;
+
+	addDrawable		: function(elem, depth)
+	{
+		if(depth == null || depth == undefined)
+		{
+			index = this.drawableObjects.length;
+			depth = (index &gt; 0) ? this.drawableObjects[(index-1)].depth + 1 : 0;
+		}
+		else
+		{
+			var index = 0;
+			for(var i = 0; i &lt; this.drawableObjects.length; i++)
+				if(depth &gt;= this.drawableObjects[i].depth)
+					index = i + 1;
+		}
+		
+		elem.depth = depth;
+		this.drawableObjects.insert(index, elem);
+		if(elem.onDrawInit) elem.onDrawInit();
+	},
+
+	&#x2F;*
+	   Function: removeDrawable
+	
+	   Removes a &lt;BaseDrawable&gt; from the drawing list.
+	
+	   Parameters:
+	
+		  elem - Element (object) of HTML5_2DRE type &lt;BaseDrawable&gt; to be removed from the rendering list.
+	
+	   See Also:
+	
+		  &lt;BaseDrawable&gt;
+		  &lt;addDrawable&gt;
+	*&#x2F;
+	
+	removeDrawable	:	function(elem)
+	{
+		for(var i = 0; i &lt; this.drawableObjects.length; i++)
+			if(this.drawableObjects[i] == elem)
+			{
+				delete this.drawableObjects[i];
+				this.drawableObjects.splice(i, 1)
+				break;
+			}
+	},
+	
+	&#x2F;*
+		Function: requestFromServer
+		
+		Requesting data from a server asynchronous (AJAX).
+		
+		Parameters:
+		url - the address we&#x27;d like to ask information from.
+		data - data in get format (data1=value1&amp;data2=value2).
+		functionToCall - when the request is done, call this function.
+		[sendDataAsPost] - set to true if you like to send the data via post.
+	*&#x2F;
+	requestFromServer		:	function(url, data, functionToCall, sendDataAsPost)
+	{
+		if(sendDataAsPost == null)
+			sendDataAsPost = false;
+		
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange=function() {
+			if (xmlhttp.readyState==4 &amp;&amp; xmlhttp.status==200) {
+				this.oncomplete(xmlhttp.responseText);
+			}
+		}
+		
+		xmlhttp.open(sendAsPostData ? &quot;post&quot; : &quot;get&quot;, url + (sendDataAsPost ? &quot;&quot; : &quot;?&quot; + data), true);
+		xmlhttp.setRequestHeader(&#x27;Content-Type&#x27;, &#x27;application&#x2F;x-www-form-urlencoded&#x27;);
+		xmlhttp.oncomplete = functionToCall;
+		if(sendDataAsPost) xmlhttp.send(); else xmlhttp.send(data);
+	}
+}
+
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="..&#x2F;assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="..&#x2F;assets/js/yui-prettify.js"></script>
+<script src="..&#x2F;assets/../api.js"></script>
+<script src="..&#x2F;assets/js/api-filter.js"></script>
+<script src="..&#x2F;assets/js/api-list.js"></script>
+<script src="..&#x2F;assets/js/api-search.js"></script>
+<script src="..&#x2F;assets/js/apidocs.js"></script>
+</body>
+</html>
