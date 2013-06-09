@@ -610,10 +610,6 @@ Model.Drawables.AnimationDrawable._currentFrame = 0;
 Model.Drawables.AnimationDrawable._currentFrameOfRow = 0;
 Model.Drawables.AnimationDrawable._currentRow = 0;
 Model.Drawables.AnimationDrawable._secondsSinceNewFrame = 0.0;
-Model.Drawables.AnimationDrawable.base_update = function() {
-    Model.Drawables.BaseDrawable.base_update.apply(this);
-    this.updateAnimation();
-}
 Model.Drawables.AnimationDrawable.loadAnimation = function(image, settings)
 {
 	this.load(image);
