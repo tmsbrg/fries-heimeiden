@@ -642,7 +642,7 @@ Model.Drawables.AnimationDrawable.unpause = function ()
 {
 	this.paused = false;
 }
-Model.Drawables.AnimationDrawable.draw = function()
+Model.Drawables.AnimationDrawable.draw = function(ctx)
 {
 	if (this._image.loaded) {
 		if (!this.paused) {
