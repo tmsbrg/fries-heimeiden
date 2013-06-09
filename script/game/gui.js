@@ -26,7 +26,7 @@ BuildingSelectButton.extend({
         this.resetImage();
     },
     /* show the unselected version of the image */
-    reset : function() {
+    resetImage : function() {
         if (this.curImage != this.baseImage + ".png") {
             this.load(this.baseImage + ".png");
         }
@@ -201,7 +201,7 @@ FinalScreen.extend({
 GUI = Model.Drawables.BaseDrawable.clone();
 GUI.extend({
     name : "GUI",
-    active : "false",
+    active : false,
     size : {x: 1920, y: 1080},
     buildingSelectButtonY : 80, /* the X value for all buildingSelectButtons */
     buildingSelectButtonX : 25, /* the Y value for the first buildingSelectButton */
