@@ -610,6 +610,10 @@ Model.Drawables.AnimationDrawable._currentFrame = 0;
 Model.Drawables.AnimationDrawable._currentFrameOfRow = 0;
 Model.Drawables.AnimationDrawable._currentRow = 0;
 Model.Drawables.AnimationDrawable._secondsSinceNewFrame = 0.0;
+Model.Drawables.AnimationDrawable.base_update = function() {
+    Model.Drawables.BaseDrawable.base_update.apply(this);
+    this.updateAnimation();
+}
 Model.Drawables.AnimationDrawable.loadAnimation = function(image, settings)
 {
 	this.load(image);
@@ -642,7 +646,7 @@ Model.Drawables.AnimationDrawable.unpause = function ()
 {
 	this.paused = false;
 }
-Model.Drawables.AnimationDrawable.draw = function(ctx)
+Model.Drawables.AnimationDrawable.draw = function()
 {
 	if (this._image.loaded) {
 		if (!this.paused) {
@@ -664,11 +668,11 @@ Model.Drawables.AnimationDrawable.draw = function(ctx)
 				this._currentFrameOfRow = 0;
 			}
 		}
-		if(this.borderWidth > 0) {
-			ctx.lineWidth = this.borderWidth;
-			ctx.strokeStyle = this.borderColor;
-			ctx.strokeRect(-(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
-		}
+        if(this.borderWidth > 0) {
+            ctx.lineWidth = this.borderWidth;
+            ctx.strokeStyle = this.borderColor;
+            ctx.strokeRect(-(this.size.x / 2), -(this.size.y / 2), this.size.x * this.scale.x, this.size.y * this.scale.y);
+        }
 		ctx.drawImage(this._image,
 					  this.offset.x + this.framePadding.x + this.framePadding.x * 2 * this._currentFrameOfRow + this.frameSize.x * this._currentFrameOfRow,
 					  this.offset.y + this.framePadding.y + this.framePadding.y * 2 * this._currentRow + this.frameSize.y * this._currentRow,
