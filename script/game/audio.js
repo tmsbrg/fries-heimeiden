@@ -1,20 +1,25 @@
 // Plays and manages audio
-AudioPlayer = Model.Drawables.BaseDrawable.clone();
-AudioPlayer.extend({
+AudioPlayer = {
     audioList : new Array, // list of audio elements
     paused : false, // whether the current audio is paused or not
     currentAudio : null, // index number of current audio element
     /* Loads one or more files and puts them in its audio list.
     Files are given by relative filepath */
     load : function() {
-        for (var i=0; i<arguments.length; i++) {
+        len = arguments.length;
+        for (var i = 0; i < len; i++) {
             if (typeof arguments[i] === 'string') {
                 var audio = document.createElement('audio');
                 audio.setAttribute('src', arguments[i]);
                 this.audioList[this.audioList.length] = audio;
+            } else if (typeof arguments[i] === 'object') { // assume array
+                var jlen = arguments[i].length;
+                for (var j = 0; j < jlen; j++) {
+                    this.load(arguments[i][j]);
+                }
             } else {
-                console.log("AudioPlayer Error: arguments are not all strings");
-                break;
+                console.log("AudioPlayer Error: argument " + arguments[i] +
+                            " is not a string or array");
             }
         }
     },
@@ -87,5 +92,4 @@ AudioPlayer.extend({
         if (this.currentAudio == null) return;
         this.audioList[this.currentAudio].removeAttribute('loop');
     }
-});
-
+}

@@ -5,6 +5,9 @@ var settings = {
     // graphical settings
         "fieldPosition" : {"x":224, "y":96}, // Do not modify!
         "tileSize" : {"x":212, "y":246}, // Do not modify!
+        // FPS
+        "showFPS" : true,
+        "maxFPS" : 40,
         // for popup texts like "+2"
             "popupSpeed" : 50,
             "popupTimeout" : 2,

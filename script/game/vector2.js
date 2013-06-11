@@ -1,4 +1,4 @@
-// object oriented 2D vector object
+/* object oriented 2D vector implementation */
 
 vec2 = function (arg1, arg2) {
     var x, y;

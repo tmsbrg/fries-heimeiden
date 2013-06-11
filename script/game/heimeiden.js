@@ -425,3 +425,6 @@ popupImage = function(position, size, image) {
 initialize = function() {
         Game.initialize();
 }
+
+/* set max FPS */
+View.fps = settings.maxFPS;

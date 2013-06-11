@@ -8,7 +8,7 @@ BuildingSelectButton.extend({
     size : new vec2(170,170),
 
     /* deselect any other selected building and select ours */
-    onclick : function() {
+    onmousedown : function() {
         if (!PlayerData.paused) {
             if (PlayerData.selectedBuilding != this.building) {
                 GUI.deselectBuilding();
@@ -203,9 +203,9 @@ GUI.extend({
     name : "GUI",
     active : false,
     size : {x: 1920, y: 1080},
-    buildingSelectButtonY : 80, /* the X value for all buildingSelectButtons */
-    buildingSelectButtonX : 25, /* the Y value for the first buildingSelectButton */
-    buildingSelectButtonSpace : 20, /* space between each buildingSelectButton */
+    buildingSelectButtonY : 123, /* the X value for all buildingSelectButtons */
+    buildingSelectButtonX : 23, /* the Y value for the first buildingSelectButton */
+    buildingSelectButtonSpace : 19, /* space between each buildingSelectButton */
     buildingSelectButtons : new Array(),
 
     startscreenGUIElements : new Array(), /* GUI elements to show before the game
@@ -217,6 +217,7 @@ GUI.extend({
     wavesTextBox : null,
     creditsTextBox : null,
     dykeHealthBox : null,
+    fpsTextBox : null,
 
     menuBar : null, /* reference to the side menu */
     game : null, /* reference to the game */
@@ -253,12 +254,13 @@ GUI.extend({
         this.initWavesText();
         this.initCreditsText();
         this.initDykeHealth();
+        this.initFPSText();
         this.initButtons();
         this.initMenuBar();
     },
     initWavesText : function() {
         this.wavesTextBox = Model.Drawables.TextDrawable.clone();
-		this.wavesTextBox.position = { x: 867, y:13};
+		this.wavesTextBox.position = { x: 1635, y:28};
 		this.wavesTextBox.size = { x:400, y: 20 };
 		this.wavesTextBox.font = "bold 52px US_Sans";
 		this.wavesTextBox.color = "#FE0000";
@@ -266,21 +268,30 @@ GUI.extend({
     },
     initCreditsText : function() {
         this.creditsTextBox = Model.Drawables.TextDrawable.clone();
-		this.creditsTextBox.position = { x: 1615,
-                                         y: 13 };
+		this.creditsTextBox.position = { x: 100,
+                                         y: 55 };
 		this.creditsTextBox.size = { x:400, y: 20 };
-		this.creditsTextBox.font = "bold 52px US_Sans";
+		this.creditsTextBox.font = "bold 35px US_Sans";
 		this.creditsTextBox.color = "#FEF500" ;
 		this.addGUIElement(this.creditsTextBox);
     },
     initDykeHealth : function() {
         this.dykeHealthBox = Model.Drawables.TextDrawable.clone();
-		this.dykeHealthBox.position = { x: 244,
-                                        y: 14 };
+		this.dykeHealthBox.position = { x: 274,
+                                        y: 28 };
 		this.dykeHealthBox.size = { x:400, y: 20 };
 		this.dykeHealthBox.font = "bold 52px US_Sans";
 		this.dykeHealthBox.color = "#23F407";
 		this.addGUIElement(this.dykeHealthBox);
+    },
+    initFPSText : function() {
+        this.fpsTextBox = Model.Drawables.TextDrawable.clone();
+		this.fpsTextBox.position = { x: 900,
+                                        y: 14 };
+		this.fpsTextBox.size = { x:400, y: 20 };
+		this.fpsTextBox.font = "bold 52px US_Sans";
+		this.fpsTextBox.color = "#FE0000";
+		this.addGUIElement(this.fpsTextBox);
     },
     /* initializes buttons and adds building select buttons */
     initButtons : function() {
@@ -347,7 +358,7 @@ GUI.extend({
         }
         this.game.gameStart();
         this.menuBar.gameStart();
-        this.buildingSelectButtons[0].onclick();
+        this.buildingSelectButtons[0].onmousedown();
         this.menuStop();
     },
     /* stops the game */
@@ -388,6 +399,9 @@ GUI.extend({
         this.creditsTextBox.text = "F " + PlayerData.credits + ",-";
         this.dykeHealthBox.text = "DIJK: " + ((this.game.dyke.health <= 0) ? 0 :
             Math.round((this.game.dyke.health / settings.dykeHealth * 100))) + "%";
+        if (settings.showFPS) {
+            this.fpsTextBox.text = "FPS: " + View.lastfps;
+        }
     }
 });
 

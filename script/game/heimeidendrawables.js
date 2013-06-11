@@ -60,7 +60,7 @@ Tile.extend({
         this.platform = null;
     },
     /* handles building on the tile */
-    onclick : function () {
+    onmousedown : function () {
         if (!PlayerData.paused && PlayerData.selectedBuilding != null) {
             switch (PlayerData.selectedBuilding) {
             case Stone:
@@ -169,6 +169,7 @@ Actor.extend({
     speed : 0, /* speed, scaled by tileSize, set via the setSpeed function */
     absoluteSpeed : 0, /* actual speed used for calculations */
     animations : [], /* list of animation sources */
+    sounds : [], /* list of sound sources */
     goDie : false, /* used by onAnimationComplete to signal the end of the death
                       animation */
     deathAnimation : -1, /* animation(index) to play before dying, none if -1 */
@@ -178,11 +179,14 @@ Actor.extend({
     ignoreCollisions : [], /* array of collisionTags of objects it won't check
                               collisions with */
     actorList : null, /* list of actors to check collisions with */
+    audio : null,
     onDrawInit : function() {
         this.absoluteSpeed = this.calculateAbsoluteSpeed();
         this.centre = this.calculateCentre();
         this.addAnimationsWithJSON(this.animations);
         this.showAnimation(0);
+        this.audio = AudioPlayer.clone();
+        this.audio.load(this.sounds);
         this.onInit();
     },
     preload : function() {
@@ -190,7 +194,7 @@ Actor.extend({
             preload(this.animations[i] + ".png");
         }
     },
-    // Sets its size and then recalculates its centre
+    /* sets its size and then recalculates its centre */
     setSize : function(size) {
         this.size = size;
         this.centre = this.calculateCentre();
@@ -333,6 +337,11 @@ Actor.extend({
 
         this.showAnimation(animation);
     },
+    playAudio : function(audioIndex) {
+        if (PlayerData.audioEnabled) {
+            this.audio.play(audioIndex);
+        }
+    },
     onAnimationComplete : function(currentAnimation) {
         if (currentAnimation === this.deathAnimation) {
             this.goDie = true;
@@ -385,7 +394,7 @@ Enemy.extend({
         this.centreOnTile(true, false);
         this.position.y += settings.tileSize.y * 0.05;
     },
-    // attacks given actor
+    /* attacks given actor */
     attack : function (other) {
         other.changeHealth(-this.damage);
     },
@@ -399,12 +408,14 @@ Enemy.extend({
             this.attackTimer -= deltaTime;
         }
 
+        /* make speed non-linear, based on animation */
         this.absoluteSpeed = this.speed * 
             (Math.sin(this.currentAnimation._currentFrame /
                       this.currentAnimation.frameN * (2*Math.PI) + this.moveAnimationOffset) *
              0.5 + 0.5) * settings.tileSize.x;
     },
     onChangeHealth : function () {
+        this.playAudio();
         this.showActorAnimation(1);
     },
     onCollide : function (other) {
@@ -449,6 +460,7 @@ WeakEnemy.extend({
     moveAnimationOffset : Math.PI * 0.5,
     animations : ["./animation/paalworm_weak/move", "./animation/paalworm_weak/hit",
                   "./animation/paalworm_weak/attack"],
+    sounds : ["./audio/paalworm/hit.ogg"],
     onInit : function() {
         this.treasure = WeakTreasure;
         Enemy.onInit.apply(this);
@@ -463,6 +475,7 @@ StrongEnemy.extend({
     moveAnimationOffset : Math.PI,
     animations : ["./animation/paalworm_strong/move", "./animation/paalworm_strong/hit",
                   "./animation/paalworm_strong/attack"],
+    sounds : ["./audio/paalworm/hit_strong.ogg"],
     onInit : function() {
         this.treasure = StrongTreasure;
         Enemy.onInit.apply(this);
@@ -476,7 +489,7 @@ Defence.extend({
     name : "Defence",
     size : new vec2(settings.defenseSize.x*settings.tileSize.x,
                 settings.defenseSize.y*settings.tileSize.y),
-    animations : [],
+    sounds : ["./audio/heimeid/create.ogg"],
     collisionTag : collisionDefence,
     cooldown : settings.defenceCooldown,
     range : settings.defenceRange,
@@ -486,6 +499,7 @@ Defence.extend({
         if (this.position.x < settings.tileSize.x) {
             this.position.x -= this.size.x / 4;
         }
+        this.playAudio();
     },
     // return true if an enemy is in range and on the same lane
     enemyInRange : function () {
@@ -509,6 +523,7 @@ Stone.extend({
     "./animation/objects/rockblock/healthlost",
     "./animation/objects/rockblock/healthcritical",
     "./animation/objects/rockblock/break"],
+    sounds : ["./audio/objects/stone_create.ogg"],
     deathAnimation : 3,
     collisionTag : collisionStone,
     health : settings.stoneHealth,
@@ -821,12 +836,23 @@ StrongTreasure.extend({
 Platform = Actor.clone()
 Platform.extend({
     name : "Platform",
-    animations : ["./animation/objects/platform"],
+    animations : ["./animation/objects/platform",
+    "./animation/objects/platform_broken"],
+    brokenAnimation : 1,
+    sounds : ["./audio/objects/platform_create.ogg"],
     health : settings.platformHealth,
     building : null,
     tile : null,
     collisionTag : collisionPlatform,
     cost : settings.platformBuildCost,
+    onInit : function() {
+        this.playAudio();
+    },
+    onChangeHealth : function() {
+        if (this.health <= 0.5 * settings.platformHealth) {
+            this.showActorAnimation(this.brokenAnimation);
+        }
+    },
     onDeath : function () {
         if (this.building) {
             this.building.animatedDie();
