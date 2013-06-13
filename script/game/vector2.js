@@ -5,11 +5,13 @@ vec2 = function (arg1, arg2) {
     if (typeof arg1 == "object" && arg1 instanceof vec2) {
         x = arg1.x;
         y = arg1.y;
-    } else {
+    } else if (arg1 == null || typeof arg1 == "number") {
         if (arg1 == null) arg1 = 0;
         if (arg2 == null) arg2 = 0;
         x = arg1;
         y = arg2;
+    } else {
+        console.log("vec2 error: " + arg1 + " is not a number or other vec2");
     }
     this.x = x;
     this.y = y;

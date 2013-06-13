@@ -6,12 +6,25 @@ BuildingSelectButton.extend({
     baseImage : null, /* part of image path from which to get the unselected
                          version of the image and the selected version */
     costText : null,
+    locked : false,
+    selected : false,
+    grey : false,
     size : new vec2(170,170),
 
     /* initialize cost text, assume building is already given */
     onDrawInit : function() {
-        this.costText = Model.Drawables.TextDrawable.clone();
-        this.costText.setText(this.building.cost);
+        if (this.building != RemoveDefence) {
+            this.costText = Model.Drawables.TextDrawable.clone();
+            this.costText.size = new vec2(50, 20);
+            this.costText.position = new vec2(40,
+                                              this.size.y - 30);
+            this.costText.font = "bold 52px US_Sans";
+            this.costText.color = "#FEF500";
+            this.costText.borderWidth = 2;
+            this.costText.borderColor = 'black';
+            this.costText.setText("F " + this.building.cost + ".-");
+            this.addDrawable(this.costText);
+        }
     },
     /* deselect any other selected building and select ours */
     onmousedown : function() {
@@ -311,7 +324,7 @@ GUI.extend({
         this.addGUIElement(this.startButton, false);
         this.addBuildingSelectButton(ShootingDefence, "./images/gui/icons/heimeid_stone");
         this.addBuildingSelectButton(Platform, "./images/gui/icons/platform");
-        this.addBuildingSelectButton(Priest, "./images/gui/icons/dominee");
+        this.addBuildingSelectButton(Priest, "./images/gui/icons/priest");
         this.addBuildingSelectButton(Stone, "./images/gui/icons/stone");
         this.addBuildingSelectButton(RemoveDefence, "./images/gui/icons/remove");
     },
@@ -319,7 +332,7 @@ GUI.extend({
     initMenuBar : function() {
         this.menuBar = MenuBar;
         this.menuBar.load("./images/gui/menubar.png");
-        this.menuBar.position = {x: 1860, y: 540 - this.menuBar.size.y / 2};
+        this.menuBar.position = {x: 1850, y: 540 - this.menuBar.size.y / 2};
         Model.addDrawable(this.menuBar);
 
         Model.addDrawable(InstructionScreen);
