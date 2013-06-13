@@ -1,5 +1,6 @@
 /* This file links to the other files, and contains some global utility functions
 and constants */
+includeJS("./script/replaceall.js");
 includeJS("./script/game/vector2.js");
 includeJS("./settings.json");
 includeJS("./script/game/language.json");
@@ -67,6 +68,16 @@ lerp = function(v1, v2, t) {
 /* returns true if v1 and v2 are within the distance d */
 inRange = function(v1, v2, d) {
     return v1 - d < v2 && v1 + d > v2;
+}
+
+jsons = {};
+/* loads json file if it hasn't been loaded before, or returns a preloaded object */
+getJSON = function(filepath) {
+    var editedpath = filepath.replaceAll(".", "").replaceAll("/", "_");
+    if (jsons[editedpath]) {
+        return jsons[editedpath];
+    }
+    return jsons[editedpath] = loadJSON(filepath);
 }
 
 /* loads json file and returns it parsed as an object */

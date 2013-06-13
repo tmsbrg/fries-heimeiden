@@ -98,6 +98,7 @@ EnemyController.extend({
         this.inWave = false;
         this.spawnTimer = 0;
         this.currentWave++;
+        GUI.newWave();
         if (this.currentWave < Waves.waves.length) {
             this.setNewWaveInfo();
         } else {

@@ -141,7 +141,7 @@ ExtendedAnimation.extend({
         len = animationArray.length;
         for (var i = 0; i < len; i++) {
             var anim = Model.Drawables.AnimationDrawable.clone();
-            var json = loadJSON(animationArray[i] + ".json");
+            var json = getJSON(animationArray[i] + ".json");
             anim.extend(json);
             anim.load(animationArray[i] + ".png");
             this.addAnimations(anim);
@@ -718,11 +718,9 @@ Dyke.extend({
                   "./animation/objects/dyke/healthlost",
                   "./animation/objects/dyke/healthcritical"],
     dykeFloor : null,
-    dykeSupports : null,
     health : settings.dykeHealth,
     onInit : function() {
         this.dykeFloor = DykeFloor;
-        this.dykeSupports = DykeSupports;
     },
     onChangeHealth : function() {
         if (this.health < 0.3 * settings.dykeHealth) {
@@ -734,9 +732,6 @@ Dyke.extend({
         }
     },
     onDeath : function () {
-        console.log(this.name + " breaks!");
-        this.dykeFloor.visible = false;
-        this.dykeSupports.visible = false;
         this.parent.lose();
     }
 });
@@ -836,9 +831,11 @@ StrongTreasure.extend({
 Platform = Actor.clone()
 Platform.extend({
     name : "Platform",
-    animations : ["./animation/objects/platform",
-    "./animation/objects/platform_broken"],
+    animations : ["./animation/objects/platform/healthy",
+    "./animation/objects/platform/broken",
+    "./animation/objects/platform/die"],
     brokenAnimation : 1,
+    deathAnimation : 2,
     sounds : ["./audio/objects/platform_create.ogg"],
     health : settings.platformHealth,
     building : null,
@@ -849,18 +846,17 @@ Platform.extend({
         this.playAudio();
     },
     onChangeHealth : function() {
-        if (this.health <= 0.5 * settings.platformHealth) {
+        if (this.health <= 0) {
+            if (this.building) {
+                this.building.animatedDie();
+            }
+            if (this.tile) {
+                this.tile.reset();
+            }
+        } else if (this.health <= 0.5 * settings.platformHealth) {
             this.showActorAnimation(this.brokenAnimation);
         }
     },
-    onDeath : function () {
-        if (this.building) {
-            this.building.animatedDie();
-        }
-        if (this.tile) {
-            this.tile.reset();
-        }
-    }
 });
 
 Effect = ExtendedAnimation.clone()
@@ -940,6 +936,19 @@ DykeFloor.extend({
         preload(this.supportsImage);
         preload(this.waterImage1);
         preload(this.waterImage2);
+    }
+});
+
+DykeShore = Model.Drawables.SpriteDrawable.clone();
+DykeShore.extend({
+    size : new vec2(250, 984),
+    ignoremouse : true,
+    image : "./images/game/dyke/shore_water.png",
+    onDrawInit : function() {
+        this.load(this.image);
+    },
+    preload : function() {
+        preload(this.image);
     }
 });
 

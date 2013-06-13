@@ -5,18 +5,44 @@ Waves = {
 // wave 1
     {
         "subWaves" : [
-            {"enemies" : [4] },
-            {"enemies" : [6] }
+            {"enemies" : [4] }
         ],
-        "spawnInterval" : {"min": 3, "max": 6},
+        "spawnInterval" : {"min": 5, "max": 6},
         "waitBeforeWave" : 5
     },
 
 // wave 2
     {
         "subWaves" : [
+            {"enemies" : [8] }
+        ],
+        "spawnInterval" : {"min": 2, "max": 5},
+    },
+
+// wave 3
+    {
+        "subWaves" : [
+            {"enemies" : [8] },
+            {"enemies" : [1, 2] }
+        ],
+        "spawnInterval" : {"min": 2, "max": 5}
+    },
+
+// wave 4
+    {
+        "subWaves" : [
+            {"enemies" : [6, 4] },
+            {"enemies" : [4, 6] }
+        ],
+        "spawnInterval" : {"min": 2, "max": 4},
+        "maxEnemies" : 7
+    },
+
+// wave 5
+    {
+        "subWaves" : [
             {"enemies" : [8, 5] },
-            {"enemies" : [5, 13] },
+            {"enemies" : [5, 13] }
         ],
         "spawnInterval" : {"min": 1, "max": 3},
         "maxEnemies" : 10

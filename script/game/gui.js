@@ -5,8 +5,14 @@ BuildingSelectButton.extend({
     building : null, /* building object bound to this button */
     baseImage : null, /* part of image path from which to get the unselected
                          version of the image and the selected version */
+    costText : null,
     size : new vec2(170,170),
 
+    /* initialize cost text, assume building is already given */
+    onDrawInit : function() {
+        this.costText = Model.Drawables.TextDrawable.clone();
+        this.costText.setText(this.building.cost);
+    },
     /* deselect any other selected building and select ours */
     onmousedown : function() {
         if (!PlayerData.paused) {
@@ -180,6 +186,8 @@ FinalScreen.extend({
         preload(this.loseImage);
     },
     show : function() {
+        this._image.loaded = false; /* do not accidentally show wrong image before
+                                       getting new one */
         if (PlayerData.lost) {
             this.load(this.loseImage);
         } else {
@@ -202,7 +210,7 @@ GUI = Model.Drawables.BaseDrawable.clone();
 GUI.extend({
     name : "GUI",
     active : false,
-    size : {x: 1920, y: 1080},
+    size : new vec2(1920, 1080),
     buildingSelectButtonY : 123, /* the X value for all buildingSelectButtons */
     buildingSelectButtonX : 23, /* the Y value for the first buildingSelectButton */
     buildingSelectButtonSpace : 19, /* space between each buildingSelectButton */
@@ -241,13 +249,13 @@ GUI.extend({
     initHUD : function() {
         var sideImage = Model.Drawables.SpriteDrawable.clone();
         sideImage.visible = false;
-        sideImage.size = {x:224, y:1080};
+        sideImage.size = new vec2(224, 1080);
         sideImage.load("./images/gui/hud_left.png");
         this.addGUIElement(sideImage);
         var upImage = Model.Drawables.SpriteDrawable.clone();
         upImage.visible = false;
         upImage.position.x = 222;
-        upImage.size = {x:1699, y:98};
+        upImage.size = new vec2(1699, 98);
         upImage.load("./images/gui/hud_up.png");
         this.addGUIElement(upImage);
 
@@ -260,8 +268,8 @@ GUI.extend({
     },
     initWavesText : function() {
         this.wavesTextBox = Model.Drawables.TextDrawable.clone();
-		this.wavesTextBox.position = { x: 1635, y:28};
-		this.wavesTextBox.size = { x:400, y: 20 };
+		this.wavesTextBox.position = new vec2(1635, 28);
+		this.wavesTextBox.size = new vec2(400, 20);
 		this.wavesTextBox.font = "bold 52px US_Sans";
 		this.wavesTextBox.color = "#FE0000";
 		this.addGUIElement(this.wavesTextBox);
@@ -270,7 +278,7 @@ GUI.extend({
         this.creditsTextBox = Model.Drawables.TextDrawable.clone();
 		this.creditsTextBox.position = { x: 100,
                                          y: 55 };
-		this.creditsTextBox.size = { x:400, y: 20 };
+		this.creditsTextBox.size = new vec2(400, 20);
 		this.creditsTextBox.font = "bold 35px US_Sans";
 		this.creditsTextBox.color = "#FEF500" ;
 		this.addGUIElement(this.creditsTextBox);
@@ -279,7 +287,7 @@ GUI.extend({
         this.dykeHealthBox = Model.Drawables.TextDrawable.clone();
 		this.dykeHealthBox.position = { x: 274,
                                         y: 28 };
-		this.dykeHealthBox.size = { x:400, y: 20 };
+		this.dykeHealthBox.size = new vec2(400, 20);
 		this.dykeHealthBox.font = "bold 52px US_Sans";
 		this.dykeHealthBox.color = "#23F407";
 		this.addGUIElement(this.dykeHealthBox);
@@ -288,7 +296,7 @@ GUI.extend({
         this.fpsTextBox = Model.Drawables.TextDrawable.clone();
 		this.fpsTextBox.position = { x: 900,
                                         y: 14 };
-		this.fpsTextBox.size = { x:400, y: 20 };
+		this.fpsTextBox.size = new vec2(400, 20);
 		this.fpsTextBox.font = "bold 52px US_Sans";
 		this.fpsTextBox.color = "#FE0000";
 		this.addGUIElement(this.fpsTextBox);
@@ -402,6 +410,9 @@ GUI.extend({
         if (settings.showFPS) {
             this.fpsTextBox.text = "FPS: " + View.lastfps;
         }
+    },
+    newWave : function() {
+        //this.wavesTextBox.color = 
     }
 });
 
@@ -413,9 +424,9 @@ MenuBar.extend({
     instructionButton : GUIButton.clone(),
     stopButton : GUIButton.clone(),
     soundButton : GUIButton.clone(),
-    size : {x: 679, y: 476},
-    textPosition : {x: 83, y: 15}, /* offset where the texts will be drawn */
-    textSize : {x: 386, y:72}, /* size for all text images */
+    size : new vec2(679, 476),
+    textPosition : new vec2(83, 15), /* offset where the texts will be drawn */
+    textSize : new vec2(386, 72), /* size for all text images */
     originPosition : null,
     destination : null,
     slidedOut : false,

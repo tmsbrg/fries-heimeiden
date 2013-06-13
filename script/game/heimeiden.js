@@ -8,8 +8,9 @@ Game.extend({
     Popups : new Array(), /* array that contains all popups and
                              effects on the field */
     dyke : null, /* direct reference to the dyke actor */
-    dykeObjects : [DykeFloor, DykeSupports], /* reference to objects part of the
-                                                dyke but behind other actors */
+    dykeObjects : [DykeFloor, DykeSupports, DykeShore], /* reference to objects
+                            that are part of the dyke but behind other actors */
+
     active : false, /* do not start the update loop immediately */
     background : Model.Drawables.SpriteDrawable.clone(), /* the tiled water
                                                             background */
@@ -20,7 +21,7 @@ Game.extend({
     preloadObjects : [FinalScreen, WeakEnemy, StrongEnemy, Stone, Priest,
                       ShootingDefence, Dyke, Bullet, WeakTreasure, StrongTreasure,
                       Platform, BackgroundFish, BackgroundWaves, DykeSupports,
-                      DykeFloor],
+                      DykeFloor, DykeShore],
 
     /* initializes the game, should only be called once per load */
     initialize : function() {
@@ -65,6 +66,7 @@ Game.extend({
         this.addDrawable(EnemyController);
         this.addDrawable(this.dykeObjects[0], settings.groundLayer);
         this.addDrawable(this.dykeObjects[1], settings.dykeLayer);
+        this.addDrawable(this.dykeObjects[2], settings.shoreLayer);
         for (i = this.dykeObjects.length-1; i > -1; i--) {
             this.dykeObjects[i].visible = false;
         }
@@ -287,6 +289,9 @@ Game.extend({
     },
     /* called when the player loses the game */
     lose : function() {
+        for (i = this.dykeObjects.length-1; i > -1; i--) {
+            this.dykeObjects[i].visible = false;
+        }
         this.killAllDefences();
         PlayerData.canBuild = false;
         PlayerData.lost = true;

@@ -32,11 +32,12 @@ var settings = {
             "fishLayer" : 1,
             "backgroundImageLayer" : 2,
             "groundLayer" : 3,
-            "characterLayer" : 4,
-            "dykeLayer" : 5,
-            "bulletLayer" : 6,
-            "shellLayer" : 7,
-            "effectLayer" : 8,
+            "dykeLayer" : 4,
+            "shoreLayer" : 5,
+            "characterLayer" : 6,
+            "bulletLayer" : 7,
+            "shellLayer" : 8,
+            "effectLayer" : 9,
         // side menu
             "menuMoveSpeed" : 0.2,
         // water effects
@@ -54,8 +55,8 @@ var settings = {
             "deselectIconAfterBuild" : false,
             "canDeselectBuilding" : false,
         // credits
-            "startingCredits" : 20,
-            "secondsToCreditUpdate" : 2,
+            "startingCredits" : 6,
+            "secondsToCreditUpdate" : 4,
             "creditsPerCreditUpdate" : 2,
             "sellRate" : 0.5, // the part of the money returned after selling a
                               // defence
@@ -100,7 +101,7 @@ var settings = {
         // waves, default values can be overwritten for specific waves in waves.json
             "defaultMaxEnemies" : 5, // max enemies on screen at the same time
             "defaultSpawnInterval" : {"min":2, "max":5}, // in seconds
-            "defaultWaitBeforeWave" : 7, // in seconds
+            "defaultWaitBeforeWave" : 10, // in seconds
         // end of game
             "timeUntilFreeze" : 3 // seconds until game freezes and
                                   // final screen pops up
