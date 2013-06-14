@@ -6,7 +6,7 @@ var settings = {
         "fieldPosition" : {"x":224, "y":96}, // Do not modify!
         "tileSize" : {"x":212, "y":246}, // Do not modify!
         // FPS
-        "showFPS" : true,
+        "showFPS" : false,
         "maxFPS" : 40,
         // for popup texts like "+2"
             "popupSpeed" : 50,
@@ -53,7 +53,7 @@ var settings = {
             "deselectIconAfterBuild" : false,
             "canDeselectBuilding" : false,
         // credits
-            "startingCredits" : 6000,
+            "startingCredits" : 6,
             "secondsToCreditUpdate" : 4,
             "creditsPerCreditUpdate" : 2,
             "sellRate" : 0.5, // the part of the money returned after selling a

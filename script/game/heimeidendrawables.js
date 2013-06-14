@@ -1,5 +1,3 @@
-// TODO: comment all stuff here, and fix some old out of date comments
-
 /* creates and maintains an array of tiles for a lane */
 Lane = Model.Drawables.BaseDrawable.clone();
 Lane.extend({
@@ -645,8 +643,8 @@ ShootingDefence.extend({
         if (this.goSpawnBullet) {
             this.goSpawnBullet = false;
             var bul = this.parent.spawnActor(new vec2(
-                    this.centre.x - this.bullet.size.x/2,
-                    this.position.y + this.size.y/3 - this.bullet.size.y/2),
+                    this.position.x + 109,
+                    this.position.y + 22),
                 this.bullet,
                 settings.bulletLayer);
             if (this.isBuffed) {

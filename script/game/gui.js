@@ -309,7 +309,9 @@ GUI.extend({
         this.initWavesText();
         this.initCreditsText();
         this.initDykeHealth();
-        this.initFPSText();
+        if (settings.showFPS) {
+            this.initFPSText();
+        }
         this.initButtons();
         this.initMenuBar();
     },
