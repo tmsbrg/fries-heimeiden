@@ -5,8 +5,9 @@ BuildingSelectButton.extend({
     building : null, /* building object bound to this button */
     baseImage : null, /* part of image path from which to get the unselected
                          version of the image and the selected version */
+    lockedImage : "./images/gui/icons/lock.png",
     costText : null,
-    locked : false,
+    locked : true,
     selected : false,
     grey : false,
     size : new vec2(170,170),
@@ -28,27 +29,60 @@ BuildingSelectButton.extend({
     },
     /* deselect any other selected building and select ours */
     onmousedown : function() {
-        if (!PlayerData.paused) {
+        if (!PlayerData.paused && !this.locked) {
             if (PlayerData.selectedBuilding != this.building) {
                 GUI.deselectBuilding();
                 PlayerData.selectedBuilding = this.building;
-                this.load(this.baseImage + "_selected.png");
+                this.selected = true;
+                this.updateImage();
             } else if (settings.canDeselectBuilding) {
                 GUI.deselectBuilding();
-                this.resetImage();
+                this.selected = false;
+                this.updateImage();
             }
         }
     },
     /* load a baseImage and set current image to the unselected version */
     loadBase : function(src) {
         this.baseImage = src;
-        this.resetImage();
+        this.updateImage();
     },
     /* show the unselected version of the image */
-    resetImage : function() {
-        if (this.curImage != this.baseImage + ".png") {
-            this.load(this.baseImage + ".png");
+    deselect : function() {
+        if (this.selected) {
+            this.selected = false;
+            this.updateImage();
         }
+    },
+    /* update image to use */
+    updateImage : function() {
+        if (!this.locked) {
+            this.load(this.baseImage +
+                        (this.selected? "_selected" : "") +
+                        (this.grey? "_grey" : "") +
+                        ".png");
+        } else {
+            this.load(this.lockedImage);
+        }
+    },
+    /* check if the player has enough money and update image accordingly */
+    update : function() {
+        if (this.building.cost > PlayerData.credits) {
+            if (!this.grey) {
+                this.grey = true;
+                this.updateImage();
+            }
+        } else {
+            if (this.grey) {
+                this.grey = false;
+                this.updateImage();
+            }
+        }
+    },
+    /* unlocks the button */
+    unlock : function() {
+        this.locked = false;
+        this.updateImage();
     }
 });
 
@@ -285,6 +319,10 @@ GUI.extend({
 		this.wavesTextBox.size = new vec2(400, 20);
 		this.wavesTextBox.font = "bold 52px US_Sans";
 		this.wavesTextBox.color = "#FE0000";
+        this.wavesTextBox.borderWidth = 2;
+        this.wavesTextBox.borderColor = 'black';
+        this.wavesTextBox.borderWidth = 2;
+        this.wavesTextBox.borderColor = 'black';
 		this.addGUIElement(this.wavesTextBox);
     },
     initCreditsText : function() {
@@ -294,6 +332,8 @@ GUI.extend({
 		this.creditsTextBox.size = new vec2(400, 20);
 		this.creditsTextBox.font = "bold 35px US_Sans";
 		this.creditsTextBox.color = "#FEF500" ;
+        this.creditsTextBox.borderWidth = 2;
+        this.creditsTextBox.borderColor = 'black';
 		this.addGUIElement(this.creditsTextBox);
     },
     initDykeHealth : function() {
@@ -303,6 +343,8 @@ GUI.extend({
 		this.dykeHealthBox.size = new vec2(400, 20);
 		this.dykeHealthBox.font = "bold 52px US_Sans";
 		this.dykeHealthBox.color = "#23F407";
+        this.dykeHealthBox.borderWidth = 2;
+        this.dykeHealthBox.borderColor = 'black';
 		this.addGUIElement(this.dykeHealthBox);
     },
     initFPSText : function() {
@@ -312,6 +354,8 @@ GUI.extend({
 		this.fpsTextBox.size = new vec2(400, 20);
 		this.fpsTextBox.font = "bold 52px US_Sans";
 		this.fpsTextBox.color = "#FE0000";
+        this.fpsTextBox.borderWidth = 2;
+        this.fpsTextBox.borderColor = 'black';
 		this.addGUIElement(this.fpsTextBox);
     },
     /* initializes buttons and adds building select buttons */
@@ -369,7 +413,15 @@ GUI.extend({
     deselectBuilding : function() {
         PlayerData.selectedBuilding = null;
         for (var i = this.buildingSelectButtons.length-1; i > -1; i--) {
-                this.buildingSelectButtons[i].resetImage();
+                this.buildingSelectButtons[i].deselect();
+        }
+    },
+    unlockBuilding : function(buildingObject) {
+        for (var i = this.buildingSelectButtons.length-1; i > -1; i--) {
+                if (this.buildingSelectButtons[i].building === buildingObject) {
+                    this.buildingSelectButtons[i].unlock();
+                    return;
+                }
         }
     },
     /* starts the game */

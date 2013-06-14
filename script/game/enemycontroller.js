@@ -101,8 +101,15 @@ EnemyController.extend({
         GUI.newWave();
         if (this.currentWave < Waves.waves.length) {
             this.setNewWaveInfo();
+            this.unlockDefences();
         } else {
             this.stop();
+        }
+    },
+    /* unlocks defences given by wave */
+    unlockDefences : function() {
+        for (var i = this.unlockBuildings.length-1; i > -1; i--) {
+            GUI.unlockBuilding(this.unlockBuildings[i]);
         }
     },
     // loads the current subwave's enemy pool
@@ -115,6 +122,7 @@ EnemyController.extend({
         this.setWaveVariable("spawnInterval");
         this.setWaveVariable("waitBeforeWave");
         this.setWaveVariable("subWaves");
+        this.setWaveVariable("unlockBuildings");
     },
     setWaveVariable : function(variable) {
         this[variable] = (Waves.waves[this.currentWave][variable] != null) ?
@@ -124,6 +132,7 @@ EnemyController.extend({
     },
     start : function() {
         this.active = true;
+        this.unlockDefences();
     },
     stop : function() {
         this.active = false;
@@ -135,6 +144,7 @@ EnemyController.extend({
         this.spawnTimer = 0;
         this.waitTimer = 0;
         this.currentWave = 0;
+        this.currentSubWave = 0;
         this.setNewWaveInfo();
     }
 });

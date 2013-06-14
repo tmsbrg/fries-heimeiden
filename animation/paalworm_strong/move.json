@@ -1,12 +1,8 @@
 {
-    "frameN" : 20,
-    "framePadding" : {
-	    "x" : 1,
-	    "y" : 0
-    },
+    "frameN" : 10,
     "frameSize" : {
-        "x" : 210,
+        "x" : 212,
         "y" : 246
     },
-    "secondsPerFrame" : 0.05
+    "secondsPerFrame" : 0.1
 }

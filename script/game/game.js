@@ -2,12 +2,12 @@
 and constants */
 includeJS("./script/replaceall.js");
 includeJS("./script/game/vector2.js");
+includeJS("./script/game/audio.js");
 includeJS("./settings.json");
 includeJS("./script/game/language.json");
-includeJS("./script/game/waves.json");
-includeJS("./script/game/audio.js");
-includeJS("./script/game/enemycontroller.js");
 includeJS("./script/game/heimeidendrawables.js");
+includeJS("./script/game/waves.json");
+includeJS("./script/game/enemycontroller.js");
 includeJS("./script/game/gui.js");
 includeJS("./script/game/heimeiden.js");
 

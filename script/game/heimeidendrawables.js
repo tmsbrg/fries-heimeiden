@@ -149,7 +149,7 @@ ExtendedAnimation.extend({
     },
     /* Sync animation pause with global game pause */
     syncPause : function() {
-        if (PlayerData.paused == !this.currentAnimation.paused) {
+        if (PlayerData.paused === !this.currentAnimation.paused) {
             this.currentAnimation.paused = !this.currentAnimation.paused;
         }
     },
@@ -255,7 +255,7 @@ Actor.extend({
         if (position == null) position = this.position;
         for (var i = this.actorList.length-1; i > -1; i--) {
             var ignore = false;
-            if (this.actorList[i] == this) continue;
+            //if (this.actorList[i] == this) continue;
             for (var j = this.ignoreCollisions.length-1; j > -1; j--) {
                 if (this.actorList[i].collisionTag === this.ignoreCollisions[j]) {
                     ignore = true;
@@ -375,6 +375,7 @@ Enemy.extend({
     size : new vec2(settings.paalwormSize.x*settings.tileSize.x,
                 settings.paalwormSize.y*settings.tileSize.y),
     treasure : null,
+    poof : null,
     direction : LEFT,
     collisionTag : collisionEnemy,
     ignoreCollisions : [collisionEnemy, collisionDefence, collisionShell],
@@ -389,13 +390,16 @@ Enemy.extend({
     attritionAmount : settings.paalwormAttritionAmount, /* amount of health lost
         every time by attrition */
     attritionTimer : null,
+    poofCollision : -1,
     onInit : function () {
         this.attritionTimer = this.attritionTime;
+        this.poof = DefenceHitEffect;
         this.centreOnTile(true, false);
         this.position.y += settings.tileSize.y * 0.05;
     },
     /* attacks given actor */
     attack : function (other) {
+        this.poofCollision = other.collisionTag;
         other.changeHealth(-this.damage);
     },
     onUpdate : function () {
@@ -407,12 +411,25 @@ Enemy.extend({
         if (this.attackTimer > 0) {
             this.attackTimer -= deltaTime;
         }
+        if (this.poofCollision != -1) {
+            this.createPoof();
+        }
 
         /* make speed non-linear, based on animation */
         this.absoluteSpeed = this.speed * 
             (Math.sin(this.currentAnimation._currentFrame /
                       this.currentAnimation.frameN * (2*Math.PI) + this.moveAnimationOffset) *
              0.5 + 0.5) * settings.tileSize.x;
+    },
+    createPoof : function() {
+        var poof = this.parent.spawnEffect(new vec2(this.position.x -
+                                                settings.tileSize.x * 0.2, 
+                                     this.position.y + settings.tileSize.y * 0.3),
+                                this.poof);
+        if (this.poofCollision === collisionStone) {
+            poof.showAnimation(1);
+        }
+        this.poofCollision = -1;
     },
     onChangeHealth : function () {
         this.playAudio();
@@ -457,7 +474,7 @@ WeakEnemy.extend({
     health : settings.weakPaalwormHealth,
     damage : settings.weakPaalwormDamage,
     speed : settings.paalwormSpeed,
-    moveAnimationOffset : Math.PI * 0.5,
+    moveAnimationOffset : Math.PI,
     animations : ["./animation/paalworm_weak/move", "./animation/paalworm_weak/hit",
                   "./animation/paalworm_weak/attack"],
     sounds : ["./audio/paalworm/hit.ogg"],
@@ -550,21 +567,13 @@ Priest = Defence.clone();
 Priest.extend({
     name : "Priest",
     cost : settings.priestBuildCost,
-    animations : ["./animation/dominee/idle", "./animation/dominee/active",
-        "./animation/dominee/die"],
-    deathAnimation : 2,
-    timeUntilActive : 0,
+    animations : ["./animation/dominee/idle", "./animation/dominee/die"],
+    deathAnimation : 1,
     directions : [new vec2(-1,0), new vec2(0,1), new vec2(1,0), new vec2(0,-1)],
     tileXY : new vec2(0,0),
     onUpdate : function() {
         for (var i = this.directions.length-1; i > -1; i--) {
             this.buffAt(this.directions[i].x, this.directions[i].y);
-        }
-        this.timeUntilActive -= deltaTime;
-        if (this.timeUntilActive < 0) {
-            this.showActorAnimation(1);
-            this.timeUntilActive = random(settings.timeUntilPriestActive.max,
-                                          settings.timeUntilPriestActive.min);
         }
     },
     onDeath : function() {
@@ -573,7 +582,7 @@ Priest.extend({
         }
     },
     getBuffableAt : function(X, Y) {
-        var tile =  this.parent.getTile(this.tileXY.x + X, this.tileXY.y + Y);
+        var tile = this.parent.getTile(this.tileXY.x + X, this.tileXY.y + Y);
         if (tile != null && tile.building && tile.building.buff) {
             return tile.building;
         } else {
@@ -592,11 +601,6 @@ Priest.extend({
             defence.unBuff();
         }
     },
-    customOnAnimationComplete : function(currentAnimation) {
-        if (currentAnimation == 1) {
-            this.showActorAnimation(0);
-        }
-    }
 });
 
 ShootingDefence = Defence.clone();
@@ -641,7 +645,7 @@ ShootingDefence.extend({
         if (this.goSpawnBullet) {
             this.goSpawnBullet = false;
             var bul = this.parent.spawnActor(new vec2(
-                    this.position.x + this.size.x - this.bullet.size.x/2,
+                    this.centre.x - this.bullet.size.x/2,
                     this.position.y + this.size.y/3 - this.bullet.size.y/2),
                 this.bullet,
                 settings.bulletLayer);
@@ -753,7 +757,7 @@ Bullet.extend({
     ignoreCollisions : [collisionDefault, collisionDefence, collisionPlatform,
                         collisionBullet, collisionShell, collisionStone],
     onInit : function() {
-        this.poof = Effect;
+        this.poof = WormHitEffect;
     },
     onUpdate : function() {
         if (this.position.x + this.size.x >= FIELD_SIZE) {
@@ -863,7 +867,6 @@ Effect = ExtendedAnimation.clone()
 Effect.extend({
     name : "Effect",
     size : new vec2(settings.tileSize.x * 0.75, settings.tileSize.y * 0.75),
-    animations : ["./animation/effects/poof", "./animation/effects/poof2"],
     onDrawInit : function() {
         this.addAnimationsWithJSON(this.animations);
         this.showAnimation(0);
@@ -877,6 +880,17 @@ Effect.extend({
     preload : function() {
         Actor.preload.apply(this);
     }
+});
+
+WormHitEffect = Effect.clone();
+WormHitEffect.extend({
+    animations : ["./animation/effects/poof", "./animation/effects/poof2"],
+});
+
+DefenceHitEffect = Effect.clone();
+DefenceHitEffect.extend({
+    animations : ["./animation/effects/poof_wood",
+    "./animation/effects/poof_stone"],
 });
 
 DykeSupports = Model.Drawables.BaseDrawable.clone();

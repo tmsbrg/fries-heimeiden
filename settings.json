@@ -47,15 +47,13 @@ var settings = {
             "fishMoveDistance" : 300, // in pixels
             "fishSpeed" : 0.01, // used in lerp
             "fishMaxAlpha" : 1,
-        // actor fluff
-            "timeUntilPriestActive" : {min : 5, max: 15}, // in seconds
 
     // game settings
         // input
             "deselectIconAfterBuild" : false,
             "canDeselectBuilding" : false,
         // credits
-            "startingCredits" : 6,
+            "startingCredits" : 6000,
             "secondsToCreditUpdate" : 4,
             "creditsPerCreditUpdate" : 2,
             "sellRate" : 0.5, // the part of the money returned after selling a
@@ -102,6 +100,8 @@ var settings = {
             "defaultMaxEnemies" : 5, // max enemies on screen at the same time
             "defaultSpawnInterval" : {"min":2, "max":5}, // in seconds
             "defaultWaitBeforeWave" : 10, // in seconds
+            "defaultUnlockBuildings" : [], // buildings to try to unlock every wave
+                                           // prefer to keep empty
         // end of game
             "timeUntilFreeze" : 3 // seconds until game freezes and
                                   // final screen pops up
