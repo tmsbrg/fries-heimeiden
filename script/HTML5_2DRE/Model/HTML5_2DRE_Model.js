@@ -132,12 +132,11 @@ Model = {
 		if(sendDataAsPost) xmlhttp.send(); else xmlhttp.send(data);
 	},
 
+    /* TODO: Fix with Chrome */
 	getLocalTextFile     :   function(filepath)
 	{
 		var filerequest = new XMLHttpRequest();
-		filerequest.open("GET",
-						 (window.chrome? chrome.extension.getURL(filepath) : filepath),
-						 false);
+		filerequest.open("GET", filepath, false);
 		filerequest.overrideMimeType("text/plain");
 		filerequest.send();
 		return filerequest.responseText;
