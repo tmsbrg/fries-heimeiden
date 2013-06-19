@@ -7,9 +7,9 @@ Waves = {
         "subWaves" : [
             {"enemies" : [4] }
         ],
-        "spawnInterval" : {"min": 7, "max": 8},
-        "waitBeforeWave" : 5,
-        "unlockBuildings" : [ShootingDefence, Stone, RemoveDefence]
+        "spawnInterval" : {"min": 9, "max": 11},
+        "waitBeforeWave" : settings.showInstructions? 21 : 5,
+        "unlockBuildings" : [ShootingDefence, RemoveDefence]
     },
 
 // wave 2
@@ -18,7 +18,7 @@ Waves = {
             {"enemies" : [8] }
         ],
         "spawnInterval" : {"min": 2, "max": 5},
-        "unlockBuildings" : [Platform]
+        "unlockBuildings" : [Stone]
     },
 
 // wave 3
@@ -28,7 +28,7 @@ Waves = {
             {"enemies" : [1, 2] }
         ],
         "spawnInterval" : {"min": 2, "max": 5},
-        "unlockBuildings" : [Priest]
+        "unlockBuildings" : [Platform]
     },
 
 // wave 4
@@ -38,7 +38,8 @@ Waves = {
             {"enemies" : [4, 6] }
         ],
         "spawnInterval" : {"min": 2, "max": 4},
-        "maxEnemies" : 7
+        "maxEnemies" : 7,
+        "unlockBuildings" : [Priest]
     },
 
 // wave 5

@@ -82,6 +82,12 @@ BuildingSelectButton.extend({
     /* unlocks the button */
     unlock : function() {
         this.locked = false;
+        this.parent.triggerInstructions(this);
+        this.updateImage();
+    },
+    /* locks the button */
+    lock : function () {
+        this.locked = true;
         this.updateImage();
     }
 });
@@ -118,13 +124,53 @@ StartButton.extend({
     },
 });
 
+/* a piece of instructions for one game element */
+InstructionText = Model.Drawables.SpriteDrawable.clone();
+InstructionText.extend({
+    active : false,
+    visible : false,
+    ignoremouse : true,
+    instructionImage : "",
+    timeUntilHide : 0,
+    update : function() {
+        if (PlayerData.paused) return;
+        this.timeUntilHide -= deltaTime;
+        if (PlayerData.giveCredits) {
+            PlayerData.giveCredits = false;
+        }
+        if (this.timeUntilHide <= 0) {
+            this.parent.triggerInstructions(this);
+            this.hide();
+        }
+    },
+    preload : function() {
+        preload(this.instructionImage);
+    },
+    hide : function() {
+        if (!PlayerData.giveCredits) {
+            PlayerData.giveCredits = true;
+        }
+        this.active = false;
+        this.visible = false;
+    },
+    show : function() {
+        this.timeUntilHide = settings.instructionTextTime;
+        this.active = true;
+        this.visible = true;
+        this.size.x = this._image.width;
+        this.size.y = this._image.height;
+    }
+});
+
 /* Contains a number of pages of instructions for the player */
 InstructionScreen = Model.Drawables.BaseDrawable.clone();
 InstructionScreen.extend({
     size : new vec2(1123, 842),
     /* array of instruction screens */
     screens : ["./images/gui/instructions/0.png",
-        "./images/gui/instructions/1.png", "./images/gui/instructions/2.png"],
+        "./images/gui/instructions/1.png",
+        "./images/gui/instructions/2.png",
+        "./images/gui/instructions/3.png"],
     screenObject : Model.Drawables.SpriteDrawable.clone(), /* object used to draw
                                                               the current page */
     previousButton : GUIButton.clone(),
@@ -155,7 +201,7 @@ InstructionScreen.extend({
         }
         this.addDrawable(this.nextButton);
 
-        this.closeButton.setBasepath("./images/gui/instructions/close");
+        this.closeButton.setBasepath("./images/gui/instructions/exit");
         this.closeButton.size = new vec2(430, 110);
         this.closeButton.position = new vec2(this.size.y - this.closeButton.size.y,
                                              0);
@@ -223,9 +269,12 @@ FinalScreen.extend({
     winImage : "./images/gui/end/win.png",
     loseImage : "./images/gui/end/lose.png",
     onDrawInit : function() {
-        this.position = new vec2(1920, 1080);
+        this.position = new vec2(1920 - settings.fieldPosition.x,
+                                 1080 -settings.fieldPosition.y);
         this.position.divide(2);
         this.position.substract(new vec2(this.size).divide(2));
+        this.position.add(new vec2(settings.fieldPosition.x,
+                                   settings.fieldPosition.y));
         this.close();
     },
     preload : function() {
@@ -266,6 +315,7 @@ GUI.extend({
     startscreenGUIElements : new Array(), /* GUI elements to show before the game
                                              begins */
     inGameGUIElements : new Array(), /* GUI elements to show ingame */
+    instructions : new Array(), /* Instruction texts */
 
     startButton : null,
 
@@ -281,8 +331,8 @@ GUI.extend({
     init : function() {
         this.game = Game;
         this.initSplash();
-        this.initHUD();
         Model.addDrawable(this);
+        this.initHUD();
         Model.addDrawable(FinalScreen);
     },
     /* initializes splash screen */
@@ -313,6 +363,7 @@ GUI.extend({
             this.initFPSText();
         }
         this.initButtons();
+        this.initInstructionTexts();
         this.initMenuBar();
     },
     initWavesText : function() {
@@ -383,6 +434,50 @@ GUI.extend({
 
         Model.addDrawable(InstructionScreen);
     },
+    /* initializes popup instruction texts */
+    initInstructionTexts : function() {
+        if (settings.showInstructions == false) return;
+        var heimeidInstruction = this.addInstructionText(new vec2(200, 100),
+                                new vec2(382, 217),
+                                this.getBuildingSelectButton(ShootingDefence),
+                                "Heimeid.png");
+        var moneyInstruction = this.addInstructionText(new vec2(200, 100),
+                                new vec2(342, 355),
+                                heimeidInstruction,
+                                "Money.png");
+        this.addInstructionText(new vec2(200, 290),
+                                new vec2(509, 290),
+                                this.getBuildingSelectButton(Platform),
+                                "Platform.png");
+        this.addInstructionText(new vec2(200, 440),
+                                new vec2(382, 300),
+                                this.getBuildingSelectButton(Priest),
+                                "Priest.png");
+        this.addInstructionText(new vec2(200, 650),
+                                new vec2(382, 217),
+                                this.getBuildingSelectButton(Stone),
+                                "Stone.png");
+        this.addInstructionText(new vec2(200, 780),
+                                new vec2(382, 300),
+                                this.getBuildingSelectButton(RemoveDefence),
+                                "RemoveDefence.png");
+        this.addInstructionText(new vec2(1600, 100),
+                                new vec2(290, 393),
+                                moneyInstruction,
+                                "Waves.png");
+        this.addInstructionText(new vec2(230, 100),
+                                new vec2(290, 393),
+                                moneyInstruction,
+                                "Health.png");
+    },
+    /* gets a building select button by the object associated with them */
+    getBuildingSelectButton : function(building) {
+        for (var i = this.buildingSelectButtons.length-1; i > -1; i--) {
+                if (this.buildingSelectButtons[i].building == building) {
+                    return this.buildingSelectButtons[i];
+                }
+        }
+    },
     /* adds a button, text or image to draw during the game or before the game
        starts */
     addGUIElement : function(element, ingame) {
@@ -411,6 +506,27 @@ GUI.extend({
         this.addGUIElement(button);
         this.buildingSelectButtons[this.buildingSelectButtons.length] = button;
     },
+    /* adds intruction text at given position and size with textImage found in
+    ./images/gui/instructions/popup/. Becomes visible when triggered by
+    triggerObject. triggerObject can be a building that becomes unlocked or a
+    different instructiontext when it hides itself */
+    addInstructionText : function(position, size, triggerObject, textImage) {
+        var instruction = InstructionText.clone();
+        instruction.position = position;
+        instruction.size = size;
+        instruction.triggerObject = triggerObject;
+        instruction.load("./images/gui/instructions/popup/" + textImage);
+        this.addDrawable(instruction);
+        this.instructions[this.instructions.length] = instruction;
+        return instruction;
+    },
+    triggerInstructions : function(trigger) {
+        for (var i = this.instructions.length-1; i > -1; i--) {
+            if (this.instructions[i].triggerObject == trigger) {
+                this.instructions[i].show();
+            }
+        }
+    },
     /* deselects currently selected building */
     deselectBuilding : function() {
         PlayerData.selectedBuilding = null;
@@ -435,11 +551,22 @@ GUI.extend({
         this.menuBar.gameStart();
         this.buildingSelectButtons[0].onmousedown();
         this.menuStop();
+        for (var i = this.instructions.length-1; i > -1; i--) {
+            if (this.instructions[i].triggerObject == null) {
+                this.instructions[i].show();
+            }
+        }
     },
     /* stops the game */
     gameStop : function() {
         for (var i = this.inGameGUIElements.length-1; i > -1; i--) {
             this.inGameGUIElements[i].visible = false;
+        }
+        for (var i = this.buildingSelectButtons.length-1; i > -1; i--) {
+            this.buildingSelectButtons[i].lock();
+        }
+        for (var i = this.instructions.length-1; i > -1; i--) {
+            this.instructions[i].hide();
         }
         this.menuBar.reset();
         InstructionScreen.reset();

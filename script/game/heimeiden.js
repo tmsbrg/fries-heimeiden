@@ -17,6 +17,8 @@ Game.extend({
     waves : BackgroundWaves, /* the moving waves in the background */
     gui : GUI, /* direct reference to the GUI */
 
+    backgroundMusic : null,
+
     /* array of objects to preload images of */
     preloadObjects : [FinalScreen, WeakEnemy, StrongEnemy, Stone, Priest,
                       ShootingDefence, Dyke, Bullet, WeakTreasure, StrongTreasure,
@@ -26,8 +28,8 @@ Game.extend({
     /* initializes the game, should only be called once per load */
     initialize : function() {
         this.preload();
-        this.initConstants();
         this.initSelf();
+        this.initMusic();
         this.initDrawables();
         this.initGUI();
     },
@@ -38,14 +40,15 @@ Game.extend({
         }
         startPreload();
     },
-    /* calculates some constants from the settings */
-    initConstants : function() {
-        FIELD_SIZE = settings.tileSize.x * settings.tilesPerLane;
-    },
     /* initializes own values */
     initSelf : function() {
         this.size = new vec2(View.canvasWidth, View.canvasHeight);
         Model.addDrawable(this);
+    },
+    /* initializes ambient background sound/music */
+    initMusic : function() {
+        this.backgroundMusic = AudioPlayer.clone();
+        this.backgroundMusic.load("./audio/music.ogg");
     },
     /* initializes all static drawableObjects,
        should only be called once per load */
@@ -98,6 +101,13 @@ Game.extend({
     },
     /* functions called constantly when the game is active */
     update : function() {
+        this.syncAudioPause();
+        PlayerData.timeUntilRestartMusic -= deltaTime;
+        if (PlayerData.timeUntilRestartMusic <= 0) {
+            this.backgroundMusic.play();
+            PlayerData.timeUntilRestartMusic = random(settings.backgroundLoopInterval.max,
+                                                      settings.backgroundLoopInterval.min);
+        }
         if (!PlayerData.paused) {
             this.updateCredits();
             this.checkWin();
@@ -105,8 +115,17 @@ Game.extend({
             this.updateFish();
         }
     },
+    syncAudioPause : function() {
+        if (PlayerData.paused && !this.backgroundMusic.paused) {
+            this.backgroundMusic.pause();
+        } else if (!PlayerData.paused && PlayerData.audioEnabled &&
+                   this.backgroundMusic.paused) {
+            this.backgroundMusic.unpause();
+        }
+    },
     /* handles getting credits automatically over time */
     updateCredits : function() {
+        if (!PlayerData.giveCredits) return;
         PlayerData.creditsTimer += deltaTime;
         if (PlayerData.creditsTimer >= settings.secondsToCreditUpdate) {
             PlayerData.creditsTimer = 0;
@@ -178,8 +197,11 @@ Game.extend({
             if (settings.deselectIconAfterBuild) {
                 GUI.deselectBuilding();
             }
+            layer = (position.x < this.dyke.position.x + this.dyke.size.x) ?
+                        settings.backCharacterLayer :
+                        settings.characterLayer;
             this.creditsPopupOnTile(position, buildingObject.cost, false);
-            return this.spawnActor(position, buildingObject);
+            return this.spawnActor(position, buildingObject, layer);
         } else {
             console.log("Not enough credits to build this defence!");
             return null;
@@ -312,124 +334,3 @@ Game.extend({
         }
     }
 });
-
-/* Contains player data to be reset on every play*/
-PlayerData = {
-    paused : null,
-    credits : null,
-    endOfGame : null,
-    creditsTimer : null,
-    selectedBuilding : null,
-    audioEnabled : null,
-    areWavesFinished : null,
-    selectedBuilding : null,
-    canBuild : null,
-    finalCountDown : null,
-    timeUntilNextFish : null,
-    currentFishId : null,
-    lost : null,
-    /* called when the game gets started, sets all playerdata to initial values */
-    reset : function() {
-        this.paused = false;
-        this.credits = settings.startingCredits;
-        this.endOfGame = false;
-        this.creditsTimer = 0;
-        this.selectedBuilding = null;
-        this.audioEnabled = true;
-        this.areWavesFinished = false;
-        this.selectedBuilding = null;
-        this.canBuild = true;
-        this.finalCountDown = INACTIVE;
-        this.timeUntilNextFish = settings.fishSpawnRate.max;
-        this.currentFishId = 0;
-        this.lost = false;
-    }
-};
-
-/* Draws fading text popup at given position, with given color.
-   Color defaults to yellow */
-popupText = function(position, text, color) {
-    if (color == null) {
-        color = "#FEF500";
-    }
-    var popupText = Model.Drawables.TextDrawable.clone();
-    popupText.font = "normal 48px US_Sans";
-    popupText.color = color;
-    popupText.setText(text);
-    popupText.timeout = settings.popupTimeout;
-    popupText.timeleft = settings.popupTimeout;
-    popupText.speed = settings.popupSpeed;
-    popupText.position = new vec2(position.x - popupText.size.x / 2, position.y);
-    popupText.update = function() {
-        if (PlayerData.paused) return;
-        this.position.y -= this.speed * deltaTime;
-        this.timeleft -= deltaTime;
-        this.alpha = this.timeleft / this.timeout;
-        if (this.timeleft <= 0) {
-            Game.removeDrawable(this);
-        }
-    }
-    Game.Popups[Game.Popups.length] = popupText;
-    Game.addDrawable(popupText);
-}
-
-/* Draws fading and expanding rect popup at given position,
-   and color, expanding until given size */
-popupRect = function(position, size, color) {
-    var rect = Model.Drawables.RectangleDrawable.clone();
-    rect.startPosition = position.clone();
-    rect.endSize = size.clone();
-    rect.color = color;
-    rect.timeout = settings.popupRectTimeout;
-    rect.timeleft = rect.timeout;
-    rect.update = function() {
-        if (PlayerData.paused) return;
-        this.timeleft -= deltaTime;
-        this.alpha = this.timeleft / this.timeout;
-        this.size = new vec2((1 - this.timeleft / this.timeout) * this.endSize.x,
-                         (1 - this.timeleft / this.timeout) * this.endSize.y);
-        this.position = new vec2(this.startPosition.x -
-                (this.size.x-this.endSize.x) / 2,
-                this.startPosition.y - (this.size.y-this.endSize.y) / 2);
-        if (this.timeleft <= 0) {
-            Game.removeDrawable(this);
-        }
-    }
-    Game.Popups[Game.Popups.length] = rect;
-    Game.addDrawable(rect);
-}
-
-/* Draws fading and expanding image popup at given position,
-   and with given image, expanding until given size */
-popupImage = function(position, size, image) {
-    var sprite = Model.Drawables.SpriteDrawable.clone();
-    sprite.startPosition = position.clone();
-    sprite.endSize = size.clone();
-    sprite.load(image);
-    sprite.timeout = settings.popupRectTimeout;
-    sprite.timeleft = sprite.timeout;
-    sprite.update = function() {
-        if (PlayerData.paused) return;
-        this.timeleft -= deltaTime;
-        this.alpha = this.timeleft / this.timeout;
-        this.size = new vec2((1 - this.timeleft / this.timeout) * this.endSize.x,
-                         (1 - this.timeleft / this.timeout) * this.endSize.y);
-        this.position = new vec2(this.startPosition.x -
-                (this.size.x-this.endSize.x) / 2,
-                this.startPosition.y - (this.size.y-this.endSize.y) / 2);
-        if (this.timeleft <= 0) {
-            Game.Popups
-            Game.removeDrawable(this);
-        }
-    }
-    Game.Popups[Game.Popups.length] = sprite;
-    Game.addDrawable(sprite);
-}
-
-/* Called by rendering engine when everything is loaded */
-initialize = function() {
-        Game.initialize();
-}
-
-/* set max FPS */
-View.fps = settings.maxFPS;

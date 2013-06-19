@@ -32,14 +32,13 @@ var settings = {
             "fishLayer" : 1,
             "backgroundImageLayer" : 2,
             "groundLayer" : 3,
-            "characterLayer" : 4,
+            "backCharacterLayer" : 4,
             "dykeLayer" : 5,
             "shoreLayer" : 6,
-            "bulletLayer" : 7,
-            "shellLayer" : 8,
-            "effectLayer" : 9,
-        // side menu
-            "menuMoveSpeed" : 0.2,
+            "characterLayer" : 7,
+            "bulletLayer" : 8,
+            "shellLayer" : 9,
+            "effectLayer" : 10,
         // water effects
             "waveSpeed" : Math.PI / 8, // in radians per second
 
@@ -47,6 +46,13 @@ var settings = {
             "fishMoveDistance" : 300, // in pixels
             "fishSpeed" : 0.01, // used in lerp
             "fishMaxAlpha" : 1,
+        // gui
+            "menuMoveSpeed" : 0.2,
+            "showInstructions" : true,
+            "instructionTextTime" : 7,
+        // sound
+            "backgroundMusic" : true,
+            "backgroundLoopInterval" : {"min" : 160, "max" : 320}, 
 
     // game settings
         // input
@@ -79,7 +85,7 @@ var settings = {
             "defenceBuffedCooldown" : 2,
             "defenceMaxAsynchTime" : 1, // unused
 
-            "platformBuildCost" : 4,
+            "platformBuildCost" : 6,
             "platformHealth" : 4,
 
             "stoneBuldCost" : 6,
@@ -99,7 +105,8 @@ var settings = {
         // waves, default values can be overwritten for specific waves in waves.json
             "defaultMaxEnemies" : 5, // max enemies on screen at the same time
             "defaultSpawnInterval" : {"min":2, "max":5}, // in seconds
-            "defaultWaitBeforeWave" : 10, // in seconds
+            "defaultWaitBeforeWave" : 7, // in seconds,
+                                         // nullified if showInstructions is false
             "defaultUnlockBuildings" : [], // buildings to try to unlock every wave
                                            // prefer to keep empty
         // end of game

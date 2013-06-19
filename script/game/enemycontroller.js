@@ -32,7 +32,8 @@ EnemyController.extend({
         if (this.spawnTimer <= 0) {
             this.spawnTimer = random(this.spawnInterval.max,
                                      this.spawnInterval.min);
-            if (this.parent.countActors(collisionEnemy) < this.maxEnemies) {
+            var enemiesOnField = this.parent.countActors(collisionEnemy);
+            if (enemiesOnField < this.maxEnemies) {
                 var enemyToSpawn = this.getEnemyFromPool();
                 if (enemyToSpawn != -1) {
                     var lane;
@@ -42,7 +43,7 @@ EnemyController.extend({
                     this.parent.spawnEnemy(lane, enemyToSpawn);
                     this.enemyPool[enemyToSpawn]--;
                     this.lastLane = lane;
-                } else {
+                } else if (enemiesOnField == 0) {
                     this.currentSubWave++;
                     if (this.currentSubWave >= this.subWaves.length) {
                         this.currentSubWave = 0;

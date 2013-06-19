@@ -376,7 +376,8 @@ Enemy.extend({
     poof : null,
     direction : LEFT,
     collisionTag : collisionEnemy,
-    ignoreCollisions : [collisionEnemy, collisionDefence, collisionShell],
+    ignoreCollisions : [collisionEnemy, collisionDefence, collisionBullet,
+                        collisionShell],
     attackTimer : 0,
     attackAnimation : 2,
     moveAnimationOffset : 0, /* Number between 0 and Math.PI*2 that is used to 
@@ -546,6 +547,7 @@ Stone.extend({
     tile : null,
     onInit : function() {
         this.centreOnTile(true, true);
+        this.playAudio();
     },
     onChangeHealth : function() {
         if (this.health < 0.3 * settings.dykeHealth) {
@@ -566,6 +568,7 @@ Priest.extend({
     name : "Priest",
     cost : settings.priestBuildCost,
     animations : ["./animation/dominee/idle", "./animation/dominee/die"],
+    sounds : ["./audio/priest/create.ogg"],
     deathAnimation : 1,
     directions : [new vec2(-1,0), new vec2(0,1), new vec2(1,0), new vec2(0,-1)],
     tileXY : new vec2(0,0),
@@ -644,7 +647,7 @@ ShootingDefence.extend({
             this.goSpawnBullet = false;
             var bul = this.parent.spawnActor(new vec2(
                     this.position.x + 109,
-                    this.position.y + 22),
+                    this.position.y + 55),
                 this.bullet,
                 settings.bulletLayer);
             if (this.isBuffed) {
@@ -718,23 +721,24 @@ Dyke.extend({
     size : new vec2(settings.tileSize.x, settings.tileSize.y * settings.lanes),
     animations : ["./animation/objects/dyke/healthfull",
                   "./animation/objects/dyke/healthlost",
-                  "./animation/objects/dyke/healthcritical"],
+                  "./animation/objects/dyke/healthcritical",
+                  "./animation/objects/dyke/die"],
+    deathAnimation : 3,
     dykeFloor : null,
     health : settings.dykeHealth,
     onInit : function() {
         this.dykeFloor = DykeFloor;
     },
     onChangeHealth : function() {
-        if (this.health < 0.3 * settings.dykeHealth) {
+        if (this.health <= 0) {
+            this.parent.lose();
+        } else if (this.health < 0.3 * settings.dykeHealth) {
             this.showActorAnimation(2);
             this.dykeFloor.changeWaterLevel(2);
         } else if (this.health < 0.7 * settings.dykeHealth) {
             this.showActorAnimation(1);
             this.dykeFloor.changeWaterLevel(1);
         }
-    },
-    onDeath : function () {
-        this.parent.lose();
     }
 });
 
