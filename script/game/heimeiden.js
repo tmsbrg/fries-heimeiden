@@ -102,17 +102,21 @@ Game.extend({
     /* functions called constantly when the game is active */
     update : function() {
         this.syncAudioPause();
+        if (!PlayerData.paused) {
+            this.updateAudio();
+            this.updateCredits();
+            this.checkWin();
+            this.checkEndOfGame();
+            this.updateFish();
+        }
+    },
+    updateAudio : function() {
+        if (settings.backgroundMusic == false || !PlayerData.audioEnabled) return;
         PlayerData.timeUntilRestartMusic -= deltaTime;
         if (PlayerData.timeUntilRestartMusic <= 0) {
             this.backgroundMusic.play();
             PlayerData.timeUntilRestartMusic = random(settings.backgroundLoopInterval.max,
                                                       settings.backgroundLoopInterval.min);
-        }
-        if (!PlayerData.paused) {
-            this.updateCredits();
-            this.checkWin();
-            this.checkEndOfGame();
-            this.updateFish();
         }
     },
     syncAudioPause : function() {
@@ -203,7 +207,16 @@ Game.extend({
             this.creditsPopupOnTile(position, buildingObject.cost, false);
             return this.spawnActor(position, buildingObject, layer);
         } else {
-            console.log("Not enough credits to build this defence!");
+            var noMoneyIconSize = new vec2(212, 196);
+            var noMoneyIconPosition = new vec2();
+            noMoneyIconPosition.x =
+                position.x + settings.tileSize.x / 2 - noMoneyIconSize.x / 2;
+            noMoneyIconPosition.y =
+                position.y + settings.tileSize.y / 2 - noMoneyIconSize.y / 2;
+            popupImage(noMoneyIconPosition,
+                       noMoneyIconSize,
+                       "./images/gui/no_money.png",
+                       0.75);
             return null;
         }
     },

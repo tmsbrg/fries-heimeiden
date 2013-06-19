@@ -43,11 +43,13 @@ EnemyController.extend({
                     this.parent.spawnEnemy(lane, enemyToSpawn);
                     this.enemyPool[enemyToSpawn]--;
                     this.lastLane = lane;
-                } else if (enemiesOnField == 0) {
+                } else {
                     this.currentSubWave++;
                     if (this.currentSubWave >= this.subWaves.length) {
-                        this.currentSubWave = 0;
-                        this.endWave();
+                        if (enemiesOnField == 0) {
+                            this.currentSubWave = 0;
+                            this.endWave();
+                        }
                     } else {
                         this.startSubWave();
                     }

@@ -642,13 +642,10 @@ ShootingDefence.extend({
     goSpawnBullet : false,
     attackAnimation : 3,
     buffedAttackAnimation : 6,
-    asynchAnimation : 1,
-    playAfterasynchAnimation : 0,
     deathAnimation : 4,
     attackTimer : 0,
     attackMode : false,
     cost : settings.defenceBuildCost,
-    maxAsynchTime : settings.defenceMaxAsynchTime,
     onInit : function() {
         this.bullet = Bullet;
         Defence.onInit.apply(this);
@@ -708,16 +705,7 @@ ShootingDefence.extend({
             case this.buffedAttackAnimation:
                 this.goSpawnBullet = true;
                 break;
-            case this.asynchAnimation:
-                this.showActorAnimation(this.playAfterasynchAnimation);
-                break;
         }
-    },
-    asynchwait : function() {
-        this.playAfterasynchAnimation = this.currentAnimationIndex;
-        this.showActorAnimation(this.asynchAnimation);
-        this.currentAnimation.frameN = 2;
-        this.currentAnimation.secondsPerFrame = Math.random()*this.maxAsynchTime/2;
     },
     buff : function() {
         this.isBuffed = true;

@@ -22,7 +22,7 @@ const FIELD_SIZE = settings.tileSize.x * settings.tilesPerLane;
 been initialized yet */
 View.fps = settings.maxFPS;
 
-/* nulligy wait before wave if there are no instructions to show */
+/* nullify wait before wave if there are no instructions to show */
 if (!settings.showInstructions) {
     settings.defaultWaitBeforeWave = 0;
 }

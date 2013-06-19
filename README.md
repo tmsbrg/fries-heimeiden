@@ -12,9 +12,10 @@ Semester 2, schooljaar 2012-2013
 
 ### Afspelen
 
-Open index.htm in een web browser(Mozilla Firefox is geadviseerd) om het spel te spelen.
+Open index.htm in Firefox om het spel te spelen.
+Chrome werkt op dit moment niet door een fout in de functie die lokale tekstbestanden ophaalt.
 Het spel benodigt een ruimte van 1920x1080 pixels om te spelen. Hiervoor moet u een monitor hebben
-die groot genoeg is om het af te spelen en uw browser op fullscreen zetten. Op Firefox kunt u dit
+die groot genoeg is om het af te spelen en uw browser op fullscreen zetten, of uitzoomen. Op Firefox kunt u dit
 doen door F11 te drukken.
 
 ### Licentie

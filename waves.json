@@ -8,7 +8,9 @@ Waves = {
             {"enemies" : [4] }
         ],
         "spawnInterval" : {"min": 9, "max": 11},
-        "waitBeforeWave" : settings.showInstructions? 21 : 5,
+        "waitBeforeWave" : settings.showInstructions?
+                            settings.instructionTextTime * 3
+                            : 5,
         "unlockBuildings" : [ShootingDefence, RemoveDefence]
     },
 
@@ -48,7 +50,7 @@ Waves = {
             {"enemies" : [8, 5] },
             {"enemies" : [5, 13] }
         ],
-        "spawnInterval" : {"min": 1, "max": 3},
+        "spawnInterval" : {"min": 1, "max": 1},
         "maxEnemies" : 10
     }
 ]

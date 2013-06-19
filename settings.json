@@ -42,17 +42,18 @@ var settings = {
         // water effects
             "waveSpeed" : Math.PI / 8, // in radians per second
 
-            "fishSpawnRate" : {min: 5, max: 15}, // in seconds
+            "fishSpawnRate" : {"min" : 5, "max" : 15}, // in seconds
             "fishMoveDistance" : 300, // in pixels
             "fishSpeed" : 0.01, // used in lerp
             "fishMaxAlpha" : 1,
         // gui
             "menuMoveSpeed" : 0.2,
-            "showInstructions" : true,
-            "instructionTextTime" : 7,
+            "showInstructions" : false,
+            "instructionTextTime" : 14,
         // sound
             "backgroundMusic" : true,
-            "backgroundLoopInterval" : {"min" : 160, "max" : 320}, 
+            "backgroundLoopInterval" : {"min" : 160, "max" : 320}, // seconds until
+                                                                   // music restart
 
     // game settings
         // input
@@ -75,17 +76,16 @@ var settings = {
             "strongPaalwormDamage" : 2,
 
             "paalwormSpeed" : 1,
-            "paalwormCooldown" : 1.5,
-            "paalwormAttritionTime" : 1000,
-            "paalwormAttritionAmount" : 0, // attrition no longer needed
+            "paalwormCooldown" : 1.5, // amount of seconds of cooldown after biting
+            "paalwormAttritionTime" : 1000, // time until automatic damage
+            "paalwormAttritionAmount" : 0, // amount of automatic damage taken
         // defences
             "defenceBuildCost" : 6,
             "defenceRange" : 10, // range for attacking enemies, in number of tiles
             "defenceCooldown" : 3, // in seconds
-            "defenceBuffedCooldown" : 2,
-            "defenceMaxAsynchTime" : 1, // unused
+            "defenceBuffedCooldown" : 3, // in seconds
 
-            "platformBuildCost" : 6,
+            "platformBuildCost" : 8,
             "platformHealth" : 4,
 
             "stoneBuldCost" : 6,
@@ -105,7 +105,7 @@ var settings = {
         // waves, default values can be overwritten for specific waves in waves.json
             "defaultMaxEnemies" : 5, // max enemies on screen at the same time
             "defaultSpawnInterval" : {"min":2, "max":5}, // in seconds
-            "defaultWaitBeforeWave" : 7, // in seconds,
+            "defaultWaitBeforeWave" : 14, // in seconds,
                                          // nullified if showInstructions is false
             "defaultUnlockBuildings" : [], // buildings to try to unlock every wave
                                            // prefer to keep empty

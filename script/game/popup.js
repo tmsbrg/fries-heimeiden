@@ -53,12 +53,13 @@ popupRect = function(position, size, color) {
 
 /* Draws fading and expanding image popup at given position,
    and with given image, expanding until given size */
-popupImage = function(position, size, image) {
+popupImage = function(position, size, image, timeoutSpeed) {
+    if (timeoutSpeed == null) timeoutSpeed = settings.popupRectTimeout;
     var sprite = Model.Drawables.SpriteDrawable.clone();
     sprite.startPosition = position.clone();
     sprite.endSize = size.clone();
     sprite.load(image);
-    sprite.timeout = settings.popupRectTimeout;
+    sprite.timeout = timeoutSpeed;
     sprite.timeleft = sprite.timeout;
     sprite.update = function() {
         if (PlayerData.paused) return;
