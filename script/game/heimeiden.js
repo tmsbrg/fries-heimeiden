@@ -209,6 +209,7 @@ Game.extend({
     },
     /* makes a popup on tile at tilePosition for credit add/remove feedback */
     creditsPopupOnTile : function(tilePosition, amount, positive) {
+        if (amount === 0) return;
         if (positive == null) {
             positive = true;
         }

@@ -268,6 +268,7 @@ FinalScreen.extend({
     size : new vec2(1123, 842),
     winImage : "./images/gui/end/win.png",
     loseImage : "./images/gui/end/lose.png",
+    audio : null,
     onDrawInit : function() {
         this.position = new vec2(1920 - settings.fieldPosition.x,
                                  1080 -settings.fieldPosition.y);
@@ -275,6 +276,8 @@ FinalScreen.extend({
         this.position.substract(new vec2(this.size).divide(2));
         this.position.add(new vec2(settings.fieldPosition.x,
                                    settings.fieldPosition.y));
+        this.audio = AudioPlayer.clone();
+        this.audio.load("./audio/lose.ogg", "./audio/win.ogg");
         this.close();
     },
     preload : function() {
@@ -285,8 +288,10 @@ FinalScreen.extend({
         this._image.loaded = false; /* do not accidentally show wrong image before
                                        getting new one */
         if (PlayerData.lost) {
+            this.audio.play(0);
             this.load(this.loseImage);
         } else {
+            this.audio.play(1);
             this.load(this.winImage);
         }
         this.visible = true;

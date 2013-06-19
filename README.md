@@ -49,11 +49,12 @@ Komt nog: technisch ontwerp
 #### Ontwikkelingsteam
  * *Thomas van der Berg - Programmeren*
  * *Remko Jansma - 2D art / animatie*
- * *Denise Tiam-Fook - 2D art / animatie*
+ * *Denise Tiam-Fook - 2D art / animatie, audio*
 
 #### Externen
  * *Lyda de Weijer - 2D art dijk*
  * *Sanne de Zwart - 2D art en animatie voor Heimeiden*
+ * *Daniel Kolk - audio*
 
 #### Geintegreerde software
 

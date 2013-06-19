@@ -94,6 +94,8 @@ Tile.extend({
             if ((this.platform = this.parent.buildBuilding(this.position.x,
                 Platform)) != null) {
                 this.platform.tile = this;
+                this.platform.builder = this.parent.buildBuilding(this.position.x,
+                                                                  BuildHeimeid);
             }
         }
     },
@@ -319,6 +321,7 @@ Actor.extend({
     /* calls the onDeath function and removes the actor from
     the actorlist and memory */
     die : function () {
+        this.audio.stop();
         this.onDeath();
         if (this.actorList != null) {
             for (var i = this.actorList.length-1; i > -1; i--) {
@@ -398,6 +401,7 @@ Enemy.extend({
     },
     /* attacks given actor */
     attack : function (other) {
+        this.playAudio(random(this.attackSounds[1], this.attackSounds[0]));
         this.poofCollision = other.collisionTag;
         other.changeHealth(-this.damage);
     },
@@ -431,7 +435,7 @@ Enemy.extend({
         this.poofCollision = -1;
     },
     onChangeHealth : function () {
-        this.playAudio();
+        this.playAudio(random(this.hitSounds[1], this.hitSounds[0]));
         this.showActorAnimation(1);
     },
     onCollide : function (other) {
@@ -476,7 +480,11 @@ WeakEnemy.extend({
     moveAnimationOffset : Math.PI,
     animations : ["./animation/paalworm_weak/move", "./animation/paalworm_weak/hit",
                   "./animation/paalworm_weak/attack"],
-    sounds : ["./audio/paalworm/hit.ogg"],
+    hitSounds : [0, 0],
+    attackSounds : [1, 2],
+    sounds : ["./audio/paalworm/hit.ogg",
+              "./audio/paalworm/attack1.ogg",
+              "./audio/paalworm/attack2.ogg"],
     onInit : function() {
         this.treasure = WeakTreasure;
         Enemy.onInit.apply(this);
@@ -491,7 +499,13 @@ StrongEnemy.extend({
     moveAnimationOffset : Math.PI,
     animations : ["./animation/paalworm_strong/move", "./animation/paalworm_strong/hit",
                   "./animation/paalworm_strong/attack"],
-    sounds : ["./audio/paalworm/hit_strong.ogg"],
+    sounds : ["./audio/paalworm/hit_strong1.ogg",
+              "./audio/paalworm/hit_strong2.ogg",
+              "./audio/paalworm/hit_strong3.ogg",
+              "./audio/paalworm/attack1.ogg",
+              "./audio/paalworm/attack2.ogg"],
+    hitSounds : [0, 2],
+    attackSounds : [3, 4],
     onInit : function() {
         this.treasure = StrongTreasure;
         Enemy.onInit.apply(this);
@@ -509,7 +523,7 @@ Defence.extend({
     collisionTag : collisionDefence,
     cooldown : settings.defenceCooldown,
     range : settings.defenceRange,
-    cost : settings.defenceBuildCost,
+    cost : 0,
     onInit : function () {
         this.centreOnTile(true, false);
         if (this.position.x < settings.tileSize.x) {
@@ -530,6 +544,19 @@ Defence.extend({
             }
         }
         return false;
+    }
+});
+
+BuildHeimeid = Defence.clone();
+BuildHeimeid.extend({
+    animations : ["./animation/objects/platform/builder"],
+    onUpdate : function() {
+        if (this.goDie) {
+            this.die();
+        }
+    },
+    customOnAnimationComplete : function() {
+        this.goDie = true;
     }
 });
 
@@ -620,6 +647,7 @@ ShootingDefence.extend({
     deathAnimation : 4,
     attackTimer : 0,
     attackMode : false,
+    cost : settings.defenceBuildCost,
     maxAsynchTime : settings.defenceMaxAsynchTime,
     onInit : function() {
         this.bullet = Bullet;
@@ -789,6 +817,7 @@ Treasure = Actor.clone();
 Treasure.extend({
     name : "Treasure",
     ignoremouse : false,
+    sounds : ["./audio/money.ogg"],
     fadeShell : "",
     fadeCounter : 0,
     fadeTime : settings.shellFadeTime,
@@ -813,6 +842,7 @@ Treasure.extend({
                             "+" + this.worth);
             popupImage(this.position, this.size, this.fadeShell);
             this.die();
+            this.playAudio();
         }
     },
     onclick : function () {
@@ -855,6 +885,9 @@ Platform.extend({
         if (this.health <= 0) {
             if (this.building) {
                 this.building.animatedDie();
+            }
+            if (this.builder) {
+                this.builder.animatedDie();
             }
             if (this.tile) {
                 this.tile.reset();
