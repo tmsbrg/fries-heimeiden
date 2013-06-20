@@ -29,6 +29,14 @@ Lane.extend({
                                        amount,
                                        positive);
     },
+    /* Creates a 'cannot build' popup on lane at given x position */
+    popupCannotBuild : function(xpos) {
+        popupImage(new vec2(xpos, this.position.y),
+                   settings.tileSize,
+                   "./images/gui/cross.png",
+                   0.75,
+                   false);
+    },
     /* resets all tiles */
     reset : function() {
         for (var i = this.Tiles.length-1; i > -1; i--) {
@@ -84,12 +92,13 @@ Tile.extend({
             if (this.building) {
                 this.building.tile = this;
             }
+        } else {
+            this.parent.popupCannotBuild(this.position.x);
         }
     },
     /* checks if a platform can be built and attempts to build it */
     buildPlatform : function() {
-        if (!this.building && (this.tileIndex == 1 || 
-            this.parent.getTile(this.tileIndex-1).platform) &&
+        if (!this.building && (this.tileIndex == 1 || this.isPlatformLeft()) &&
             this.platform == null) {
             if ((this.platform = this.parent.buildBuilding(this.position.x,
                 Platform)) != null) {
@@ -97,6 +106,8 @@ Tile.extend({
                 this.platform.builder = this.parent.buildBuilding(this.position.x,
                                                                   BuildHeimeid);
             }
+        } else {
+            this.parent.popupCannotBuild(this.position.x);
         }
     },
     /* removes building if present, otherwise removes platform if present.
@@ -128,7 +139,16 @@ Tile.extend({
             if (this.platform) {
                 this.platform.building = this.building;
             }
+        } else {
+            this.parent.popupCannotBuild(this.position.x);
         }
+    },
+    isPlatformLeft : function() {
+        var tile = this.parent.getTile(this.tileIndex-1);
+        if (tile && tile.platform) {
+            return true;
+        }
+        return false;
     }
 });
 
@@ -529,7 +549,7 @@ Defence.extend({
         if (this.position.x < settings.tileSize.x) {
             this.position.x -= this.size.x / 4;
         }
-        this.playAudio();
+        this.playAudio(0);
     },
     // return true if an enemy is in range and on the same lane
     enemyInRange : function () {
@@ -566,7 +586,8 @@ Stone.extend({
     "./animation/objects/rockblock/healthlost",
     "./animation/objects/rockblock/healthcritical",
     "./animation/objects/rockblock/break"],
-    sounds : ["./audio/objects/stone_create.ogg"],
+    sounds : ["./audio/objects/stone_create.ogg",
+              "./audio/sink.ogg"],
     deathAnimation : 3,
     collisionTag : collisionStone,
     health : settings.stoneHealth,
@@ -577,7 +598,9 @@ Stone.extend({
         this.playAudio();
     },
     onChangeHealth : function() {
-        if (this.health < 0.3 * settings.dykeHealth) {
+        if (this.health <= 0) {
+             this.playAudio(1);
+        } else if (this.health < 0.3 * settings.dykeHealth) {
             this.showActorAnimation(2);
         } else if (this.health < 0.7 * settings.dykeHealth) {
             this.showActorAnimation(1);
@@ -595,7 +618,8 @@ Priest.extend({
     name : "Priest",
     cost : settings.priestBuildCost,
     animations : ["./animation/dominee/idle", "./animation/dominee/die"],
-    sounds : ["./audio/priest/create.ogg"],
+    sounds : ["./audio/priest/create.ogg",
+              "./audio/sink.ogg"],
     deathAnimation : 1,
     directions : [new vec2(-1,0), new vec2(0,1), new vec2(1,0), new vec2(0,-1)],
     tileXY : new vec2(0,0),
@@ -739,6 +763,7 @@ Dyke.extend({
                   "./animation/objects/dyke/healthlost",
                   "./animation/objects/dyke/healthcritical",
                   "./animation/objects/dyke/die"],
+    sounds : ["./audio/sink.ogg"],
     deathAnimation : 3,
     dykeFloor : null,
     health : settings.dykeHealth,
@@ -747,6 +772,7 @@ Dyke.extend({
     },
     onChangeHealth : function() {
         if (this.health <= 0) {
+            this.playAudio();
             this.parent.lose();
         } else if (this.health < 0.3 * settings.dykeHealth) {
             this.showActorAnimation(2);
@@ -860,17 +886,18 @@ Platform.extend({
     "./animation/objects/platform/die"],
     brokenAnimation : 1,
     deathAnimation : 2,
-    sounds : ["./audio/objects/platform_create.ogg"],
+    sounds : ["./audio/objects/platform_create.ogg", "./audio/sink.ogg"],
     health : settings.platformHealth,
     building : null,
     tile : null,
     collisionTag : collisionPlatform,
     cost : settings.platformBuildCost,
     onInit : function() {
-        this.playAudio();
+        this.playAudio(0);
     },
     onChangeHealth : function() {
         if (this.health <= 0) {
+            this.playAudio(1);
             if (this.building) {
                 this.building.animatedDie();
             }

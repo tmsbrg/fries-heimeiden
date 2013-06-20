@@ -138,6 +138,9 @@ InstructionText.extend({
         if (PlayerData.giveCredits) {
             PlayerData.giveCredits = false;
         }
+        if (PlayerData.canBuild) {
+            PlayerData.canBuild = false;
+        }
         if (this.timeUntilHide <= 0) {
             this.parent.triggerInstructions(this);
             this.hide();
@@ -149,6 +152,9 @@ InstructionText.extend({
     hide : function() {
         if (!PlayerData.giveCredits) {
             PlayerData.giveCredits = true;
+        }
+        if (!PlayerData.canBuild) {
+            PlayerData.canBuild = true;
         }
         this.active = false;
         this.visible = false;

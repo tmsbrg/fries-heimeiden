@@ -207,7 +207,7 @@ Game.extend({
             this.creditsPopupOnTile(position, buildingObject.cost, false);
             return this.spawnActor(position, buildingObject, layer);
         } else {
-            var noMoneyIconSize = new vec2(212, 196);
+            var noMoneyIconSize = new vec2(106, 98);
             var noMoneyIconPosition = new vec2();
             noMoneyIconPosition.x =
                 position.x + settings.tileSize.x / 2 - noMoneyIconSize.x / 2;
@@ -216,7 +216,7 @@ Game.extend({
             popupImage(noMoneyIconPosition,
                        noMoneyIconSize,
                        "./images/gui/no_money.png",
-                       0.75);
+                       0.75, false);
             return null;
         }
     },

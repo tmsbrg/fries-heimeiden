@@ -53,20 +53,26 @@ popupRect = function(position, size, color) {
 
 /* Draws fading and expanding image popup at given position,
    and with given image, expanding until given size */
-popupImage = function(position, size, image, timeoutSpeed) {
+popupImage = function(position, size, image, timeoutSpeed, grow) {
     if (timeoutSpeed == null) timeoutSpeed = settings.popupRectTimeout;
+    if (grow == null) grow = true;
     var sprite = Model.Drawables.SpriteDrawable.clone();
     sprite.startPosition = position.clone();
     sprite.endSize = size.clone();
+    sprite.ignoremouse = true;
+    sprite.size = size.clone();
     sprite.load(image);
     sprite.timeout = timeoutSpeed;
     sprite.timeleft = sprite.timeout;
+    sprite.grow = grow;
     sprite.update = function() {
         if (PlayerData.paused) return;
         this.timeleft -= deltaTime;
         this.alpha = this.timeleft / this.timeout;
-        this.size = new vec2((1 - this.timeleft / this.timeout) * this.endSize.x,
-                         (1 - this.timeleft / this.timeout) * this.endSize.y);
+        if (this.grow) {
+            this.size = new vec2((1 - this.timeleft / this.timeout) * this.endSize.x,
+                             (1 - this.timeleft / this.timeout) * this.endSize.y);
+        }
         this.position = new vec2(this.startPosition.x -
                 (this.size.x-this.endSize.x) / 2,
                 this.startPosition.y - (this.size.y-this.endSize.y) / 2);
