@@ -50,7 +50,7 @@ Waves = {
             {"enemies" : [8, 5] },
             {"enemies" : [5, 13] }
         ],
-        "spawnInterval" : {"min": 1, "max": 1},
+        "spawnInterval" : {"min": 1, "max": 2},
         "maxEnemies" : 10
     }
 ]

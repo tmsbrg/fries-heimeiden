@@ -294,10 +294,10 @@ FinalScreen.extend({
         this._image.loaded = false; /* do not accidentally show wrong image before
                                        getting new one */
         if (PlayerData.lost) {
-            this.audio.play(0);
+            if (PlayerData.audioEnabled) this.audio.play(0);
             this.load(this.loseImage);
         } else {
-            this.audio.play(1);
+            if (PlayerData.audioEnabled) this.audio.play(1);
             this.load(this.winImage);
         }
         this.visible = true;
