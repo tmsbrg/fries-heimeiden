@@ -19,7 +19,7 @@ EnemyController.extend({
     /* check if in a wave and if so, call updateWave(), otherwise count down
        until the wave should start and start it */
     update : function() {
-        if (PlayerData.paused) return;
+        if (PlayerData.paused || !PlayerData.enemiesSpawn) return;
         if (this.inWave) {
             this.updateWave();
         } else {

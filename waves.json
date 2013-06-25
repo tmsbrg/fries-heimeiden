@@ -7,10 +7,7 @@ Waves = {
         "subWaves" : [
             {"enemies" : [4] }
         ],
-        "spawnInterval" : {"min": 9, "max": 11},
-        "waitBeforeWave" : settings.showInstructions?
-                            settings.instructionTextTime * 3
-                            : 5,
+        "spawnInterval" : {"min": 11, "max": 11},
         "unlockBuildings" : [ShootingDefence, RemoveDefence]
     },
 

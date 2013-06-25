@@ -129,7 +129,7 @@ InstructionText = Model.Drawables.SpriteDrawable.clone();
 InstructionText.extend({
     active : false,
     visible : false,
-    ignoremouse : true,
+    cursor : "pointer",
     instructionImage : "",
     timeUntilHide : 0,
     update : function() {
@@ -141,9 +141,11 @@ InstructionText.extend({
         if (PlayerData.canBuild) {
             PlayerData.canBuild = false;
         }
+        if (PlayerData.enemiesSpawn) {
+            PlayerData.enemiesSpawn = false;
+        }
         if (this.timeUntilHide <= 0) {
-            this.parent.triggerInstructions(this);
-            this.hide();
+            this.close();
         }
     },
     preload : function() {
@@ -156,6 +158,9 @@ InstructionText.extend({
         if (!PlayerData.canBuild) {
             PlayerData.canBuild = true;
         }
+        if (!PlayerData.enemiesSpawn) {
+            PlayerData.enemiesSpawn = true;
+        }
         this.active = false;
         this.visible = false;
     },
@@ -165,6 +170,13 @@ InstructionText.extend({
         this.visible = true;
         this.size.x = this._image.width;
         this.size.y = this._image.height;
+    },
+    close : function() {
+        GUI.triggerInstructions(this);
+        this.hide();
+    },
+    onmousedown : function() {
+        GUI.nextInstructionTexts();
     }
 });
 
@@ -527,9 +539,16 @@ GUI.extend({
         instruction.size = size;
         instruction.triggerObject = triggerObject;
         instruction.load("./images/gui/instructions/popup/" + textImage);
-        this.addDrawable(instruction);
+        Model.addDrawable(instruction);
         this.instructions[this.instructions.length] = instruction;
         return instruction;
+    },
+    nextInstructionTexts : function() {
+        for (var i = this.instructions.length-1; i > -1; i--) {
+            if (this.instructions[i].visible) {
+                this.instructions[i].close();
+            }
+        }
     },
     triggerInstructions : function(trigger) {
         for (var i = this.instructions.length-1; i > -1; i--) {

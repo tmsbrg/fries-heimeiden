@@ -60,7 +60,7 @@ var settings = {
             "deselectIconAfterBuild" : false,
             "canDeselectBuilding" : false,
         // credits
-            "startingCredits" : 6,
+            "startingCredits" : 12,
             "secondsToCreditUpdate" : 4,
             "creditsPerCreditUpdate" : 2,
             "sellRate" : 0.5, // the part of the money returned after selling a
@@ -69,7 +69,7 @@ var settings = {
             "tilesPerLane" : 8, // do not modify!
             "lanes" : 4, // do not modify!
         // enemies
-            "weakPaalwormHealth" : 10,
+            "weakPaalwormHealth" : 6,
             "weakPaalwormDamage" : 2,
 
             "strongPaalwormHealth" : 20,
@@ -105,8 +105,7 @@ var settings = {
         // waves, default values can be overwritten for specific waves in waves.json
             "defaultMaxEnemies" : 5, // max enemies on screen at the same time
             "defaultSpawnInterval" : {"min":2, "max":5}, // in seconds
-            "defaultWaitBeforeWave" : 14, // in seconds,
-                                         // nullified if showInstructions is false
+            "defaultWaitBeforeWave" : 2, // in seconds,
             "defaultUnlockBuildings" : [], // buildings to try to unlock every wave
                                            // prefer to keep empty
         // end of game
