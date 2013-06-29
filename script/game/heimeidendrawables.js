@@ -848,7 +848,7 @@ Treasure.extend({
             this.die();
         }
     },
-    onhover : function() {
+    onmousedown : function () {
         if (!PlayerData.paused) {
             this.parent.addCredits(this.worth);
             popupText(new vec2(this.position.x + this.size.x/2,
@@ -858,9 +858,6 @@ Treasure.extend({
             this.die();
             this.playAudio();
         }
-    },
-    onclick : function () {
-        this.onhover();
     }
 });
 
