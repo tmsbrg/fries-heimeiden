@@ -7,6 +7,7 @@ popupText = function(position, text, color) {
     var popupText = Model.Drawables.TextDrawable.clone();
     popupText.font = "normal 48px US_Sans";
     popupText.color = color;
+    popupText.ignoremouse = true;
     popupText.setText(text);
     popupText.timeout = settings.popupTimeout;
     popupText.timeleft = settings.popupTimeout;

@@ -913,6 +913,7 @@ Platform.extend({
 Effect = ExtendedAnimation.clone()
 Effect.extend({
     name : "Effect",
+    ignoremouse : true,
     size : new vec2(settings.tileSize.x * 0.75, settings.tileSize.y * 0.75),
     onDrawInit : function() {
         this.addAnimationsWithJSON(this.animations);
