@@ -69,7 +69,7 @@ var settings = {
             "tilesPerLane" : 8, // do not modify!
             "lanes" : 4, // do not modify!
         // enemies
-            "weakPaalwormHealth" : 6,
+            "weakPaalwormHealth" : 8,
             "weakPaalwormDamage" : 2,
 
             "strongPaalwormHealth" : 20,
